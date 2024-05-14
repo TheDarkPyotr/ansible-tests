@@ -1,0 +1,13 @@
+one_doc:
+  hosts:
+    one_doc_root_orchestrator:
+      ansible_host: 131.159.24.33  # Use localhost for the local machine
+      ansible_ssh_user: 'xavier1'
+      ansible_ssh_pass: 'Passw0rd!'
+      ansible_become: True     # Enable privilege escalation
+      ansible_become_method: sudo  # Default method for privilege escalation (optional)
+      rootIP: '131.159.24.33'  # Optional, public IP of the machine
+      clusterName: 'Test'
+      clusterLocation: 'Munich'  # Optional
+      additionalComposeOverrides: ''  # Optional configuration for docker-compose
+      ansible_sudo_pass: "Passw0rd!"  # **NOT RECOMMENDED**

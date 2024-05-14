@@ -1,0 +1,32 @@
+all:
+  vars:
+    rootIP: '131.159.24.33'
+
+root:
+  hosts:
+    root_orchestrator: 
+      ansible_host: '131.159.24.33'
+      ansible_ssh_user: 'xavier1'
+      ansible_ssh_pass: 'Passw0rd!'
+      ansible_become_password: 'Passw0rd!'
+      additionalComposeOverrides: '' #E.g. additionalClusterOverrides: '-f override-ipv6-enabled.yml' to enable ipv6
+
+clusters:
+  hosts:
+    cluster_1: 
+      ansible_host: '131.159.24.33'
+      ansible_ssh_user: 'xavier1'
+      ansible_ssh_pass: 'Passw0rd!'
+      ansible_become_password: 'Passw0rd!'
+      clusterName: 'LucaTestCluster1'
+      clusterLocation: ' '
+      additionalComposeOverrides: '' #E.g. additionalClusterOverrides: '-f override-ipv6-enabled.yml' to enable ipv6
+    cluster_2: 
+      ansible_host: '131.159.24.33'
+      ansible_ssh_user: 'xavier1'
+      ansible_ssh_pass: 'Passw0rd!'
+      ansible_become_password: 'Passw0rd!'
+      clusterName: 'LucaTestCluster2'
+      clusterLocation: ' '
+      additionalComposeOverrides: ''
+
