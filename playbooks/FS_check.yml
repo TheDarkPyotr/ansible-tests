@@ -4,7 +4,7 @@
 
   tasks:
   -  name: Root FS usage
-     shell: df -h / |awk ' { print $5 } ' |grep -v Use
+     shell: df -h {{ FS_MOUNTPOINT }} |awk ' { print $5 } ' |grep -v Use
      register: dfroot
 
   -  debug:
