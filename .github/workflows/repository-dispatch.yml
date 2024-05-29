@@ -15,7 +15,7 @@ jobs:
         # If the API call includes data in the request body, use this step to parse it.
         # Example using jq (if applicable):
         run: |
-          data=$(echo ${{ github.event.client_payload }} | jq -r '.data')  # Adjust selector as needed
+          data=$(echo ${{ github.event.client_payload }} | jq)  # Adjust selector as needed
           echo "Extracted data: $data"
           # Store the data in an environment variable (optional):
           echo "DATA=$data" >> $GITHUB_ENV
