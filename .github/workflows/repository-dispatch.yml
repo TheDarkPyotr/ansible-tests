@@ -15,29 +15,18 @@ jobs:
         # If the API call includes data in the request body, use this step to parse it.
         # Example using jq (if applicable):
         run: |
-          data=$(echo ${{ github.event.payload }} | jq -r '.data')  # Adjust selector as needed
+          data=$(echo ${{ github.event.client_payload }} | jq -r '.data')  # Adjust selector as needed
           echo "Extracted data: $data"
           # Store the data in an environment variable (optional):
           echo "DATA=$data" >> $GITHUB_ENV
 
-      - name: Process API Call
-        # Perform actions based on the API call content.
-        # This step could involve:
-        #   - Making additional API calls
-        #   - Updating code or files in the repository
-        #   - Deploying code
-        #   - Sending notifications
-        run: |
-          echo "Processing API call..."
-          # Replace with your specific actions
-          # Example: make a follow-up API call
-          curl -X POST https://your-api-endpoint
+      - name: Send Push Notification
+        uses: techulus/push-github-action@1.0.0
+        env:
+            API_KEY: ${{ secrets.AWX_REPO_API_KEY }}
+            MESSAGE: "Test notification from GitHub 🧪"
+            TITLE: Testing
+            LINK: https://localhost/api/v2/
+            SOUND: scifi
+            TIME_SENSITIVE: true
 
-      - name: Commit Changes (Optional)
-        # If the workflow needs to commit changes, use this step.
-        run: |
-          git config user.name "GitHub Actions"
-          git config user.email "actions@github.com"
-          git add .
-          git commit -m "API call processing updates"
-          git push origin main  # Adjust branch as needed
