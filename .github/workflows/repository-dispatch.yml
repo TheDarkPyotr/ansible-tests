@@ -16,10 +16,8 @@ jobs:
         # Example using jq (if applicable):
         run: |
           echo "Raw payload: ${{ toJson(github.event.client_payload) }}"
-          data=$(echo ${{ github.event.client_payload }} | jq)  # Adjust selector as needed
+          data=$(echo '${{ toJson(github.event.client_payload) }}' | jq .)
           echo "Extracted data: $data"
-          # Store the data in an environment variable (optional):
-          echo "DATA=$data" >> $GITHUB_ENV
 
       - name: Send Push Notification
         uses: techulus/push-github-action@1.0.0
