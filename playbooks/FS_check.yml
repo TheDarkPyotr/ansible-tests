@@ -27,4 +27,5 @@
             unit: false
             integration: true
         body_format: json
+        status_code: [204]
       delegate_to: localhost
