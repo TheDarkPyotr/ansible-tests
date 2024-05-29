@@ -22,7 +22,7 @@
           Authorization: "Bearer {{ GITHUB_API_TOKEN }}"
           X-GitHub-Api-Version: "2022-11-28"
         body: 
-          event_type: "on-demand-test"
+          event_type: "api_call"
           client_payload: 
             unit: false
             integration: true
