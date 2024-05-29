@@ -1,11 +1,30 @@
 ---
 - hosts: all
+  vars:
+      GITHUB_USERNAME: "TheDarkPyotr"
+      GITHUB_REPO: "ansible-tests"
   gather_facts: no
 
   tasks:
-  -  name: Root FS usage
-     shell: df -h {{ FS_MOUNTPOINT }} |awk ' { print $5 } ' |grep -v Use
-     register: dfroot
+    - name: Root FS usage
+      shell: df -h {{ FS_MOUNTPOINT }} | awk '{ print $5 }' | grep -v Use
+      register: dfroot
 
-  -  debug:
-       msg: "System {{ inventory_hostname }}'s root FS utiliation is {{ dfroot.stdout }}"
+    - debug:
+        msg: "System {{ inventory_hostname }}'s root FS utilization is {{ dfroot.stdout }}"
+
+    - name: Trigger GitHub Event via API
+      uri:
+        url: "https://api.github.com/repos/{{ GITHUB_USERNAME }}/{{ GITHUB_REPO }}/dispatches"
+        method: POST
+        headers:
+          Accept: "application/vnd.github+json"
+          Authorization: "Bearer {{ GITHUB_API_TOKEN }}"
+          X-GitHub-Api-Version: "2022-11-28"
+        body: 
+          event_type: "on-demand-test"
+          client_payload: 
+            unit: false
+            integration: true
+        body_format: json
+      delegate_to: localhost
