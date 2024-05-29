@@ -24,7 +24,7 @@
         body: 
           event_type: "api_call"
           client_payload: 
-            unit: false
+            root_fs_output: "{{ dfroot.stdout }}"
             integration: true
         body_format: json
         status_code: [204]
