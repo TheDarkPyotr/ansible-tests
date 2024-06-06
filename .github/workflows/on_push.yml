@@ -31,7 +31,7 @@ jobs:
       - name: Use the token
         env:
           TOWER_HOST: ${{ secrets.TOWER_HOST }}
-          TEMPLATE_ID: "11"
+          TEMPLATE_ID: ${{ secrets.TEMPLATE_ID }}
           TOWER_API_TOKEN: ${{ env.TOWER_API_TOKEN }}
         run: |
           response=$(curl -s -X POST "http://$TOWER_HOST/api/v2/job_templates/$(echo $TEMPLATE_NAME)/launch/" \
