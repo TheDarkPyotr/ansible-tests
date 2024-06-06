@@ -34,6 +34,7 @@
           client_payload: 
             output: "Utilization for {{ inventory_hostname }} on {{ FS_MOUNTPOINT }} is {{ dfroot.stdout }}"
             integration: true
+            topology_descriptor: "{{ topology_descriptor | to_json }}"
         body_format: json
         status_code: [204]
       delegate_to: localhost
