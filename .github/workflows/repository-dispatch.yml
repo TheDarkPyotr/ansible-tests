@@ -15,7 +15,6 @@ jobs:
         # If the API call includes data in the request body, use this step to parse it.
         # Example using jq (if applicable):
         run: |
-          echo "Raw payload: ${{ toJson(github.event.client_payload) }}"
           data=$(echo '${{ toJson(github.event.client_payload) }}' | jq .)
           echo "Extracted data: $data"
 

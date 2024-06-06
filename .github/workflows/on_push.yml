@@ -1,21 +1,16 @@
 name: Trigger AWX Job Template
 
-on:
-  push:
-    branches:
-      - main 
-  
+on:  
   workflow_dispatch:
-    inputs:
-      topology:
-        description: 'Choose the topology to deploy'     
-        required: true
-        type: string
-        default: topology.json
-    
+
 jobs:
   trigger-awx-job:
     runs-on: ubuntu-latest
+
+    inputs:
+      topology:  # Define the input for the topology file path
+        required: true
+        type: string
 
     steps:
       - name: Checkout repository
@@ -45,11 +40,8 @@ jobs:
           TEMPLATE_ID: ${{ secrets.TEMPLATE_ID }}
           TOWER_API_TOKEN: ${{ env.TOWER_API_TOKEN }}
         run: |
-          # Parse the topology JSON
           topology_json=$(echo ${{ steps.read_topology.outputs }})
 
-          # Use jq to convert the JSON string to a format suitable for curl (optional)
-          # You might need to adjust this based on your specific JSON structure
           extra_vars_data=$(echo "$topology_json" | jq -r '. | tostring')
           response=$(curl -s -X POST "http://$TOWER_HOST/api/v2/job_templates/$TEMPLATE_ID/launch/" \
             -H "Authorization: Bearer $TOWER_API_TOKEN" \
