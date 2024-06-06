@@ -9,8 +9,10 @@
   tasks:
     - name: Debug entire extra_vars JSON
       debug:
-        var: extra_vars
-      register: extra_vars_output
+        msg: |-
+          Microservice Name: {{ cluster_list[0].sla_descriptor.applications[0].microservices[0].microservice_name }}
+          Memory: {{ cluster_list[0].sla_descriptor.applications[0].microservices[0].memory }}
+          Command: {{ cluster_list[0].sla_descriptor.applications[0].microservices[0].cmd }}
     
     - name: Print the entire JSON content (alternative method)
       debug:
