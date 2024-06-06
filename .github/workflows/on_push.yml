@@ -40,7 +40,7 @@ jobs:
           TEMPLATE_ID: ${{ secrets.TEMPLATE_ID }}
           TOWER_API_TOKEN: ${{ env.TOWER_API_TOKEN }}
         run: |
-          topology_json=$(echo ${{ steps.read_topology.outputs }})
+          topology_json=$(echo ${{ steps.read_topology.outputs.stdout }})
 
           extra_vars_data=$(echo "$topology_json" | jq -r '. | tostring')
           response=$(curl -s -X POST "http://$TOWER_HOST/api/v2/job_templates/$TEMPLATE_ID/launch/" \
