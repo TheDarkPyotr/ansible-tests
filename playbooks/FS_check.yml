@@ -3,9 +3,20 @@
   vars:
       GITHUB_USERNAME: "TheDarkPyotr"
       GITHUB_REPO: "ansible-tests"
+      extra_vars: "{{ lookup('json', tower_extra_vars) }}"
+
   gather_facts: no
 
   tasks:
+    - name: Debug entire extra_vars JSON
+      debug:
+        var: extra_vars
+      register: extra_vars_output
+    
+    - name: Print the entire JSON content (alternative method)
+      debug:
+        msg: "{{ extra_vars_output.stdout }}"
+
     - name: Root FS usage
       shell: df -h {{ FS_MOUNTPOINT }} | awk '{ print $5 }' | grep -v Use
       register: dfroot

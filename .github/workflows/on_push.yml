@@ -4,7 +4,15 @@ on:
   push:
     branches:
       - main 
-
+  
+  workflow_dispatch:
+    inputs:
+      topology:
+        description: 'Choose the topology to deploy'     
+        required: true
+        type: string
+        default: topology.json
+    
 jobs:
   trigger-awx-job:
     runs-on: ubuntu-latest
@@ -12,7 +20,10 @@ jobs:
     steps:
       - name: Checkout repository
         uses: actions/checkout@v3
-
+      - name: Read topology file ${{ github.event.inputs.topology }}
+        id: read_topology
+        run: |
+          cat ${{ github.event.inputs.topology }}  # Read file content
       - name: Get the token
         id: get_token
         env:
@@ -34,8 +45,15 @@ jobs:
           TEMPLATE_ID: ${{ secrets.TEMPLATE_ID }}
           TOWER_API_TOKEN: ${{ env.TOWER_API_TOKEN }}
         run: |
+          # Parse the topology JSON
+          topology_json=$(echo ${{ steps.read_topology.outputs }})
+
+          # Use jq to convert the JSON string to a format suitable for curl (optional)
+          # You might need to adjust this based on your specific JSON structure
+          extra_vars_data=$(echo "$topology_json" | jq -r '. | tostring')
           response=$(curl -s -X POST "http://$TOWER_HOST/api/v2/job_templates/$TEMPLATE_ID/launch/" \
             -H "Authorization: Bearer $TOWER_API_TOKEN" \
             -H "Content-Type: application/json" \
+            -d "$extra_vars_data"
             --insecure)  # --insecure is equivalent to validate_certs: false in Ansible
           echo "$response" | jq .
