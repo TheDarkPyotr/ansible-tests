@@ -46,6 +46,6 @@ jobs:
           response=$(curl -s -X POST "http://$TOWER_HOST/api/v2/job_templates/$TEMPLATE_ID/launch/" \
             -H "Authorization: Bearer $TOWER_API_TOKEN" \
             -H "Content-Type: application/json" \
-            -d "$extra_vars_data"
+            -d "$extra_vars_data" \
             --insecure)  # --insecure is equivalent to validate_certs: false in Ansible
           echo "$response" | jq .
