@@ -3,7 +3,6 @@
   vars:
       GITHUB_USERNAME: "TheDarkPyotr"
       GITHUB_REPO: "ansible-tests"
-      extra_vars: "{{ lookup('json', tower_extra_vars) }}"
 
   gather_facts: no
 
