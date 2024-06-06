@@ -10,14 +10,9 @@
     - name: Debug entire extra_vars JSON
       debug:
         msg: |-
-          ONEDOC: {{ one_doc_enabled }}
-          Root+cluster: {{ together_root_cluster }}
-          Cluster List: {{ cluster_list }}
+          topology_descriptor: {{ topology_descriptor  | to_json }}
          
     
-    - name: Print the entire JSON content (alternative method)
-      debug:
-        msg: "{{ extra_vars_output.stdout }}"
 
     - name: Root FS usage
       shell: df -h {{ FS_MOUNTPOINT }} | awk '{ print $5 }' | grep -v Use

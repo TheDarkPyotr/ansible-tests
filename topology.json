@@ -1,4 +1,4 @@
-{
+"topology_descriptor": {
     "one_doc_enabled": false, 
     "together_root_cluster": false,
     "cluster_list": [{
