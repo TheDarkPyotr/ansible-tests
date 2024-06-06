@@ -10,9 +10,10 @@
     - name: Debug entire extra_vars JSON
       debug:
         msg: |-
-          Microservice Name: {{ cluster_list[0].sla_descriptor.applications[0].microservices[0].microservice_name }}
-          Memory: {{ cluster_list[0].sla_descriptor.applications[0].microservices[0].memory }}
-          Command: {{ cluster_list[0].sla_descriptor.applications[0].microservices[0].cmd }}
+          ONEDOC: {{ one_doc_enabled }}
+          Root+cluster: {{ together_root_cluster }}
+          Cluster List: {{ cluster_list }}
+         
     
     - name: Print the entire JSON content (alternative method)
       debug:
