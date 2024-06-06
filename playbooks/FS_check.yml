@@ -1,5 +1,5 @@
 ---
-- hosts: all
+- hosts: localhost
   vars:
       GITHUB_USERNAME: "TheDarkPyotr"
       GITHUB_REPO: "ansible-tests"
