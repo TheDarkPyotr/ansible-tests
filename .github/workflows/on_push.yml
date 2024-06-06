@@ -2,15 +2,15 @@ name: Trigger AWX Job Template
 
 on:  
   workflow_dispatch:
+    inputs:
+      topology:
+        description: 'Path to the topology file'
+        required: true
+        default: 'topology.json'
 
 jobs:
   trigger-awx-job:
     runs-on: ubuntu-latest
-
-    inputs:
-      topology:  # Define the input for the topology file path
-        required: true
-        type: string
 
     steps:
       - name: Checkout repository
