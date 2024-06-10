@@ -1,9 +1,4 @@
 ---
-- name: Deploy clusters
-  hosts: localhost
-  gather_facts: no
-
-  tasks:
     - name: Parse JSON input
       set_fact:
         topology: "{{ topology_data.topology_descriptor | from_json }}"
