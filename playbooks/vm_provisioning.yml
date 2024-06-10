@@ -1,0 +1,58 @@
+- name: Check available VMs and deploy (if topology is valid)
+  become: true
+  register: deploy_result
+  when: topology_is_valid is defined and topology_is_valid
+
+  # Define variables based on JSON data (assuming it's already available)
+  # Adjust variable names based on your actual JSON structure
+  set_fact:
+    cluster_list: "{{ lookup('json', topology_descriptor).cluster_list }}"
+    one_doc_enabled: "{{ lookup('json', topology_descriptor).one_doc_enabled }}"
+    together_root_cluster: "{{ lookup('json', topology_descriptor).together_root_cluster }}"
+
+  # Calculate total required VMs (cluster nodes + worker nodes)
+  set_fact:
+    required_vms: "{{ (cluster_list | map(attribute='number_of_nodes') | sum) + (cluster_list | length) }}"
+    required_vms: "{{ required_vms if not one_doc_enabled and not together_root_cluster else 1 }}"
+
+  # Find available VMs in the cmvm_pool group
+  # Adjust filters based on your environment (e.g., status)
+  set_fact:
+    available_vms: "{{ hostvars | selectattr('groups', 'in', ['cmvm_pool']) | selectattr('ansible_vm_communicator', 'defined') }}"
+
+  # Check if enough VMs are available
+  set_fact:
+    deploy_possible: "{{ available_vms | length >= required_vms }}"
+
+  # Define timestamp for new host group name
+  set_fact:
+    timestamp: "{{ lookup('pipe', 'date +%Y-%m-%d_%H-%M-%S') }}"
+
+  # Tag and mark selected VMs (up to required number)
+  when: deploy_possible
+  tasks:
+    - name: Tag VM {{ item.name }}
+      set_fact:
+        vm_name: "{{ 'vm_' + (available_vms | list_index(item)) }}"
+      add_host:
+        hostname: "{{ item.name }}"
+        groups: "{{ vm_name }}"
+      meta:
+        tags: "{{ vm_name }}"
+      with_items: "{{ available_vms[:required_vms] }}"
+
+    - name: Create new host group
+      group_by:
+        name: "deploy_{{ timestamp }}"
+        hosts: "{{ vm_name for vm_name in (available_vms[:required_vms] | map(attribute='name')) }}"
+
+    - name: Mark VMs as busy
+      # Adjust module based on your environment (e.g., vmware_guest)
+      vmware_guest:
+        name: "{{ item.name }}"
+        state: poweredoff  # You can adjust the state (e.g., suspended)
+      with_items: "{{ available_vms[:required_vms] }}"
+
+  # Show results
+  debug:
+    msg: "Deploy possible: {{ deploy_result.deploy_possible }}"

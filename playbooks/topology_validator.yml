@@ -1,0 +1,46 @@
+---
+- hosts: localhost
+  vars:
+      GITHUB_USERNAME: "TheDarkPyotr"
+      GITHUB_REPO: "ansible-tests"
+
+  gather_facts: no
+
+  tasks:
+    - name: Debug entire extra_vars JSON
+      debug:
+        msg: |-
+          topology_descriptor: {{ topology_descriptor  | to_json }}
+         
+    
+
+    - name: Root FS usage
+      shell: df -h {{ FS_MOUNTPOINT }} | awk '{ print $5 }' | grep -v Use
+      register: dfroot
+
+    - debug:
+        msg: "System {{ inventory_hostname }}'s root FS utilization is {{ dfroot.stdout }}"
+
+    - name: Trigger GitHub Event via API
+      uri:
+        url: "https://api.github.com/repos/{{ GITHUB_USERNAME }}/{{ GITHUB_REPO }}/dispatches"
+        method: POST
+        headers:
+          Accept: "application/vnd.github+json"
+          Authorization: "Bearer {{ GITHUB_API_TOKEN }}"
+          X-GitHub-Api-Version: "2022-11-28"
+        body: 
+          event_type: "api_call"
+          client_payload: 
+            output: "Utilization for {{ inventory_hostname }} on {{ FS_MOUNTPOINT }} is {{ dfroot.stdout }}"
+            integration: true
+            topology_descriptor: "{{ topology_descriptor | to_json }}"
+        body_format: json
+        status_code: [204]
+      delegate_to: localhost
+    
+    - name: "Set stats for VM Provisioning"
+      set_stats:
+        data:
+          topology_descriptor:  "{{ topology_descriptor | to_json }}"
+          topology_is_valid: true
