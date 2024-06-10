@@ -1,0 +1,10 @@
+- hosts: all
+  roles:
+    - validate-topology
+    - vm-provisioning
+  vars:
+    path: "{{ oak_repo_path }}"
+    repo: "{{ oak_repo_link }}"
+    branch: "{{ oak_repo_version }}"
+    GITHUB_USERNAME: "TheDarkPyotr"
+    GITHUB_REPO: "ansible-tests"
