@@ -1,7 +1,7 @@
 ---
     - name: Parse JSON input
       set_fact:
-        topology: "{{ topology_descriptor | from_json }}"
+        topology: "{{ topology_descriptor | to json }}"
 
     - name: Check if topology is valid
       fail:
