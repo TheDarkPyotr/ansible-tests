@@ -35,6 +35,10 @@
       debug:
         msg: "Total number of VMs: {{ total_vms }}"
 
+    - name: Inspect machine groups
+      debug:
+        msg: "Machine groups: {{ groups }}"
+
     - name: Find available VMs in cmvm_pool
       add_host:
         name: "{{ item }}"
