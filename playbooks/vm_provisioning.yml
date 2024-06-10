@@ -10,7 +10,7 @@
     
     - name: Print topology
       debug:
-        var: topology
+        var: topology_descriptor
 
     - name: Calculate required number of VMs
       set_fact:
