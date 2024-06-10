@@ -18,14 +18,18 @@
         num_nodes: "{{ topology_descriptor.cluster_list | map(attribute='number_of_nodes') | sum }}"
         one_doc_enabled: "{{ topology_descriptor.one_doc_enabled | bool }}"
         together_root_cluster: "{{ topology_descriptor.together_root_cluster | bool }}"
+
+    - name: Verify if flag one_doc_enabled
+      set_fact:
+        plus_one: "{{ 1 if not one_doc_enabled and not together_root_cluster else 0 }}"
         
     - name : Print number of clusters and nodes
       debug:
-        msg: "Number of clusters: {{ num_clusters }}, Number of nodes: {{ num_nodes }}"
+        msg: "Number of clusters: {{ num_clusters }}, Number of nodes: {{ num_nodes }}, Plus one: {{ plus_one }}"
 
     - name: Calculate total number of VMs
       set_fact:
-        total_vms: "{{ num_clusters + num_nodes + (1 if not one_doc_enabled and not together_root_cluster else 0) }}"
+        total_vms: "{{ num_clusters + num_nodes + plus_one }}"
     
     - name: Print total number of VMs
       debug:
