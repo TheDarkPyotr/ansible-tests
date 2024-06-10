@@ -12,8 +12,7 @@
         msg: |-
           topology_descriptor: {{ topology_descriptor  | to_json }}
          
-    
-
+  
     - name: Root FS usage
       shell: df -h {{ FS_MOUNTPOINT }} | awk '{ print $5 }' | grep -v Use
       register: dfroot
