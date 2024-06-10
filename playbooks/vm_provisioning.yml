@@ -66,11 +66,16 @@
 
     - name: Define roles list
       set_fact:
-        roles_list: "{{ ['root'] | union(['cluster_' ~ item]) | list }}"
-      loop: "{{ range(2, (num_clusters | int) +1) }}"
+        roles_list: "{{ ['root'] }}"
+    - set_fact:
+        roles_list: "{{ roles_list + ['cluster_' ~ item] }}"
+      loop: "{{ range(2, (num_clusters | int) + 1) }}"
+      when: num_clusters > 0
     - set_fact:
         roles_list: "{{ roles_list + ['worker_' ~ item] }}"
-      loop: "{{ range(1, (num_nodes | int) +1) }}"
+      loop: "{{ range(1, (num_nodes | int) + 1) }}"
+      when: num_nodes > 0
+
 
     - name: Tag VMs with roles
       add_host:
