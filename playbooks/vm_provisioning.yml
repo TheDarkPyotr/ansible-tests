@@ -72,3 +72,16 @@
     - name: Mark VMs as busy
       set_fact:
         busy_vms: "{{ (groups['busy_vms'] | default([])) + (available_vm_list.results | map(attribute='item') | list) }}"
+
+    - name: Print busy VMs
+      debug:
+        msg: "Busy VMs: {{ busy_vms }}"
+
+    - name: Print deploy group name
+      debug:
+        msg: "Deploy group name: {{ deploy_group_name }}"
+
+    - name: Print cmvm_pool and busy_vms
+      debug:
+        msg: "cmvm_pool: {{ groups['cmvm_pool'] }} busy_vms: {{ groups['busy_vms'] }}"
+     
