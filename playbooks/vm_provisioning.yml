@@ -1,12 +1,12 @@
 ---
     - name: Parse JSON input
       set_fact:
-        topology: "{{ topology_descriptor | to_json}}"
+        topology: "{{ topology_desc | to_json}}"
 
     - name: Check if topology is valid
       fail:
         msg: "Topology is not valid. Deployment cannot proceed."
-      when: not topology_is_valid
+      when: not topology_validity
 
     - name: Calculate required number of VMs
       set_fact:
