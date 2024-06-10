@@ -13,7 +13,7 @@
         var: topology_descriptor
 
     - name: Calculate required number of VMs
-      vars:
+      set_fact:
         num_clusters: "{{ topology_descriptor.cluster_list | length }}"
         num_nodes: "{{ topology_descriptor.cluster_list | map(attribute='number_of_nodes') | sum }}"
         
@@ -22,14 +22,14 @@
         msg: "Number of clusters: {{ num_clusters }}, Number of nodes: {{ num_nodes }}"
 
     - name: Calculate total number of VMs
-      # Remove the set_fact task
+      set_fact:
         total_vms: >
             {{ num_clusters + num_nodes + (1 if not (topology_descriptor.one_doc_enabled or topology_descriptor.together_root_cluster) else 0) }}
 
     - name: Print total number of VMs
       debug:
         msg: "Total number of VMs: {{ total_vms }}"
-        
+
     - name: Find available VMs in cmvm_pool
       add_host:
         name: "{{ item }}"
