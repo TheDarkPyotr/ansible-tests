@@ -10,7 +10,7 @@
     - name: Debug entire extra_vars JSON
       debug:
         msg: |-
-          topology_descriptor: {{ topology_descriptor  | to_json }}
+          topology_descriptor: {{ topology_descriptor }}
          
   
     - name: Root FS usage
@@ -33,7 +33,7 @@
           client_payload: 
             output: "Utilization for {{ inventory_hostname }} on {{ FS_MOUNTPOINT }} is {{ dfroot.stdout }}"
             integration: true
-            topology_descriptor: "{{ topology_descriptor | to_json }}"
+            topology_descriptor: "{{ topology_descriptor }}"
         body_format: json
         status_code: [204]
       delegate_to: localhost
