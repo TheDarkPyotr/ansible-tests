@@ -29,7 +29,7 @@
 
     - name: Calculate total number of VMs
       set_fact:
-        total_vms: "{{ num_clusters + num_nodes + plus_one }}"
+        total_vms: "{{ (num_clusters + num_nodes + plus_one) | int}}"
     
     - name: Print total number of VMs
       debug:
