@@ -59,41 +59,16 @@
         msg: "Not enough available VMs in cmvm_pool. Required: {{ total_vms }}, Available: {{ available_vm_list.results | length }}"
       when: (available_vm_list.results | length) < (total_vms | int)
 
-
-    - name: Tag selected VMs
-      set_fact:
-        selected_vms: "{{ available_vm_list.results | map(attribute='item') | list }}"
-
-    - name: Define roles list
-      set_fact:
-        roles_list: "{{ ['root'] }}"
-    - set_fact:
-        roles_list: "{{ roles_list + ['cluster_' ~ item] }}"
-      loop: "{{ range(2, (num_clusters | int) + 1) }}"
-      when: num_clusters > 0
-    - set_fact:
-        roles_list: "{{ roles_list + ['worker_' ~ item] }}"
-      loop: "{{ range(1, (num_nodes | int) + 1) }}"
-      when: num_nodes > 0
-
-
-    - name: Tag VMs with roles
-      add_host:
-        name: "{{ selected_vms[item.0] }}"
-        groups: deployed_vms
-        vm_role: "{{ item.1 }}"
-      loop: "{{ roles_list }}"
-  
     - name: Create new group with timestamp
       set_fact:
         deploy_group_name: "deploy_{{ lookup('pipe', 'date +%Y%m%d%H%M%S') }}"
 
-    - name: Add selected VMs to new deploy group
+    - name: Add available VMs to new deploy group
       add_host:
         name: "{{ item }}"
         groups: "{{ deploy_group_name }}"
-      loop: "{{ groups['deployed_vms'] }}"
+      loop: "{{ available_vm_list.results | map(attribute='item') | list }}"
 
     - name: Mark VMs as busy
       set_fact:
-        busy_vms: "{{ (groups['busy_vms'] | default([])) + selected_vms }}"
+        busy_vms: "{{ (groups['busy_vms'] | default([])) + (available_vm_list.results | map(attribute='item') | list) }}"
