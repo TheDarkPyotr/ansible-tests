@@ -1,7 +1,6 @@
 - name: Check available VMs and deploy (if topology is valid)
   become: true
-  register: deploy_result
-  when: topology_is_valid is defined and topology_is_valid
+  when: topology_data.topology_is_valid is defined and topology_data.topology_is_valid
 
   # Define variables based on JSON data (assuming it's already available)
   # Adjust variable names based on your actual JSON structure

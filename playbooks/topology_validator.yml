@@ -44,3 +44,7 @@
         data:
           topology_descriptor:  "{{ topology_descriptor | to_json }}"
           topology_is_valid: true
+    - include_tasks: vm_provisioning.yml
+      vars:
+        # Pass data to vm_provisioning playbook
+        topology_data: "{{ data }}"
