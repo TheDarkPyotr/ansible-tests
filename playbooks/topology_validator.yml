@@ -40,7 +40,8 @@
     
     - name: "Set stats for VM Provisioning"
       set_stats:
-          topology_descriptor:  "{{ topology_descriptor | to_json }}"
-          topology_is_valid: true
+        data:
+            topology_descriptor:  "{{ topology_descriptor | to_json }}"
+            topology_is_valid: true
     - include_tasks: vm_provisioning.yml
 
