@@ -59,14 +59,14 @@
 
 - name: Get AWX API token
   uri:
-  url: "{{ awx_api_url }}/api/v2/users/1/personal_tokens/"
+    url: "{{ awx_api_url }}/api/v2/users/1/personal_tokens/"
     method: POST
     body_format: json
     body:
       description: "Token for automation"
     headers:
       Content-Type: "application/json"
-       Authorization: "Basic {{ (awx_username ~ ':' ~ awx_password) | b64encode }}"
+      Authorization: "Basic {{ (awx_username ~ ':' ~ awx_password) | b64encode }}"
     status_code: 201
   register: awx_token_response
     no_log: false
