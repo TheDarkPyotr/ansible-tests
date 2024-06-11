@@ -43,7 +43,7 @@
       add_host:
         name: "{{ item }}"
         groups: available_vms
-      loop: "{{ groups['cmvm_pool'] | default([])) }}"
+      loop: "{{ groups['cmvm_pool'] | default([]) }}"
       register: available_vm_list
 
    
