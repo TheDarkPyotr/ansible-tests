@@ -143,33 +143,24 @@
       loop: "{{ host_id_response.results }}"
       when: item.json.results | length > 0
 
-    - name: Add hosts to busy_vms group in AWX
+
+    - name: Remove hosts from cmvm_pool group in AWX
       uri:
-        url: "{{ awx_api_url }}/api/v2/groups/{{ busy_vms_group_id }}/hosts/"
+        url: "{{ awx_api_url }}/api/v2/groups/{{ cmvm_pool_group_id }}/hosts/{{ item.id }}"
         method: POST
         headers:
           Authorization: "Bearer {{ awx_api_token }}"
           Content-Type: "application/json"
         body_format: json
         body:
-          id: "{{ item }}"
-      loop: "{{ host_ids }}"
+          id: "{{ item.id }}"
+          disassociate: true
+      loop: "{{ available_vm_list.results }}"
       retries: 3
       delay: 2
       until: result.status == 201
       register: result
-      when: host_ids | length > 0
 
-
-
-    - name: Remove hosts from cmvm_pool group in AWX
-      uri:
-        url: "{{ awx_api_url }}/api/v2/groups/{{ cmvm_pool_group_id }}/hosts/{{ item }}"
-        method: DELETE
-        headers:
-          Authorization: "Bearer {{ awx_api_token }}"
-          Content-Type: "application/json"
-      loop: "{{ available_vm_list.results | map(attribute='item') | list }}"
 
     - name: Create new group with timestamp
       set_fact:
