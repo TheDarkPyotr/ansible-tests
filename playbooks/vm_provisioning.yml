@@ -156,9 +156,10 @@
       loop: "{{ host_ids }}"
       retries: 3
       delay: 2
-      until: result.status == 200
+      until: result.status == 201
       register: result
       when: host_ids | length > 0
+
 
 
     - name: Remove hosts from cmvm_pool group in AWX
