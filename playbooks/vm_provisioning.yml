@@ -43,8 +43,7 @@
       add_host:
         name: "{{ item }}"
         groups: available_vms
-      loop: "{{ groups['cmvm_pool'] | difference(groups['busy_vms'] | default([])) }}"
-      when: inventory_hostname not in groups['busy_vms'] | default([])
+      loop: "{{ groups['cmvm_pool'] | default([])) }}"
       register: available_vm_list
 
    
