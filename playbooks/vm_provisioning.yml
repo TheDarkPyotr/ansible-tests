@@ -69,6 +69,7 @@
         headers:
           Content-Type: "application/json"
           Authorization: "Basic {{ (awx_username ~ ':' ~ awx_password) | b64encode }}"
+        status_code: 201
       register: awx_token_response
       no_log: false
 
