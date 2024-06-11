@@ -81,7 +81,7 @@
 
 - name: Get inventory ID
   uri:
-    url: "{{ awx_api_url }}/api/v2/inventories/?name=busy_vms"
+    url: "{{ awx_api_url }}/api/v2/inventories/?name=CMVM"
     method: GET
     headers:
       Authorization: "{{ awx_auth }}"
