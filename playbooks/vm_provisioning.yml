@@ -70,7 +70,7 @@
         headers:
           Content-Type: "application/json"
       register: awx_token_response
-      no_log: true
+      no_log: false
 
     - name: Set AWX API token
       set_fact:
