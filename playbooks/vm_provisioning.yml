@@ -53,7 +53,7 @@
 
 - name: Reserve VMs
   set_fact:
-    reserved_vms: "{{ groups['available_vms'][:total_vms|int] }}"
+    reserved_vms: "{{ groups['busy_vms'][:total_vms|int] }}"
   when: (available_vm_list.results | length) >= (total_vms | int)
 
 - name: Set AWX credentials
