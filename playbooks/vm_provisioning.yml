@@ -153,9 +153,9 @@
           Content-Type: "application/json"
         body_format: json
         body:
-          id: "{{ item.id }}"
+          id: "{{ item.json.results[0].id }}"
           disassociate: true
-      loop: "{{ available_vm_list.results }}"
+      loop: "{{ host_id_response.results }}"
       retries: 3
       delay: 2
       until: result.status == 201
