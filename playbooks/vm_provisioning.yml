@@ -88,6 +88,10 @@
     validate_certs: no
   register: inventory_response
 
+- name: Debug inventory response
+  debug:
+    var: inventory_response
+
 - name: Set inventory ID
   set_fact:
     inventory_id: "{{ inventory_response.json.results[0].id }}"
