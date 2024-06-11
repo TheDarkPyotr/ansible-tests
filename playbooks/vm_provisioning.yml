@@ -143,7 +143,6 @@
       loop: "{{ host_id_response.results }}"
       when: item.json.results | length > 0
 
-
     - name: Add hosts to busy_vms group in AWX
       uri:
         url: "{{ awx_api_url }}/api/v2/groups/{{ busy_vms_group_id }}/hosts/"
