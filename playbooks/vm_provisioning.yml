@@ -162,6 +162,7 @@
       register: result
 
 
+
     - name: Create new group with timestamp
       set_fact:
         deploy_group_name: "deploy_{{ lookup('pipe', 'date +%Y%m%d%H%M%S') }}"
