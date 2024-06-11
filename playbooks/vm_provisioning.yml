@@ -144,22 +144,6 @@
       when: item.json.results | length > 0
 
 
-    - name: Remove hosts from cmvm_pool group in AWX
-      uri:
-        url: "{{ awx_api_url }}/api/v2/groups/{{ cmvm_pool_group_id }}/hosts/{{ item.id }}"
-        method: POST
-        headers:
-          Authorization: "Bearer {{ awx_api_token }}"
-          Content-Type: "application/json"
-        body_format: json
-        body:
-          id: "{{ item.json.results[0].id }}"
-          disassociate: true
-      loop: "{{ host_id_response.results }}"
-      retries: 3
-      delay: 2
-      until: result.status == 201
-      register: result
 
 
 
