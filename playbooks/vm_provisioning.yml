@@ -53,7 +53,7 @@
 
 - name: Reserve VMs
   set_fact:
-    reserved_vms: "{{ groups['busy_vms'][:total_vms|int] }}"
+    busy_vms: "{{ groups['busy_vms'][:total_vms|int] }}"
   when: (available_vm_list.results | length) >= (total_vms | int)
 
 
@@ -106,9 +106,9 @@
     body_format: json
     body:
       name: "{{ item }}"
-      groups: ["reserved_vms"]
+      groups: ["busy_vms"]
     validate_certs: no
-  loop: "{{ reserved_vms }}"
+  loop: "{{ busy_vms }}"
   register: update_response
   until: update_response.status == 201
   retries: 5
