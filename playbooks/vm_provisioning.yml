@@ -118,6 +118,29 @@
         groups: "{{ deploy_group_name }}"
       loop: "{{ available_vm_list.results | map(attribute='item') | list }}"
 
+
+    - name: Get host ID
+      uri:
+        url: "{{ awx_api_url }}/api/v2/hosts/?name={{ item }}"
+        method: GET
+        headers:
+          Authorization: "Bearer {{ awx_api_token }}"
+          Content-Type: "application/json"
+      register: host_id_response
+      loop: "{{ available_vm_list.results | map(attribute='item') | list }}"
+      when: available_vm_list.results | length > 0
+      changed_when: false
+      retries: 3
+      delay: 2
+      until: host_id_response.status == 200
+
+    - name: Set host ID
+      set_fact:
+        host_ids: "{{ (host_ids | default([])) + [host_id_response.json.results[0].id] }}"
+      loop: "{{ available_vm_list.results | map(attribute='item') | list }}"
+      when: host_id_response.json.results | length > 0
+
+
     - name: Add hosts to busy_vms group in AWX
       uri:
         url: "{{ awx_api_url }}/api/v2/groups/{{ busy_vms_group_id }}/hosts/"
@@ -127,8 +150,14 @@
           Content-Type: "application/json"
         body_format: json
         body:
-          name: "{{ item }}"
-      loop: "{{ available_vm_list.results | map(attribute='item') | list }}"
+          id: "{{ item }}"
+        loop: "{{ host_ids }}"
+        retries: 3
+        delay: 2
+        until: result.status == 200
+        register: result
+        when: host_ids | length > 0
+
 
     - name: Remove hosts from cmvm_pool group in AWX
       uri:
