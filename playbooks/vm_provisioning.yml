@@ -133,6 +133,10 @@
       delay: 2
       until: host_id_response.status == 200
 
+    - name: Print host ID response
+      debug:
+        msg: "{{ host_id_response }}"
+
     - name: Set host ID
       set_fact:
         host_ids: "{{ (host_ids | default([])) + [host_id_response.json.results[0].id] }}"
