@@ -153,12 +153,12 @@
         body_format: json
         body:
           id: "{{ item }}"
-        loop: "{{ host_ids }}"
-        retries: 3
-        delay: 2
-        until: result.status == 200
-        register: result
-        when: host_ids | length > 0
+      loop: "{{ host_ids }}"
+      retries: 3
+      delay: 2
+      until: result.status == 200
+      register: result
+      when: host_ids | length > 0
 
 
     - name: Remove hosts from cmvm_pool group in AWX
