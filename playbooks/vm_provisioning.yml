@@ -137,11 +137,11 @@
       debug:
         msg: "{{ host_id_response }}"
 
-    - name: Set host ID
+    - name: Set host IDs
       set_fact:
-        host_ids: "{{ (host_ids | default([])) + [host_id_response.json.results[0].id] }}"
-      loop: "{{ available_vm_list.results | map(attribute='item') | list }}"
-      when: host_id_response.json.results | length > 0
+        host_ids: "{{ host_ids | default([]) + [item.json.results[0].id] }}"
+      loop: "{{ host_id_response.results }}"
+      when: item.json.results | length > 0
 
 
     - name: Add hosts to busy_vms group in AWX
