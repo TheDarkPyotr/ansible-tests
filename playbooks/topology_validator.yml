@@ -25,5 +25,10 @@
       vars:
         topology_desc: "{{ topology_descriptor }}"
         topology_validity: true
+        awx_api_url: "http://131.159.25.106"
+        awx_username: "admin"
+        awx_password: "password"
+        busy_vms_group: "busy_vms"
+        cmvm_pool_group: "cmvm_pool"
 
 
