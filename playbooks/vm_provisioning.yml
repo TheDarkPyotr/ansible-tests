@@ -1,172 +1,98 @@
 ---
-    - name: Parse JSON input
-      set_fact:
-        topology_descriptor: "{{ topology_desc | to_json}}"
+- name: Parse JSON input
+  set_fact:
+    topology_descriptor: "{{ topology_desc | to_json}}"
 
-    - name: Check if topology is valid
-      fail:
-        msg: "Topology is not valid. Deployment cannot proceed."
-      when: not topology_validity
-    
-    - name: Print topology
-      debug:
-        var: topology_descriptor
+- name: Check if topology is valid
+  fail:
+    msg: "Topology is not valid. Deployment cannot proceed."
+  when: not topology_validity
 
-    - name: Calculate required number of VMs
-      set_fact:
-        num_clusters: "{{ topology_descriptor.cluster_list | length }}"
-        num_nodes: "{{ topology_descriptor.cluster_list | map(attribute='number_of_nodes') | sum }}"
-        one_doc_enabled: "{{ topology_descriptor.one_doc_enabled | bool }}"
-        together_root_cluster: "{{ topology_descriptor.together_root_cluster | bool }}"
+- name: Print topology
+  debug:
+    var: topology_descriptor
 
-    - name: Verify if flag one_doc_enabled
-      set_fact:
-        plus_one: "{{ 1 if not one_doc_enabled and not together_root_cluster else 0 }}"
-        
-    - name : Print number of clusters and nodes
-      debug:
-        msg: "Number of clusters: {{ num_clusters }}, Number of nodes: {{ num_nodes }}, Plus one: {{ plus_one }}"
+- name: Calculate required number of VMs
+  set_fact:
+    num_clusters: "{{ topology_descriptor.cluster_list | length }}"
+    num_nodes: "{{ topology_descriptor.cluster_list | map(attribute='number_of_nodes') | sum }}"
+    one_doc_enabled: "{{ topology_descriptor.one_doc_enabled | bool }}"
+    together_root_cluster: "{{ topology_descriptor.together_root_cluster | bool }}"
 
-    - name: Calculate total number of VMs
-      set_fact:
-        total_vms: "{{ (num_clusters | int) + (num_nodes | int) + (plus_one | int) }}"
-    
-    - name: Print total number of VMs
-      debug:
-        msg: "Total number of VMs: {{ total_vms }}"
+- name: Verify if flag one_doc_enabled
+  set_fact:
+    plus_one: "{{ 1 if not one_doc_enabled and not together_root_cluster else 0 }}"
 
-    - name: Inspect machine groups
-      debug:
-        msg: "Machine groups: {{ groups }}"
+- name: Print number of clusters and nodes
+  debug:
+    msg: "Number of clusters: {{ num_clusters }}, Number of nodes: {{ num_nodes }}, Plus one: {{ plus_one }}"
 
-    - name: Find available VMs in cmvm_pool
-      add_host:
-        name: "{{ item }}"
-        groups: available_vms
-      loop: "{{ groups['cmvm_pool'] | default([]) }}"
-      register: available_vm_list
+- name: Calculate total number of VMs
+  set_fact:
+    total_vms: "{{ (num_clusters | int) + (num_nodes | int) + (plus_one | int) }}"
 
-   
-    - include_tasks: github_results.yml
-      vars:
-        topology_desc: "{{ topology_descriptor }}"
-        result: "Not enough available VMs in cmvm_pool. Required: {{ total_vms }}, Available: {{ available_vm_list.results | length }}"
-      when: (available_vm_list.results | length) < (total_vms | int)
+- name: Print total number of VMs
+  debug:
+    msg: "Total number of VMs: {{ total_vms }}"
 
-    - name: Ensure enough available VMs
-      fail:
-        msg: "Not enough available VMs in cmvm_pool. Required: {{ total_vms }}, Available: {{ available_vm_list.results | length }}"
-      when: (available_vm_list.results | length) < (total_vms | int)
+- name: Inspect machine groups
+  debug:
+    msg: "Machine groups: {{ groups }}"
 
-    - name: Get AWX API token
-      uri:
-        url: "{{ awx_api_url }}/api/v2/users/1/personal_tokens/"
-        method: POST
-        body_format: json
-        body:
-          description: "Token for automation"
-        headers:
-          Content-Type: "application/json"
-          Authorization: "Basic {{ (awx_username ~ ':' ~ awx_password) | b64encode }}"
-        status_code: 201
-      register: awx_token_response
-      no_log: false
+- name: Find available VMs in cmvm_pool
+  add_host:
+    name: "{{ item }}"
+    groups: busy_vms
+  loop: "{{ groups['cmvm_pool'] | default([]) }}"
+  register: available_vm_list
 
-    - name: Set AWX API token
-      set_fact:
-        awx_api_token: "{{ awx_token_response.json.token }}"
+- name: Ensure enough available VMs
+  fail:
+    msg: "Not enough available VMs in cmvm_pool. Required: {{ total_vms }}, Available: {{ available_vm_list.results | length }}"
+  when: (available_vm_list.results | length) < (total_vms | int)
 
-    - name: Get group ID for busy_vms
-      uri:
-        url: "{{ awx_api_url }}/api/v2/groups/?name={{ busy_vms_group }}"
-        method: GET
-        headers:
-          Authorization: "Bearer {{ awx_api_token }}"
-          Content-Type: "application/json"
-      register: busy_vms_group_response
+- name: Reserve VMs
+  set_fact:
+    reserved_vms: "{{ groups['busy_vms'][:total_vms] }}"
+  when: (available_vm_list.results | length) >= (total_vms | int)
 
-    - name: Set busy_vms group ID
-      set_fact:
-        busy_vms_group_id: "{{ busy_vms_group_response.json.results[0].id }}"
+- name: Set AWX credentials
+  set_fact:
+    awx_auth: "Bearer {{ awx_token }}"
 
-    - name: Get group ID for cmvm_pool
-      uri:
-        url: "{{ awx_api_url }}/api/v2/groups/?name={{ cmvm_pool_group }}"
-        method: GET
-        headers:
-          Authorization: "Bearer {{ awx_api_token }}"
-          Content-Type: "application/json"
-      register: cmvm_pool_group_response
+- name: Get inventory ID
+  uri:
+    url: "{{ awx_api_url }}/api/v2/inventories/?name={{ inventory_name }}"
+    method: GET
+    headers:
+      Authorization: "{{ awx_auth }}"
+    validate_certs: no
+  register: inventory_response
 
-    - name: Set cmvm_pool group ID
-      set_fact:
-        cmvm_pool_group_id: "{{ cmvm_pool_group_response.json.results[0].id }}"
+- name: Set inventory ID
+  set_fact:
+    inventory_id: "{{ inventory_response.json.results[0].id }}"
 
-    - name: Ensure enough available VMs
-      fail:
-        msg: "Not enough available VMs in cmvm_pool. Required: {{ total_vms }}, Available: {{ available_vm_list.results | length }}"
-      when: (available_vm_list.results | length) < (total_vms | int)
+- name: Update AWX inventory to reserve VMs
+  uri:
+    url: "{{ awx_api_url }}/api/v2/inventories/{{ inventory_id }}/hosts/"
+    method: POST
+    headers:
+      Authorization: "{{ awx_auth }}"
+      Content-Type: "application/json"
+    body_format: json
+    body:
+      name: "{{ item }}"
+      groups: ["reserved_vms"]
+    validate_certs: no
+  loop: "{{ reserved_vms }}"
+  register: update_response
+  until: update_response.status == 201
+  retries: 5
+  delay: 2
 
-    - name: Create new group with timestamp
-      set_fact:
-        deploy_group_name: "deploy_{{ lookup('pipe', 'date +%Y%m%d%H%M%S') }}"
-
-    - name: Add available VMs to new deploy group
-      add_host:
-        name: "{{ item }}"
-        groups: "{{ deploy_group_name }}"
-      loop: "{{ available_vm_list.results | map(attribute='item') | list }}"
-
-
-    - name: Get host ID
-      uri:
-        url: "{{ awx_api_url }}/api/v2/hosts/?name={{ item }}"
-        method: GET
-        headers:
-          Authorization: "Bearer {{ awx_api_token }}"
-          Content-Type: "application/json"
-      register: host_id_response
-      loop: "{{ available_vm_list.results | map(attribute='item') | list }}"
-      when: available_vm_list.results | length > 0
-      changed_when: false
-      retries: 3
-      delay: 2
-      until: host_id_response.status == 200
-
-    - name: Print host ID response
-      debug:
-        msg: "{{ host_id_response }}"
-
-    - name: Set host IDs
-      set_fact:
-        host_ids: "{{ host_ids | default([]) + [item.json.results[0].id] }}"
-      loop: "{{ host_id_response.results }}"
-      when: item.json.results | length > 0
-
-
-
-
-
-    - name: Create new group with timestamp
-      set_fact:
-        deploy_group_name: "deploy_{{ lookup('pipe', 'date +%Y%m%d%H%M%S') }}"
-
-    - name: Add available VMs to new deploy group
-      add_host:
-        name: "{{ item }}"
-        groups: "{{ deploy_group_name }}"
-      loop: "{{ available_vm_list.results | map(attribute='item') | list }}"
-
-
-    - name: Print busy VMs
-      debug:
-        msg: "Busy VMs: {{ groups['busy_vms'] }}"
-
-    - name: Print deploy group name
-      debug:
-        msg: "Deploy group name: {{ deploy_group_name }}"
-
-    - name: Print cmvm_pool and busy_vms
-      debug:
-        msg: "cmvm_pool: {{ groups['cmvm_pool'] }} busy_vms: {{ groups['busy_vms'] }}"
-     
+- include_tasks: github_results.yml
+  vars:
+    topology_desc: "{{ topology_descriptor }}"
+    result: "Not enough available VMs in cmvm_pool. Required: {{ total_vms }}, Available: {{ available_vm_list.results | length }}"
+  when: (available_vm_list.results | length) < (total_vms | int)
