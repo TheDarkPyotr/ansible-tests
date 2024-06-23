@@ -44,7 +44,7 @@ jobs:
           FILENAME: ${{ github.event.inputs.topology }}
           
         run: |
-          extra_vars_data=$(echo "{"topology_descriptor": $FILENAME, "branch": $BRANCH, "commit": $COMMIT}")
+          extra_vars_data=$(echo "{\"topology_descriptor\": $FILENAME, \"branch\": $BRANCH, \"commit\": $COMMIT}")
           echo "$extra_vars_data"
         
           response=$(curl -s -X POST "http://$TOWER_HOST/api/v2/job_templates/$TEMPLATE_ID/launch/" \
