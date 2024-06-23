@@ -56,10 +56,8 @@
       ansible.builtin.debug:
         msg: "{{ topology_descriptor_content }}"
 
-    - name: Run the Python script to validate JSON
-      command: python3 validator.py "{{ temp_repo_dir.path }}/{{ topology_descriptor }}"
-      args:
-          chdir: "{{ temp_repo_dir.path }}" 
+    - name: Run the Python script to validate JSON in {{ temp_repo_dir.path }}
+      command: python3 "{{ temp_repo_dir.path }}"/validator.py "{{ temp_repo_dir.path }}/{{ topology_descriptor }}"
       register: validation_result
 
     - name: Set environment variable with validation result
