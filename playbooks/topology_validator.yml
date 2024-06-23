@@ -32,12 +32,17 @@
           - git_checkout.rc == 0
         fail_msg: "Failed to checkout commit {{ commit }}"
 
-    # list files in the cloned repository
-    - name: List files in the cloned repository
+    # print all the files in the cloned repository
+    - name: List all files in the cloned repository
       ansible.builtin.find:
         paths: "{{ temp_repo_dir.path }}"
         recurse: yes
       register: files
+
+    - name: Display all files in the cloned repository
+      ansible.builtin.debug:
+        msg: "{{ files.files | map(attribute='path') | list }}"
+        
 
 
     - name: Read the topology descriptor JSON file
