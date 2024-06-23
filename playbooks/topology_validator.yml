@@ -5,6 +5,7 @@
     repo: "https://github.com/TheDarkPyotr/ansible-tests"
   tasks:
     - name: Ensure the git package is installed
+      delegate_to: localhost
       ansible.builtin.package:
         name: git
         state: present
