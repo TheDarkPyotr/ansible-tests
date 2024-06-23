@@ -43,11 +43,11 @@ jobs:
           COMMIT: ${{ github.sha }}
           
         run: |
-          extra_vars_data=$(echo ${{ github.event.inputs.topology }})
-          extra_vars_data=$(echo $extra_vars_data | jq '. + {topology_descriptor: ${{ github.event.inputs.topology }} }')
-          extra_vars_data=$(echo $extra_vars_data | jq --arg branch "$BRANCH" '. + {branch: $branch}')
-          extra_vars_data=$(echo $extra_vars_data | jq --arg commit "$COMMIT" '. + {commit: $commit}')
-          echo $extra_vars_data
+        extra_vars_data=$(echo "${{ github.event.inputs.topology }}" | jq '. + {topology_descriptor: .}')
+        extra_vars_data=$(echo "$extra_vars_data" | jq --arg branch "$BRANCH" '. + {branch: $branch}')
+        extra_vars_data=$(echo "$extra_vars_data" | jq --arg commit "$COMMIT" '. + {commit: $commit}')
+        echo "$extra_vars_data"
+        
 
           response=$(curl -s -X POST "http://$TOWER_HOST/api/v2/job_templates/$TEMPLATE_ID/launch/" \
             -H "Authorization: Bearer $TOWER_API_TOKEN" \
