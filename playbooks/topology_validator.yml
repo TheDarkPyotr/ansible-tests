@@ -3,6 +3,9 @@
   hosts: localhost
   vars:
     repo: "https://github.com/TheDarkPyotr/ansible-tests"
+
+  gather_facts: no
+  
   tasks:
     - name: Ensure the git package is installed
       delegate_to: localhost
