@@ -41,11 +41,10 @@ jobs:
           TOWER_API_TOKEN: ${{ env.TOWER_API_TOKEN }}
           BRANCH: ${{ github.ref }}
           COMMIT: ${{ github.sha }}
+          FILENAME: ${{ github.event.inputs.topology }}
           
         run: |
-          extra_vars_data=$(echo "{topology_descriptor: "${{ github.event.inputs.topology }}"}")
-          extra_vars_data=$(echo "$extra_vars_data" | jq --arg branch "$BRANCH" '. + {branch: $branch}')
-          extra_vars_data=$(echo "$extra_vars_data" | jq --arg commit "$COMMIT" '. + {commit: $commit}')
+          extra_vars_data=$(echo "{topology_descriptor: $FILENAME, branch: $BRANCH, commit: $COMMIT}")
           echo "$extra_vars_data"
         
           response=$(curl -s -X POST "http://$TOWER_HOST/api/v2/job_templates/$TEMPLATE_ID/launch/" \
