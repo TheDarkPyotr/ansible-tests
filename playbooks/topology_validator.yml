@@ -43,8 +43,6 @@
       ansible.builtin.debug:
         msg: "{{ files.files | map(attribute='path') | list }}"
         
-
-
     - name: Read the topology descriptor JSON file
       ansible.builtin.slurp:
         src: "{{ temp_repo_dir.path }}/{{ topology_descriptor }}"
@@ -61,7 +59,7 @@
     - name: Run the Python script to validate JSON
       command: python3 validator.py "{{ temp_repo_dir.path }}/{{ topology_descriptor }}"
       args:
-          chdir: "{{ playbook_dir }}/../"  # Change this to the actual path where your validator.py script is located
+          chdir: "{{ temp_repo_dir.path }}" 
       register: validation_result
 
     - name: Set environment variable with validation result
