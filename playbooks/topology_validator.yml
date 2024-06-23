@@ -18,7 +18,7 @@
       register: topology_content
 
     - name: Run the Validator
-      command: python3 validator.py "{{ topology_content.content | b64decode }}"
+      command: python3 validator.py "{{ topology_descriptor | b64decode }}"
       register: validation_result
 
     - name: Set environment variable with validation result
