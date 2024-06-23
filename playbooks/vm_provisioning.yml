@@ -1,7 +1,7 @@
 ---
 - name: Parse JSON input
   set_fact:
-    topology_descriptor: "{{ topology_desc | to_json}}"
+    topology: "{{ topology_desc | from_json}}"
 
 - name: Check if topology is valid
   fail:
@@ -10,14 +10,15 @@
 
 - name: Print topology
   debug:
-    var: topology_descriptor
+    var: topology
+
 
 - name: Calculate required number of VMs
   set_fact:
-    num_clusters: "{{ topology_descriptor.cluster_list | length }}"
-    num_nodes: "{{ topology_descriptor.cluster_list | map(attribute='number_of_nodes') | sum }}"
-    one_doc_enabled: "{{ topology_descriptor.one_doc_enabled | bool }}"
-    together_root_cluster: "{{ topology_descriptor.together_root_cluster | bool }}"
+    num_clusters: "{{ topology.topology_descriptor.cluster_list | length }}"
+    num_nodes: "{{ topology.topology_descriptor.cluster_list | map(attribute='number_of_nodes') | sum }}"
+    one_doc_enabled: "{{ topology.topology_descriptor.one_doc_enabled | bool }}"
+    together_root_cluster: "{{ topology.topology_descriptor.together_root_cluster | bool }}"
 
 - name: Verify if flag one_doc_enabled
   set_fact:
@@ -111,7 +112,7 @@
   loop: "{{ busy_vms }}"
   register: update_response
   until: update_response.status == 201
-  retries: 5
+  retries: 1
   delay: 2
 
 - include_tasks: github_results.yml
