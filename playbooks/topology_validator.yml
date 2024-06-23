@@ -5,13 +5,27 @@
     repo: "https://github.com/TheDarkPyotr/ansible-tests"
 
   gather_facts: no
-  
+
   tasks:
     - name: Ensure the git package is installed
       delegate_to: localhost
-      ansible.builtin.package:
-        name: git
-        state: present
+      command: "sudo apt-get install -y git"  # Adjust this command based on your package manager (yum, apt-get, etc.)
+      become: true
+      register: install_git_result
+      ignore_errors: true
+
+    - name: Check if git is installed
+      debug:
+        msg: "Git is already installed."
+      when: 
+        - install_git_result is not failed
+
+    - name: Print error message if installation fails
+      debug:
+        msg: "Failed to install Git. Error: {{ install_git_result.stdout }}"
+      when: 
+        - install_git_result is failed
+
 
     - name: Create a temporary directory
       ansible.builtin.tempfile:
