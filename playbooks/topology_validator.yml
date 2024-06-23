@@ -12,13 +12,20 @@
         msg: |-
           topology_descriptor: {{ topology_descriptor  | to_json }}
          
-  
-    - name: Root FS usage
-      shell: df -h {{ FS_MOUNTPOINT }} | awk '{ print $5 }' | grep -v Use
-      register: dfroot
+    - name: Read the JSON file
+      slurp:
+        src: topology.json
+      register: topology_content
 
-    - debug:
-        msg: "System {{ inventory_hostname }}'s root FS utilization is {{ dfroot.stdout }}"
+    - name: Run the Validator
+      command: python3 validator.py "{{ topology_content.content | b64decode }}"
+      register: validation_result
+
+    - name: Set environment variable with validation result
+      shell: export TOPOLOGY_VALIDITY={{ validation_result.stdout }}
+      environment:
+        TOPOLOGY_VALIDITY: "{{ validation_result.stdout }}"
+      register: env_var_result
 
     
     - include_tasks: vm_provisioning.yml
