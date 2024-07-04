@@ -62,20 +62,21 @@
     msg: "Busy VMs: {{ busy_vms }}"
   when: (available_vm_list.results | length) >= (total_vms | int)
 
-- name: Tag busy VMs with status=busy in inventory file
-  ini_file:
-    path: /etc/ansible/hosts
-    section: "{{ item }}"
-    option: status
-    value: busy
-  with_items: "{{ groups['busy_vms'] }}"
-  when: item in groups['all']"
-
-- name: Verify busy VMs status in inventory file
-  debug:
-    msg: "Host {{ item }} status: {{ hostvars[item]['status'] }}"
-  with_items: "{{ groups['busy_vms'] }}"
+- name: Tag busy VMs with status=busy
+  set_fact:
+    status_busy: true
+  loop: "{{ groups['busy_vms'] }}"
   when: item in groups['all']
+  delegate_to: "{{ item }}"
+  args:
+    cacheable: true
+
+- name: Verify busy VMs status
+  debug:
+    msg: "Host {{ item }} status: {{ hostvars[item]['status_busy'] }}"
+  loop: "{{ groups['busy_vms'] }}"
+  when: item in groups['all']
+
 
 - name: Update 'all' group to exclude busy VMs
   set_fact:
