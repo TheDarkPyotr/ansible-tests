@@ -48,6 +48,7 @@
       loop: "{{ groups['cmvm_pool'] }}"
       loop_control:
         loop_var: item
+      where: search_expression
 
     - name: Print available VMs not tagged as busy
       debug:
