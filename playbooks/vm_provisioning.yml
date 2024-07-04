@@ -57,15 +57,9 @@
     busy_vms: "{{ groups['busy_vms'][:total_vms|int] }}"
   when: (available_vm_list.results | length) >= (total_vms | int)
 
-- name: Print busy VMs
+- name: Current busy VMs
   debug:
     msg: "Busy VMs: {{ busy_vms }}"
-  when: (available_vm_list.results | length) >= (total_vms | int)
-
-- name: Update cmvm_pool group
-  set_fact:
-    groups:
-      cmvm_pool: "{{ groups['cmvm_pool'] | difference(busy_vms) }}"
   when: (available_vm_list.results | length) >= (total_vms | int)
 
 - name: Current members of cmvm_pool group
@@ -73,15 +67,15 @@
     msg: "Updated cmvm_pool group: {{ groups['cmvm_pool'] }}"
   when: (available_vm_list.results | length) >= (total_vms | int)
 
-- name: Update available VMs group
+- name: Update 'all' group to exclude busy VMs
   set_fact:
     groups:
-      available_vms: "{{ groups['all'] | difference(busy_vms) }}"
-  when: (available_vm_list.results | length) >= (total_vms | int)
+      all: "{{ groups['all'] | difference(busy_vms) }}"
 
-- name: Updated available_vms group
+- name: Updated 'all' group
   debug:
-    msg: "Updated available_vms group: {{ groups['all'] }}"
+    msg: "Updated 'all' group: {{ groups['all'] }}"
+
 
 
 - include_tasks: github_results.yml
