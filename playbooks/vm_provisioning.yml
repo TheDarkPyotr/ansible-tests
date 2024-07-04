@@ -76,7 +76,7 @@
 - name: Update available_vms group
   set_fact:
     groups:
-      available_vms: "{{ groups['available_vms'] | difference(busy_vms) }}"
+      available_vms: "{{ groups['all'] | difference(busy_vms) }}"
   when: (available_vm_list.results | length) >= (total_vms | int)
 
 
