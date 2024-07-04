@@ -73,6 +73,12 @@
     msg: "Updated cmvm_pool group: {{ groups['cmvm_pool'] }}"
   when: (available_vm_list.results | length) >= (total_vms | int)
 
+- name: Update available_vms group
+  set_fact:
+    groups:
+      available_vms: "{{ groups['available_vms'] | difference(busy_vms) }}"
+  when: (available_vm_list.results | length) >= (total_vms | int)
+
 
 - include_tasks: github_results.yml
   vars:
