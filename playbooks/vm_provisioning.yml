@@ -55,13 +55,13 @@
 
 - name: Ensure enough available VMs
   fail:
-    msg: "Not enough available VMs in cmvm_pool. Required: {{ total_vms }}, Available: {{ available_vm_list.results | length }}"
-  when: (available_vm_list.results | length) < (total_vms | int)
+    msg: "Not enough available VMs in cmvm_pool. Required: {{ total_vms }}, Available: {{ available_vm_list | length }}"
+  when: (available_vm_list | length) < (total_vms | int)
 
 - name: Reserve VMs
   set_fact:
     busy_vms: "{{ groups['busy_vms'][:total_vms | int] }}"
-  when: (available_vm_list.results | length) >= (total_vms | int)
+  when: (available_vm_list | length) >= (total_vms | int)
 
 - name: Tag busy VMs with status=busy
   add_host:
@@ -80,11 +80,11 @@
 - include_tasks: github_results.yml
   vars:
     topology_desc: "{{ topology_descriptor }}"
-    result: "Not enough available VMs in cmvm_pool. Required: {{ total_vms }}, Available: {{ available_vm_list.results | length }}"
-  when: (available_vm_list.results | length) < (total_vms | int)
+    result: "Not enough available VMs in cmvm_pool. Required: {{ total_vms }}, Available: {{ available_vm_list | length }}"
+  when: (available_vm_list | length) < (total_vms | int)
   
 - include_tasks: github_results.yml
   vars:
     topology_desc: "{{ topology_descriptor }}"
-    result: "Istantiatig topology. Reserved VMs: {{ groups['busy_vms'] }}, Available: {{ available_vm_list.results | length }}"
-  when: (available_vm_list.results | length) >= (total_vms | int)
+    result: "Istantiatig topology. Reserved VMs: {{ groups['busy_vms'] }}, Available: {{ available_vm_list | length }}"
+  when: (available_vm_list | length) >= (total_vms | int)
