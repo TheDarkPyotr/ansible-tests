@@ -62,30 +62,24 @@
     msg: "Busy VMs: {{ busy_vms }}"
   when: (available_vm_list.results | length) >= (total_vms | int)
 
-- name: Tag busy VMs with status=busy
+- name: Reserve VMs
   set_fact:
-    status_busy: true
+    busy_vms: "{{ groups['busy_vms'][:total_vms | int] }}"
+  when: (available_vm_list.results | length) >= (total_vms | int)
+
+- name: Tag busy VMs with status=busy
+  add_host:
+    name: "{{ item }}"
+    status: busy
   loop: "{{ groups['busy_vms'] }}"
   when: item in groups['all']
-  delegate_to: "{{ item }}"
-  args:
-    cacheable: true
 
 - name: Verify busy VMs status
   debug:
-    msg: "Host {{ item }} status: {{ hostvars[item]['status_busy'] }}"
+    msg: "Host {{ item }} status: {{ hostvars[item].status }}"
   loop: "{{ groups['busy_vms'] }}"
   when: item in groups['all']
 
-
-- name: Update 'all' group to exclude busy VMs
-  set_fact:
-    groups:
-      all: "{{ groups['all'] | difference(busy_vms) }}"
-
-- name: Updated 'all' group
-  debug:
-    msg: "Updated 'all' group: {{ groups['all'] }}"
 
 
 
