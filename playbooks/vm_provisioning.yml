@@ -81,8 +81,6 @@
   when: item in groups['all']
 
 
-
-
 - include_tasks: github_results.yml
   vars:
     topology_desc: "{{ topology_descriptor }}"
@@ -92,5 +90,5 @@
 - include_tasks: github_results.yml
   vars:
     topology_desc: "{{ topology_descriptor }}"
-    result: "Istantiatig topology. Required: {{ total_vms }}, Available: {{ available_vm_list.results | length }}"
+    result: "Istantiatig topology. Reserved VMs: {{ groups['busy_vms'] }}, Available: {{ available_vm_list.results | length }}"
   when: (available_vm_list.results | length) >= (total_vms | int)
