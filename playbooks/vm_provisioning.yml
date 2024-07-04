@@ -79,3 +79,9 @@
     topology_desc: "{{ topology_descriptor }}"
     result: "Not enough available VMs in cmvm_pool. Required: {{ total_vms }}, Available: {{ available_vm_list.results | length }}"
   when: (available_vm_list.results | length) < (total_vms | int)
+  
+- include_tasks: github_results.yml
+  vars:
+    topology_desc: "{{ topology_descriptor }}"
+    result: "Istantiatig topology. Required: {{ total_vms }}, Available: {{ available_vm_list.results | length }}"
+  when: (available_vm_list.results | length) >= (total_vms | int)
