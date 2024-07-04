@@ -42,7 +42,7 @@
 
 - name: Find available VMs not tagged as busy
   set_fact:
-    available_vms_list: "{{ groups['cmvm_pool'] | select('search', 'status_busy=false') | list }}"
+    available_vm_list: "{{ groups['cmvm_pool'] | select('search', 'status_busy=false') | list }}"
   vars:
     search_expression: "{{ hostvars[item]['status'] != 'busy' }}"
   loop: "{{ groups['cmvm_pool'] }}"
@@ -51,7 +51,7 @@
 
 - name: Print available VMs not tagged as busy
   debug:
-    var: available_vms_list
+    var: available_vm_list
 
 - name: Ensure enough available VMs
   fail:
