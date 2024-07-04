@@ -40,27 +40,23 @@
   debug:
     msg: "Machine groups: {{ groups }}"
 
-- name: Find available VMs in cmvm_pool
-  add_host:
-    name: "{{ item }}"
-    groups: busy_vms
-  loop: "{{ groups['cmvm_pool'] | default([]) }}"
-  register: available_vm_list
+- name: Find available VMs not tagged as busy
+  set_fact:
+    available_vms_list: "{{ groups['cmvm_pool'] | select('search', 'status_busy=false') | list }}"
+  vars:
+    search_expression: "{{ hostvars[item]['status'] != 'busy' }}"
+  loop: "{{ groups['cmvm_pool'] }}"
+  loop_control:
+    loop_var: item
+
+- name: Print available VMs not tagged as busy
+  debug:
+    var: available_vms_list
 
 - name: Ensure enough available VMs
   fail:
     msg: "Not enough available VMs in cmvm_pool. Required: {{ total_vms }}, Available: {{ available_vm_list.results | length }}"
   when: (available_vm_list.results | length) < (total_vms | int)
-
-- name: Reserve VMs
-  set_fact:
-    busy_vms: "{{ groups['busy_vms'][:total_vms|int] }}"
-  when: (available_vm_list.results | length) >= (total_vms | int)
-
-- name: Current busy VMs
-  debug:
-    msg: "Busy VMs: {{ busy_vms }}"
-  when: (available_vm_list.results | length) >= (total_vms | int)
 
 - name: Reserve VMs
   set_fact:
