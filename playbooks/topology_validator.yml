@@ -60,6 +60,12 @@
       command: python3 "{{ temp_repo_dir.path }}"/validator.py "{{ temp_repo_dir.path }}/{{ topology_descriptor }}"
       register: validation_result
 
+    - name: Ensure the validation script was successful
+      ansible.builtin.assert:
+        that:
+          - validation_result.rc == 0
+        fail_msg: "Failed to validate the topology descriptor"
+
     - name: Set environment variable with validation result
       ansible.builtin.set_fact:
         TOPOLOGY_VALIDITY: "{{ validation_result.stdout }}"
@@ -76,7 +82,7 @@
     - include_tasks: vm_provisioning.yml
       vars:
         topology_desc: "{{ topology_descriptor_content | to_json}}"
-        topology_validity: true
+        topology_validity: 
         awx_api_url: "http://131.159.25.106"
         awx_username: "admin"
         awx_password: "password"
