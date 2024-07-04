@@ -86,13 +86,13 @@
       add_host:
         name: "{{ item }}"
         status: false
-      loop: "{{ busy_vms }}"
+      loop: "{{ groups['all'] }}"
       when: item in groups['all']
 
     - name: Verify updated VMs status
       debug:
         msg: "Host {{ item }} status_busy: {{ hostvars[item].status }}"
-      loop: "{{ busy_vms }}"
+      loop: "{{ groups['all'] }}"
       when: item in groups['all']
 
     - include_tasks: github_results.yml
