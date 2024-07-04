@@ -24,15 +24,15 @@
   set_fact:
     plus_one: "{{ 1 if not one_doc_enabled and not together_root_cluster else 0 }}"
 
-- name: Print number of clusters and nodes
+- name: Requested hosts 
   debug:
     msg: "Number of clusters: {{ num_clusters }}, Number of nodes: {{ num_nodes }}, Plus one: {{ plus_one }}"
 
-- name: Calculate total number of VMs
+- name: Total number of requested VMs
   set_fact:
     total_vms: "{{ (num_clusters | int) + (num_nodes | int) + (plus_one | int) }}"
 
-- name: Print total number of VMs
+- name: Total number of VMs
   debug:
     msg: "Total number of VMs: {{ total_vms }}"
 
@@ -62,15 +62,20 @@
     msg: "Busy VMs: {{ busy_vms }}"
   when: (available_vm_list.results | length) >= (total_vms | int)
 
-- name: Current members of cmvm_pool group
-  debug:
-    msg: "Updated cmvm_pool group: {{ groups['cmvm_pool'] }}"
-  when: (available_vm_list.results | length) >= (total_vms | int)
+- name: Tag busy VMs with status=busy in inventory file
+  ini_file:
+    path: /etc/ansible/hosts
+    section: "{{ item }}"
+    option: status
+    value: busy
+  with_items: "{{ groups['busy_vms'] }}"
+  when: item in groups['all']"
 
-- name: Check if busy VMs are in 'all' group
-  fail:
-    msg: "Busy VMs are in 'all' group"
-  when: (groups['all'] | intersect(busy_vms) | length) > 0
+- name: Verify busy VMs status in inventory file
+  debug:
+    msg: "Host {{ item }} status: {{ hostvars[item]['status'] }}"
+  with_items: "{{ groups['busy_vms'] }}"
+  when: item in groups['all']
 
 - name: Update 'all' group to exclude busy VMs
   set_fact:
