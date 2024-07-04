@@ -67,6 +67,11 @@
     msg: "Updated cmvm_pool group: {{ groups['cmvm_pool'] }}"
   when: (available_vm_list.results | length) >= (total_vms | int)
 
+- name: Check if busy VMs are in 'all' group
+  fail:
+    msg: "Busy VMs are in 'all' group"
+  when: (groups['all'] | intersect(busy_vms) | length) > 0
+
 - name: Update 'all' group to exclude busy VMs
   set_fact:
     groups:
