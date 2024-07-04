@@ -82,7 +82,7 @@
     - include_tasks: vm_provisioning.yml
       vars:
         topology_desc: "{{ topology_descriptor_content | to_json}}"
-        topology_validity: 
+        topology_validity: {{ TOPOLOGY_VALIDITY }}
         awx_api_url: "http://131.159.25.106"
         awx_username: "admin"
         awx_password: "password"
