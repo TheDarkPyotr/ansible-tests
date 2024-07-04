@@ -57,63 +57,22 @@
     busy_vms: "{{ groups['busy_vms'][:total_vms|int] }}"
   when: (available_vm_list.results | length) >= (total_vms | int)
 
-
-- name: Get AWX API token
-  uri:
-    url: "{{ awx_api_url }}/api/v2/users/1/personal_tokens/"
-    method: POST
-    body_format: json
-    body:
-      description: "Token for automation"
-    headers:
-      Content-Type: "application/json"
-      Authorization: "Basic {{ (awx_username ~ ':' ~ awx_password) | b64encode }}"
-    status_code: 201
-  register: awx_token_response
-  no_log: false
-
-- name: Set AWX API token
-  set_fact:
-    awx_api_token: "{{ awx_token_response.json.token }}"
-
-- name: Set AWX credentials
-  set_fact:
-    awx_auth: "Bearer {{ awx_api_token }}"
-
-- name: Get inventory ID
-  uri:
-    url: "{{ awx_api_url }}/api/v2/inventories/?name=CMVM"
-    method: GET
-    headers:
-      Authorization: "{{ awx_auth }}"
-    validate_certs: no
-  register: inventory_response
-
-- name: Debug inventory response
+- name: Print busy VMs
   debug:
-    var: inventory_response
+    msg: "Busy VMs: {{ busy_vms }}"
+  when: (available_vm_list.results | length) >= (total_vms | int)
 
-- name: Set inventory ID
+- name: Update cmvm_pool group
   set_fact:
-    inventory_id: "{{ inventory_response.json.results[0].id }}"
+    groups:
+      cmvm_pool: "{{ groups['cmvm_pool'] | difference(busy_vms) }}"
+  when: (available_vm_list.results | length) >= (total_vms | int)
 
-- name: Update AWX inventory to reserve VMs
-  uri:
-    url: "{{ awx_api_url }}/api/v2/inventories/{{ inventory_id }}/hosts/"
-    method: POST
-    headers:
-      Authorization: "{{ awx_auth }}"
-      Content-Type: "application/json"
-    body_format: json
-    body:
-      name: "{{ item }}"
-      groups: ["busy_vms"]
-    validate_certs: no
-  loop: "{{ busy_vms }}"
-  register: update_response
-  until: update_response.status == 201
-  retries: 1
-  delay: 2
+- name: Print updated cmvm_pool group
+  debug:
+    msg: "Updated cmvm_pool group: {{ groups['cmvm_pool'] }}"
+  when: (available_vm_list.results | length) >= (total_vms | int)
+
 
 - include_tasks: github_results.yml
   vars:
