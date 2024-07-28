@@ -34,7 +34,7 @@
         total_vms: "{{ num_nodes + plus_one }}"
 
     - name: Set workflow data
-      ansible.builtin.set_stats:
+      set_stats:
         data:
           total_vms: "{{ total_vms }}"
 
@@ -71,9 +71,17 @@
       set_fact:
         available_hosts: "{{ hostvars | dict2items | selectattr('value.host_available', 'defined') | selectattr('value.host_available', 'eq', True) | map(attribute='key') | list }}"
 
+    - name: Print available hosts
+      debug:
+        msg: "Available hosts: {{ available_hosts }}"
+
+    - name: Print total_vms
+      debug:
+        msg: "Total VMs: {{ total_vms }}" 
+   
     - name: Retrieve total_vms from workflow data
       set_fact:
-        total_vms: "{{ ansible_stats.data.total_vms }}"
+        total_vms: "{{ total_vms }}"
 
     - name: Check available hosts count
       set_fact:
