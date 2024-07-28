@@ -1,10 +1,11 @@
+---
 - name: Job Template 2 Playbook
   hosts: localhost
-
   tasks:
     - name: Use data from Job Template 1
       debug:
         msg: "Data from Job Template 1: {{ topology_desc }}"
+
     - name: Parse JSON input
       set_fact:
         topology: "{{ topology_desc | from_json }}"
@@ -29,63 +30,50 @@
       set_fact:
         plus_one: "{{ 1 if not one_doc_enabled and not together_root_cluster else 0 }}"
 
-    - name: Requested hosts 
-      debug:
-        msg: "Number of clusters: {{ num_clusters }}, Number of nodes: {{ num_nodes }}, Plus one: {{ plus_one }}"
-
-    - name: Total number of requested VMs
+    - name: Calculate total required VMs
       set_fact:
-        total_vms: "{{ (num_clusters | int) + (num_nodes | int) + (plus_one | int) }}"
+        total_vms: "{{ num_nodes + plus_one }}"
 
-    - name: Total number of VMs
-      debug:
-        msg: "Total number of VMs: {{ total_vms }}"
+    - name: Gather available hosts based on OAK_STATUS
+      hosts: all
+      gather_facts: false
+      tasks:
+        - name: Check OAK_STATUS environment variable
+          shell: |
+            echo $OAK_STATUS
+          register: oak_status
 
-    - name: Inspect machine groups
-      debug:
-        msg: "Machine groups: {{ groups }}"
-
-    - block:
-        - name: Find available VMs not tagged as busy
+        - name: Set host availability
           set_fact:
-            available_vm_list: "{{ groups['cmvm_pool'] | select('search', 'status_busy=false') | list }}"
-          vars:
-            search_expression: "{{ hostvars[item]['status'] != 'busy' }}"
-          loop: "{{ groups['cmvm_pool'] }}"
-          loop_control:
-            loop_var: item
+            host_available: "{{ oak_status.stdout != 'busy' }}"
+          when: oak_status.stdout is defined
 
-        - name: Print available VMs not tagged as busy
-          debug:
-            var: available_vm_list
+        - name: Set host availability if OAK_STATUS is not set
+          set_fact:
+            host_available: true
+          when: oak_status.stdout is not defined
 
-        - name: Ensure enough available VMs
+        - name: Add available hosts to a list
+          set_fact:
+            available_hosts: "{{ available_hosts | default([]) + [inventory_hostname] }}"
+          when: host_available
+
+    - name: Ensure enough hosts are available
+      hosts: localhost
+      gather_facts: false
+      tasks:
+        - name: Check available hosts count
+          set_fact:
+            enough_hosts: "{{ available_hosts | length >= total_vms }}"
+
+        - name: Fail if not enough hosts
           fail:
-            msg: "Not enough available VMs in cmvm_pool. Required: {{ total_vms }}, Available: {{ available_vm_list | length }}"
-          when: (available_vm_list | length) < (total_vms | int)
+            msg: "Not enough available hosts. Required: {{ total_vms }}, Available: {{ available_hosts | length }}"
+          when: not enough_hosts
 
-        - name: Reserve VMs
-          set_fact:
-            busy_vms: "{{ available_vm_list[:total_vms | int] }}"
-          when: (available_vm_list | length) >= (total_vms | int)
-
-        - name: Tag busy VMs with status=busy
-          add_host:
-            name: "{{ item }}"
-            status: busy
-          loop: "{{ busy_vms }}"
-          when: item in groups['all']
-
-        - name: Verify busy VMs status
-          debug:
-            msg: "Host {{ item }} status: {{ hostvars[item].status }}"
-          loop: "{{ busy_vms }}"
-          when: item in groups['all']
-
-      rescue:
-        - name: Handle failure
-          debug:
-            msg: "Failure encountered during VM processing."
+    - name: Print available hosts
+      debug:
+        var: available_hosts
 
       always:
         - name: Change the tag to status_busy=false for all busy VMs
