@@ -120,7 +120,6 @@
           requested_vms: "{{ requested_vms }}"
           reserved_hosts: "{{ reserved_hosts }}"
 
-
     - name: Assign hosts to groups based on the conditions
       set_fact:
         data:
@@ -128,8 +127,8 @@
           group_rc_together: "{{ reserved_hosts[:1] if not one_doc_enabled and together_root_cluster else [] }}"
           group_rc_workers: "{{ reserved_hosts[1:] if not one_doc_enabled and together_root_cluster else [] }}"
           group_root_full: "{{ reserved_hosts[:1] if not one_doc_enabled and not together_root_cluster else [] }}"
-          group_clusters_full: "{{ reserved_hosts[1:(1 + num_clusters)] if not one_doc_enabled and not together_root_cluster else [] }}"
-          group_workers_full: "{{ reserved_hosts[(1 + num_clusters):(1 + num_clusters + num_nodes)] if not one_doc_enabled and not together_root_cluster else [] }}"
+          group_clusters_full: "{{ reserved_hosts[1:(1 + (num_clusters | int))] if not one_doc_enabled and not together_root_cluster else [] }}"
+          group_workers_full: "{{ reserved_hosts[(1 + (num_clusters | int)):(1 + (num_clusters | int) + (num_nodes | int))] if not one_doc_enabled and not together_root_cluster else [] }}"
 
 
     - name: Assign hosts to groups based on the conditions
@@ -138,8 +137,8 @@
         group_rc_together: "{{ reserved_hosts[:1] if not one_doc_enabled and together_root_cluster else [] }}"
         group_rc_workers: "{{ reserved_hosts[1:] if not one_doc_enabled and together_root_cluster else [] }}"
         group_root_full: "{{ reserved_hosts[:1] if not one_doc_enabled and not together_root_cluster else [] }}"
-        group_clusters_full: "{{ reserved_hosts[1:(1 + num_clusters)] if not one_doc_enabled and not together_root_cluster else [] }}"
-        group_workers_full: "{{ reserved_hosts[(1 + num_clusters):(1 + num_clusters + num_nodes)] if not one_doc_enabled and not together_root_cluster else [] }}"
+        group_clusters_full: "{{ reserved_hosts[1:(1 + (num_clusters | int))] if not one_doc_enabled and not together_root_cluster else [] }}"
+        group_workers_full: "{{ reserved_hosts[(1 + (num_clusters | int)):(1 + (num_clusters | int) + (num_nodes | int))] if not one_doc_enabled and not together_root_cluster else [] }}"
 
     - name: Print group assignments for verification
       debug:
