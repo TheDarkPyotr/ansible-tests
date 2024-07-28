@@ -1,15 +1,10 @@
 - name: Job Template 2 Playbook
   hosts: localhost
-  vars:
-    validator: "{{ hostvars[inventory_hostname]['ansible_stats']['data']['validator'] }}"
 
   tasks:
-    - name: Use data from Job Template 1
-      debug:
-        msg: "Data from Job Template 1: {{ validator }}"
     - name: Parse JSON input
       set_fact:
-        topology: "{{ validator.topology_desc | from_json }}"
+        topology: "{{ topology_desc | from_json }}"
 
     - name: Check if topology is valid
       fail:
