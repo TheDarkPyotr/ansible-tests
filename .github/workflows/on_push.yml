@@ -7,6 +7,14 @@ on:
         description: 'Path to the topology file'
         required: true
         default: 'topology.json'
+      branch:
+        description: 'Branch name'
+        required: true
+        default: 'develop'
+      commit:
+          description: 'Short commit'
+          required: true
+          type: string
 
 jobs:
   trigger-awx-job:
@@ -18,7 +26,7 @@ jobs:
       - name: Read topology file ${{ github.event.inputs.topology }}
         id: read_topology
         run: |
-          cat ${{ github.event.inputs.topology }}  # Read file content
+          cat ${{ github.event.inputs.topology }} 
       - name: Get the token
         id: get_token
         env:
@@ -39,8 +47,8 @@ jobs:
           TOWER_HOST: ${{ secrets.TOWER_HOST }}
           TEMPLATE_ID: ${{ secrets.TEMPLATE_ID }}
           TOWER_API_TOKEN: ${{ env.TOWER_API_TOKEN }}
-          BRANCH: ${{ github.ref }}
-          COMMIT: ${{ github.sha }}
+          BRANCH: ${{ github.event.inputs.branch }}
+          COMMIT: ${{ github.event.inputs.commit }}
           FILENAME: ${{ github.event.inputs.topology }}
           
         run: |
