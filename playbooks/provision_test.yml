@@ -91,15 +91,16 @@
         msg: "Not enough available hosts. Required: {{ requested_vms }}, Available: {{ available_hosts | length }}"
       when: not enough_hosts
 
-    - name: Tag available hosts as busy
+    - name: Tag the required number of available hosts as busy
       when: enough_hosts
       delegate_to: "{{ item }}"
       become: true
       lineinfile:
         path: /etc/environment
         create: yes
-        line: 'OAK_STATUS=free'
-      with_items: "{{ available_hosts }}"
+        line: 'OAK_STATUS=busy'
+      with_items: "{{ available_hosts | slice(requested_vms | int) }}"
+
 
     - name: Tag available hosts as free
       delegate_to: "{{ item }}"
