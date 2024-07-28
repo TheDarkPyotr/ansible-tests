@@ -117,7 +117,7 @@
           reserved_hosts: "{{ reserved_hosts }}"
 
     - name: Assign hosts to groups based on the conditions
-      set_fact:
+      set_stats:
         data:
           group_1doc: "{{ reserved_hosts[:1] if one_doc_enabled else [] }}"
           group_rc_together: "{{ reserved_hosts[:1] if not one_doc_enabled and together_root_cluster else [] }}"
