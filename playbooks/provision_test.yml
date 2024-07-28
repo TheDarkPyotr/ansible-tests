@@ -109,3 +109,5 @@
         create: yes
         line: 'OAK_STATUS=free'
       with_items: "{{ available_hosts }}"
+      tags:
+        - always
