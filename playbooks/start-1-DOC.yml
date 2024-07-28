@@ -1,6 +1,6 @@
 ---
 - name: Execute 1DOC template if one_doc_enabled is true
-  hosts: "{{ hosts_to_tag_busy }}"
+  hosts: "{{ reserved_hosts }}"
   roles:
     - ensure-oakestra-repo-is-cloned
     - start-1-doc
