@@ -3,11 +3,10 @@
   hosts: localhost
   gather_facts: false
   tasks:
-    - name: Execute the second job template
-      # Replace with the task or action to run your second job template
-      debug:
-        msg: "Running second job template on host {{ inventory_hostname }}"
-      when: deploy_1doc
+    - name: Fail if deploy_1doc is false
+      fail:
+        msg: "Deployment is skipped because deploy_1doc is false."
+      when: not deploy_1doc
 
 - name: Deploy components for 1DOC topology
   hosts: "{{ group_1doc }}"
