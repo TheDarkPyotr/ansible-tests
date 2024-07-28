@@ -3,7 +3,8 @@
   gather_facts: false
   tasks:
     - name: Fail if it's not a full deploy topology
-      meta: end_play
+      fail:
+        msg: "Deployment is skipped because is not a full topology."
       when: deploy_1doc or together_root_cluster
 
     - name: Print group assignments for verification

@@ -3,7 +3,8 @@
   gather_facts: false
   tasks:
     - name: Fail if deploy_1doc is false
-      meta: end_play
+      fail:
+        msg: "Deployment is skipped because deploy_1doc is false."
       when: not deploy_1doc
 
 - name: Deploy components for 1DOC topology
