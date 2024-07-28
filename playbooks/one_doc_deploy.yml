@@ -1,4 +1,3 @@
----
 - name: Execute 1DOC template if one_doc_enabled is true
   hosts: localhost
   gather_facts: false
@@ -19,4 +18,3 @@
     path: "{{ oak_repo_path }}"
     repo: "{{ oak_repo_link }}"
     branch: "{{ oak_repo_version }}"
-  when: deploy_1doc
