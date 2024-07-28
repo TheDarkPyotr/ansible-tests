@@ -1,4 +1,3 @@
----
 - name: Job Template 2 Playbook
   hosts: localhost
   tasks:
@@ -34,46 +33,52 @@
       set_fact:
         total_vms: "{{ num_nodes + plus_one }}"
 
-    - name: Gather available hosts based on OAK_STATUS
-      hosts: all
-      gather_facts: false
-      tasks:
-        - name: Check OAK_STATUS environment variable
-          shell: |
-            echo $OAK_STATUS
-          register: oak_status
+- name: Check hosts for OAK_STATUS
+  hosts: all
+  gather_facts: false
+  tasks:
+    - name: Check OAK_STATUS environment variable
+      shell: |
+        echo $OAK_STATUS
+      register: oak_status
 
-        - name: Set host availability
-          set_fact:
-            host_available: "{{ oak_status.stdout != 'busy' }}"
-          when: oak_status.stdout is defined
+    - name: Set host availability
+      set_fact:
+        host_available: "{{ oak_status.stdout != 'busy' }}"
+      when: oak_status.stdout is defined
 
-        - name: Set host availability if OAK_STATUS is not set
-          set_fact:
-            host_available: true
-          when: oak_status.stdout is not defined
+    - name: Set host availability if OAK_STATUS is not set
+      set_fact:
+        host_available: true
+      when: oak_status.stdout is not defined
 
-        - name: Add available hosts to a list
-          set_fact:
-            available_hosts: "{{ available_hosts | default([]) + [inventory_hostname] }}"
-          when: host_available
+    - name: Add available hosts to a list
+      set_fact:
+        available_hosts: "{{ available_hosts | default([]) + [inventory_hostname] }}"
+      when: host_available
+      delegate_facts: true
 
-    - name: Ensure enough hosts are available
-      hosts: localhost
-      gather_facts: false
-      tasks:
-        - name: Check available hosts count
-          set_fact:
-            enough_hosts: "{{ available_hosts | length >= total_vms }}"
+- name: Verify enough hosts are available
+  hosts: localhost
+  gather_facts: false
+  tasks:
+    - name: Gather available hosts from all hosts
+      set_fact:
+        available_hosts: "{{ hostvars | dict2items | selectattr('value.host_available', 'defined') | selectattr('value.host_available', 'eq', True) | map(attribute='key') | list }}"
 
-        - name: Fail if not enough hosts
-          fail:
-            msg: "Not enough available hosts. Required: {{ total_vms }}, Available: {{ available_hosts | length }}"
-          when: not enough_hosts
+    - name: Check available hosts count
+      set_fact:
+        enough_hosts: "{{ available_hosts | length >= total_vms }}"
+
+    - name: Fail if not enough hosts
+      fail:
+        msg: "Not enough available hosts. Required: {{ total_vms }}, Available: {{ available_hosts | length }}"
+      when: not enough_hosts
 
     - name: Print available hosts
       debug:
         var: available_hosts
+
 
       always:
         - name: Change the tag to status_busy=false for all busy VMs
