@@ -80,12 +80,13 @@
       ansible.builtin.debug:
         var: topology_descriptor_content
 
-    - include_tasks: vm_provisioning.yml
-      vars:
-        topology_desc: "{{ topology_descriptor_content | to_json}}"
-        topology_validity: "{{ TOPOLOGY_VALIDITY | bool}}"
-        awx_api_url: "http://131.159.25.106"
-        awx_username: "admin"
-        awx_password: "password"
-        busy_vms_group: "busy_vms"
-        cmvm_pool_group: "cmvm_pool"
+    - name: Set workflow data for Provision test
+      set_stats:
+        data:
+          topology_desc: "{{ topology_descriptor_content | to_json}}"
+          topology_validity: "{{ TOPOLOGY_VALIDITY | bool}}"
+          awx_api_url: "http://131.159.25.106"
+          awx_username: "admin"
+          awx_password: "password"
+          busy_vms_group: "busy_vms"
+          cmvm_pool_group: "cmvm_pool"
