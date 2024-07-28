@@ -105,6 +105,11 @@
         line: 'OAK_STATUS=busy'
       with_items: "{{ hosts_to_tag_busy }}"
 
+    - name: Ensure one_doc_enabled fact is set
+      set_stats:
+        data:
+          deploy_1doc: "{{ one_doc_enabled }}"
+
     - name: Tag available hosts as free
       delegate_to: "{{ item }}"
       become: true
