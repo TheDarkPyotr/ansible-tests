@@ -1,0 +1,16 @@
+---
+- hosts: "{{ group_workers_full }}"
+  roles:
+    - kill-all-workers
+
+- hosts: "{{ group_cluster_full }}"
+  tasks:
+    - name: Kill Cluster components
+      command: "docker compose -f {{ oak_repo_path }}/cluster_orchestrator/docker-compose.yml  kill"
+      become: True
+
+- hosts: "{{ group_root_full }}"
+  tasks:
+    - name: Kill Root components
+      command: "docker compose -f {{ oak_repo_path }}/root_orchestrator/docker-compose.yml kill"
+      become: True
