@@ -3,8 +3,7 @@
   gather_facts: false
   tasks:
     - name: Fail if together_root_cluster is false
-      fail:
-        msg: "Deployment is skipped because together_root_cluster is false."
+      meta: end_play
       when: not together_root_cluster
 
 - name: Deploy components for Root+Cluster topology
