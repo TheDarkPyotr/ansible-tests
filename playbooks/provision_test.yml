@@ -1,11 +1,11 @@
-- name: Job Template 2 Playbook
+- name: Execute Host Provision
   hosts: localhost
   tasks:
-    - name: Use data from Job Template 1
+    - name: Read data from topology validator job template
       debug:
-        msg: "Data from Job Template 1: {{ topology_desc }}"
+        msg: "Topology is: {{ topology_desc }}"
 
-    - name: Parse JSON input
+    - name: Parse JSON topology data
       set_fact:
         topology: "{{ topology_desc | from_json }}"
 
@@ -13,10 +13,6 @@
       fail:
         msg: "Topology is not valid. Deployment cannot proceed."
       when: not topology_validity
-
-    - name: Print topology
-      debug:
-        var: topology
 
     - name: Calculate required number of VMs
       set_fact:

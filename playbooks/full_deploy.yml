@@ -7,14 +7,36 @@
         msg: "Deployment is skipped because it's not a full deploy topology."
       when: deploy_1doc or together_root_cluster
 
-- name: Deploy components for full topology
-  hosts: localhost
-  gather_facts: false
-#  roles:
-#    - ensure-oakestra-repo-is-cloned
-#    - start-1-doc
+    - name: Print group assignments for verification
+      debug:
+        msg: |
+              group_root_full: {{ group_root_full }}
+              group_clusters_full: {{ group_clusters_full }}
+              group_workers_full: {{ group_workers_full }}
+
+- name: Deploy root component for full topology
+  hosts: "{{ group_root_full }}"
   vars:
-    params: "-f run-a-cluster/override-alpha-versions.yaml"
-    path: "{{ oak_repo_path }}"
     repo: "{{ oak_repo_link }}"
+    path: "{{ oak_repo_path }}"
     branch: "{{ oak_repo_version }}"
+  roles:
+    - ensure-oakestra-repo-is-cloned
+    - run-root
+
+- name: Deploy cluster components for full topology
+  hosts: "{{ group_clusters_full }}"
+  roles:
+    - role: ensure-oakestra-repo-is-cloned
+      vars:
+        repo: "{{ oak_repo_link }}"
+        path: "{{ oak_repo_path }}"
+        branch: "{{ oak_repo_version }}"
+    - role: run-cluster
+- name: Deploy worker components for full topology
+  hosts: "{{ group_workers_full }}"
+  roles:
+    - setup-net-manager
+    - setup-node-engine
+  vars:
+    repo: "{{ oak_repo_link }}"
