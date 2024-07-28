@@ -90,3 +90,9 @@
       fail:
         msg: "Not enough available hosts. Required: {{ requested_vms }}, Available: {{ available_hosts | length }}"
       when: not enough_hosts
+
+    - name: Tag available hosts as busy
+      when: enough_hosts
+      delegate_to: "{{ item }}"
+      shell: "export OAK_STATUS=busy"
+      with_items: "{{ available_hosts }}"
