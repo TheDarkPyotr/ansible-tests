@@ -1,13 +1,19 @@
 ---
 - name: Execute 1DOC template if one_doc_enabled is true
-  hosts: "{{ group_1doc }}"
+  hosts: localhost
+  gather_facts: false
   roles:
     - ensure-oakestra-repo-is-cloned
     - start-1-doc
-  gather_facts: false
   vars:
-    group_1doc: "{{ group_1doc }}"
     params: "-f run-a-cluster/override-alpha-versions.yaml"
     path: "{{ oak_repo_path }}"
     repo: "{{ oak_repo_link }}"
     branch: "{{ oak_repo_version }}"
+
+  tasks:
+    - name: Print group_1doc
+      debug:
+        var: group_1doc
+        
+
