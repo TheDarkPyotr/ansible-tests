@@ -150,11 +150,11 @@
           group_clusters_full: {{ group_clusters_full }}
           group_workers_full: {{ group_workers_full }}
 
-- name: Import playbook for one_doc_enabled
-  import_playbook: one_doc_deploy.yml
-  when: one_doc_enabled
-  vars:
-    group_1doc: "{{ group_1doc }}"
-    topology_desc: "{{ topology_desc }}"
-    requested_vms: "{{ requested_vms }}"
-    reserved_hosts: "{{ reserved_hosts }}"
+#- name: Import playbook for one_doc_enabled
+#  import_playbook: one_doc_deploy.yml
+#  when: one_doc_enabled
+#  vars:
+#    group_1doc: "{{ group_1doc }}"
+#    topology_desc: "{{ topology_desc }}"
+#    requested_vms: "{{ requested_vms }}"
+#    reserved_hosts: "{{ reserved_hosts }}"

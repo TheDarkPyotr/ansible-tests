@@ -1,19 +1,20 @@
 ---
 - name: Execute 1DOC template if one_doc_enabled is true
-  hosts: localhost
-  gather_facts: false
+  hosts: "{{ group_1doc }}"
   roles:
     - ensure-oakestra-repo-is-cloned
     - start-1-doc
+  gather_facts: false
+  tasks:
+    - name: Execute the second job template
+      # Replace with the task or action to run your second job template
+      debug:
+        msg: "Running second job template on host {{ inventory_hostname }}"
+      when: deploy_1doc
+
   vars:
     params: "-f run-a-cluster/override-alpha-versions.yaml"
     path: "{{ oak_repo_path }}"
     repo: "{{ oak_repo_link }}"
     branch: "{{ oak_repo_version }}"
-
-  tasks:
-    - name: Print group_1doc
-      debug:
-        var: group_1doc
-        
 
