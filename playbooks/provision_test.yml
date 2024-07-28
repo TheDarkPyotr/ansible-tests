@@ -31,12 +31,12 @@
 
     - name: Calculate total required VMs
       set_fact:
-        total_vms: "{{ (num_nodes | int) + (plus_one | int) }}"
+        requested_vms: "{{ (num_nodes | int) + (plus_one | int) }}"
 
     - name: Set workflow data
       set_stats:
         data:
-          total_vms: "{{ total_vms }}"
+          requested_vms: "{{ requested_vms }}"
 
 - name: Check hosts for OAK_STATUS
   hosts: all
@@ -75,19 +75,15 @@
       debug:
         msg: "Available hosts: {{ available_hosts }}"
 
-    - name: Print total_vms
+    - name: Print requested_vms
       debug:
-        msg: "Total VMs: {{ total_vms }}"
+        msg: "Total VMs: {{ requested_vms }}"
    
-    - name: Retrieve total_vms from workflow data
-      set_fact:
-        total_vms: "{{ total_vms }}"
-
     - name: Check available hosts count
       set_fact:
-        enough_hosts: "{{ available_hosts | length >= total_vms | int }}"
+        enough_hosts: "{{ available_hosts | length >= requested_vms | int }}"
 
     - name: Fail if not enough hosts
       fail:
-        msg: "Not enough available hosts. Required: {{ total_vms }}, Available: {{ available_hosts | length }}"
+        msg: "Not enough available hosts. Required: {{ requested_vms }}, Available: {{ available_hosts | length }}"
       when: not enough_hosts
