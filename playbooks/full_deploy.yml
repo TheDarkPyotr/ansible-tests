@@ -1,0 +1,20 @@
+- name: Execute Full Deploy template
+  hosts: localhost
+  gather_facts: false
+  tasks:
+    - name: Fail if it's not a full deploy topology
+      fail:
+        msg: "Deployment is skipped because it's not a full deploy topology."
+      when: not deploy_1doc and not together_root_cluster
+
+- name: Deploy components for full topology
+  hosts: localhost
+  gather_facts: false
+#  roles:
+#    - ensure-oakestra-repo-is-cloned
+#    - start-1-doc
+  vars:
+    params: "-f run-a-cluster/override-alpha-versions.yaml"
+    path: "{{ oak_repo_path }}"
+    repo: "{{ oak_repo_link }}"
+    branch: "{{ oak_repo_version }}"
