@@ -2,6 +2,9 @@
   hosts: localhost
 
   tasks:
+    - name: Use data from Job Template 1
+      debug:
+        msg: "Data from Job Template 1: {{ topology_desc }}"
     - name: Parse JSON input
       set_fact:
         topology: "{{ topology_desc | from_json }}"
