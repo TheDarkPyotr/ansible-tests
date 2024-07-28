@@ -146,10 +146,10 @@
   when: one_doc_enabled
 
 - name: Import playbook for together_root_cluster true
-  import_playbook: playbook_together_root_cluster.yml
+  import_playbook: together_root_cluster.yml
   when: not one_doc_enabled and together_root_cluster
 
 - name: Import playbook for both one_doc_enabled and together_root_cluster false
-  import_playbook: playbook_default_groups.yml
+  import_playbook: default_groups.yml
   when: not one_doc_enabled and not together_root_cluster
 
