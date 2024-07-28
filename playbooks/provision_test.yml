@@ -94,5 +94,9 @@
     - name: Tag available hosts as busy
       when: enough_hosts
       delegate_to: "{{ item }}"
-      shell: "export OAK_STATUS=busy"
+      become: true
+      lineinfile:
+        path: /etc/environment
+        create: yes
+        line: 'OAK_STATUS=busy'
       with_items: "{{ available_hosts }}"
