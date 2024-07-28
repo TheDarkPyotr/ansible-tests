@@ -105,6 +105,10 @@
         line: 'OAK_STATUS=busy'
       with_items: "{{ hosts_to_tag_busy }}"
 
+    - name: Assign reserved_hosts
+      set_fact:
+        reserved_hosts: "{{ available_hosts[:requested_vms | int] | list }}"
+
     - name: Ensure one_doc_enabled fact is set
       set_stats:
         data:
@@ -114,7 +118,7 @@
           num_nodes: "{{ num_nodes }}"
           topology_desc: "{{ topology_desc }}"
           requested_vms: "{{ requested_vms }}"
-          reserved_hosts: "{{ available_hosts[:requested_vms | int] | list }}"
+          reserved_hosts: "{{ reserved_hosts }}"
 
 
     - name: Assign hosts to groups based on the conditions
