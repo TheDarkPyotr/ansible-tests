@@ -25,13 +25,16 @@
         one_doc_enabled: "{{ topology.topology_descriptor.one_doc_enabled | bool }}"
         together_root_cluster: "{{ topology.topology_descriptor.together_root_cluster | bool }}"
 
-    - name: Verify if flag one_doc_enabled
+    - name: Calculate requested_vms based on one_doc_enabled and together_root_cluster
       set_fact:
-        plus_one: "{{ 1 if not one_doc_enabled and not together_root_cluster else 0 }}"
-
-    - name: Calculate total required VMs
-      set_fact:
-        requested_vms: "{{ (num_nodes | int) + (plus_one | int) }}"
+        requested_vms: >-
+          {%- if one_doc_enabled -%}
+          1
+          {%- elif together_root_cluster -%}
+          {{ (1 | int) + (num_nodes | int) }}
+          {%- else -%}
+          {{ (1 | int) + (num_clusters | int) + (num_nodes | int) }}
+          {%- endif -%}
 
     - name: Set workflow data
       set_stats:
