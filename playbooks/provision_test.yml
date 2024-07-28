@@ -98,5 +98,16 @@
       lineinfile:
         path: /etc/environment
         create: yes
-        line: 'OAK_STATUS=busy'
+        line: 'OAK_STATUS=free'
+      with_items: "{{ available_hosts }}"
+
+
+    - name: Tag available hosts as free
+      when: enough_hosts
+      delegate_to: "{{ item }}"
+      become: true
+      lineinfile:
+        path: /etc/environment
+        create: yes
+        line: 'OAK_STATUS=free'
       with_items: "{{ available_hosts }}"
