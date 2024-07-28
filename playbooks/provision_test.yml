@@ -83,34 +83,3 @@
       fail:
         msg: "Not enough available hosts. Required: {{ total_vms }}, Available: {{ available_hosts | length }}"
       when: not enough_hosts
-
-    - name: Print available hosts
-      debug:
-        var: available_hosts
-
-      always:
-        - name: Change the tag to status_busy=false for all busy VMs
-          add_host:
-            name: "{{ item }}"
-            status: false
-          loop: "{{ groups['all'] }}"
-          when: item in groups['all']
-
-        - name: Verify updated VMs status
-          debug:
-            msg: "Host {{ item }} status_busy: {{ hostvars[item].status }}"
-          loop: "{{ groups['all'] }}"
-          when: item in groups['all']
-
-        - include_tasks: github_results.yml
-          vars:
-            topology_desc: "{{ topology_descriptor }}"
-            result: "Not enough available VMs in cmvm_pool. Required: {{ total_vms }}, Available: {{ available_vm_list | length }}"
-          when: (available_vm_list | length) < (total_vms | int)
-      
-        - include_tasks: github_results.yml
-          vars:
-            topology_desc: "{{ topology_descriptor }}"
-            result: "Instantiating topology. Reserved VMs: {{ busy_vms }}, Available: {{ available_vm_list | length }}"
-          when: (available_vm_list | length) >= (total_vms | int)
-
