@@ -122,13 +122,14 @@
 
 
     - name: Assign hosts to groups based on the conditions
-      set_fact:
-        group_1doc: "{{ reserved_hosts[:1] if one_doc_enabled else [] }}"
-        group_rc_together: "{{ reserved_hosts[:1] if not one_doc_enabled and together_root_cluster else [] }}"
-        group_rc_workers: "{{ reserved_hosts[1:] if not one_doc_enabled and together_root_cluster else [] }}"
-        group_root_full: "{{ reserved_hosts[:1] if not one_doc_enabled and not together_root_cluster else [] }}"
-        group_clusters_full: "{{ reserved_hosts[1:num_clusters + 1] if not one_doc_enabled and not together_root_cluster else [] }}"
-        group_workers_full: "{{ reserved_hosts[(1 + num_clusters):(1 + num_clusters + num_nodes)] if not one_doc_enabled and not together_root_cluster else [] }}"
+      set_stats:
+        data:
+          group_1doc: "{{ reserved_hosts[:1] if one_doc_enabled else [] }}"
+          group_rc_together: "{{ reserved_hosts[:1] if not one_doc_enabled and together_root_cluster else [] }}"
+          group_rc_workers: "{{ reserved_hosts[1:] if not one_doc_enabled and together_root_cluster else [] }}"
+          group_root_full: "{{ reserved_hosts[:1] if not one_doc_enabled and not together_root_cluster else [] }}"
+          group_clusters_full: "{{ reserved_hosts[1:num_clusters + 1] if not one_doc_enabled and not together_root_cluster else [] }}"
+          group_workers_full: "{{ reserved_hosts[(1 + num_clusters):(1 + num_clusters + num_nodes)] if not one_doc_enabled and not together_root_cluster else [] }}"
 
     - name: Print group assignments for verification
       debug:
@@ -140,13 +141,15 @@
           group_clusters_full: {{ group_clusters_full }}
           group_workers_full: {{ group_workers_full }}
 
-    - name: Tag available hosts as free
-      delegate_to: "{{ item }}"
-      become: true
-      lineinfile:
-        path: /etc/environment
-        create: yes
-        line: 'OAK_STATUS=free'
-      with_items: "{{ available_hosts }}"
-      tags:
-        - always
+- name: Import playbook for one_doc_enabled
+  import_playbook: one_doc_deploy.yml
+  when: one_doc_enabled
+
+- name: Import playbook for together_root_cluster true
+  import_playbook: playbook_together_root_cluster.yml
+  when: not one_doc_enabled and together_root_cluster
+
+- name: Import playbook for both one_doc_enabled and together_root_cluster false
+  import_playbook: playbook_default_groups.yml
+  when: not one_doc_enabled and not together_root_cluster
+
