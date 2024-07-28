@@ -2,7 +2,8 @@
 - name: Retrieve topology descriptor JSON from Git repository
   hosts: localhost
   vars:
-    repo: "https://github.com/TheDarkPyotr/oakestra"
+    repo: "https://github.com/TheDarkPyotr/ansible-tests"
+    branch: "main"
 
   gather_facts: no
 
