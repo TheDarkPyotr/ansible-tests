@@ -33,6 +33,11 @@
       set_fact:
         total_vms: "{{ num_nodes + plus_one }}"
 
+    - name: Set workflow data
+      ansible.builtin.set_stats:
+        data:
+          total_vms: "{{ total_vms }}"
+
 - name: Check hosts for OAK_STATUS
   hosts: all
   gather_facts: false
@@ -66,6 +71,10 @@
       set_fact:
         available_hosts: "{{ hostvars | dict2items | selectattr('value.host_available', 'defined') | selectattr('value.host_available', 'eq', True) | map(attribute='key') | list }}"
 
+    - name: Retrieve total_vms from workflow data
+      set_fact:
+        total_vms: "{{ ansible_stats.data.total_vms }}"
+
     - name: Check available hosts count
       set_fact:
         enough_hosts: "{{ available_hosts | length >= total_vms }}"
@@ -78,7 +87,6 @@
     - name: Print available hosts
       debug:
         var: available_hosts
-
 
       always:
         - name: Change the tag to status_busy=false for all busy VMs
