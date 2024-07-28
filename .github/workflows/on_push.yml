@@ -10,7 +10,7 @@ on:
       branch:
         description: 'Branch name'
         required: true
-        default: 'develop'
+        default: 'main'
       commit:
           description: 'Short commit'
           required: true
