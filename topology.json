@@ -1,7 +1,7 @@
 {
     "topology_descriptor": {
     "one_doc_enabled": false, 
-    "together_root_cluster": false,
+    "together_root_cluster": true,
     "cluster_list": [{
       "cluster_number": 1,
       "number_of_nodes": 1,
