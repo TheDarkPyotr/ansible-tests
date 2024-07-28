@@ -3,7 +3,7 @@
   roles:
     - kill-all-workers
 
-- hosts: "{{ group_cluster_full }}"
+- hosts: "{{ group_clusters_full }}"
   tasks:
     - name: Kill Cluster components
       command: "docker compose -f {{ oak_repo_path }}/cluster_orchestrator/docker-compose.yml  kill"
