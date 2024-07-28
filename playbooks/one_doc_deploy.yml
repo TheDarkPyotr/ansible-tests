@@ -6,6 +6,7 @@
     - start-1-doc
   gather_facts: false
   vars:
+    group_1doc: "{{ group_1doc }}"
     params: "-f run-a-cluster/override-alpha-versions.yaml"
     path: "{{ oak_repo_path }}"
     repo: "{{ oak_repo_link }}"
