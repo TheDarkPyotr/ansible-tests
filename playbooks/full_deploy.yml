@@ -31,10 +31,9 @@
       set_fact:
         cluster_host_ranges: >
           {{
-            dict(
-              cluster_ids | zip(reserved_hosts[1:(1 + num_clusters_int)]) | list
-            )
+            dict([(cluster_id, reserved_host) for cluster_id, reserved_host in zip(cluster_ids, reserved_hosts[1:len(cluster_ids)+1])])
           }}
+
 
     - name: Set worker ranges
       set_fact:
