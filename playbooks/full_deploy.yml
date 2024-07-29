@@ -19,7 +19,7 @@
     - name: Set facts for cluster and worker associations
       set_fact:
         # Extract clusters information
-        clusters: "{{ topology_descriptor.topology_descriptor.cluster_list }}"
+        clusters: "{{ topology_desc.topology_descriptor.cluster_list }}"
         # Number of clusters
         num_clusters: "{{ clusters | length }}"
         # Create a list of cluster IDs
