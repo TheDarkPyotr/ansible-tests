@@ -5,8 +5,25 @@ import re
 
 def convert_single_to_double_quotes(json_str):
     """Convert single quotes to double quotes in a JSON string."""
-    # Replace single quotes with double quotes, except when inside strings
     json_str = re.sub(r"(?<!\\)'", '"', json_str)
+    return json_str
+
+
+def sanitize_microservices(json_str):
+    """Remove or sanitize the 'cmd' field in 'microservices'."""
+    # Regular expression to find and remove the 'cmd' field from 'microservices'
+    sanitized_str = re.sub(r'("cmd"\s*:\s*\[[^\]]*\])', '"cmd": []', json_str)
+    return sanitized_str
+
+
+def preprocess_json_string(json_str):
+    """Preprocess JSON string to be parsed safely."""
+    # Convert single quotes to double quotes
+    json_str = convert_single_to_double_quotes(json_str)
+
+    # Sanitize the 'microservices' field
+    json_str = sanitize_microservices(json_str)
+
     return json_str
 
 
@@ -34,11 +51,8 @@ def compute_worker_cluster_association(data):
 
 def process_json_string(json_str):
     """Process JSON string to compute worker-cluster association."""
-    # Convert single quotes to double quotes
-    json_str = convert_single_to_double_quotes(json_str)
-
-    # Print the JSON string
-    print(json_str)
+    # Preprocess the JSON string
+    json_str = preprocess_json_string(json_str)
 
     # Load JSON data
     try:
