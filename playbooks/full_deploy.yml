@@ -58,9 +58,10 @@
           Worker Map: {{ worker_map }}
 
     - name: Set environment variables for deployment
-      set_fact:
-        cluster_host_ranges: "{{ cluster_host_ranges }}"
-        worker_map: "{{ worker_map }}"
+      set_stats:
+        data:
+          cluster_host_ranges: "{{ cluster_host_ranges }}"
+          worker_map: "{{ worker_map }}"
 
 ############# Deploy 3-tier components          
 - name: Deploy root component for full topology
