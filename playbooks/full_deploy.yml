@@ -62,6 +62,13 @@
         cluster_ips: "{{ cluster_host_ranges }}"
         worker_ips: "{{ worker_map }}"
 
+    - name: Set environment variables for deployment
+      set_stats:
+        data:
+          cluster_ips: "{{ cluster_host_ranges }}"
+          worker_ips: "{{ worker_map }}"
+
+
     - name: Print cluster and worker IPs
       debug:
         msg: |
