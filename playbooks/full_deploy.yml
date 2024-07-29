@@ -87,7 +87,7 @@
 #    - ensure-oakestra-repo-is-cloned
 #    - run-root
   tasks:
-    - name: Set environment variables for deployment
+    - name: Set environment variables for deployment root
       set_fact:
         cluster_host_ranges: "{{ cluster_host_ranges }}"
         worker_map: "{{ worker_map }}"
