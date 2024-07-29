@@ -12,11 +12,7 @@ def convert_single_to_double_quotes(json_str):
 
 def compute_worker_cluster_association(data):
     """Compute the association between workers and clusters."""
-    clusters = (
-        data.get("topology_descriptor", {})
-        .get("topology_descriptor", {})
-        .get("cluster_list", [])
-    )
+    clusters = data.get("topology_descriptor", {}).get("cluster_list", [])
     workers = data.get("group_workers_full", [])
 
     cluster_worker_map = {}
@@ -40,6 +36,9 @@ def process_json_string(json_str):
     """Process JSON string to compute worker-cluster association."""
     # Convert single quotes to double quotes
     json_str = convert_single_to_double_quotes(json_str)
+
+    # Print the JSON string
+    print(json_str)
 
     # Load JSON data
     try:
