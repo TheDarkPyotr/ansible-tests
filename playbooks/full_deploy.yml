@@ -121,14 +121,14 @@
       set_fact:
         node_ip: "{{ ansible_host }}"  # Use ansible_host to get the IP of the current node
         cluster_id: >-
-          {%- for cid, ips in worker_map.items() -%}
-            {%- if node_ip in ips -%}
-              {{ cid }}
-              {%- break -%}
-            {%- endif -%}
-          {%- endfor -%}
+          {%- set found_cluster_id = worker_map | dict2items | selectattr('value', 'search', node_ip) | map(attribute='key') | first -%}
+          {%- if found_cluster_id is not none -%}
+            {{ found_cluster_id }}
+          {%- else -%}
+            "undefined"
+          {%- endif -%}
         cluster_ip: >-
-          {%- if cluster_id is defined and cluster_id in cluster_host_ranges -%}
+          {%- if cluster_id != 'undefined' and cluster_id in cluster_host_ranges -%}
             {{ cluster_host_ranges[cluster_id] }}
           {%- else -%}
             "undefined"
