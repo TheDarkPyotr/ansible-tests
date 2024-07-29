@@ -2,34 +2,33 @@
   hosts: localhost
   gather_facts: false
   tasks:
-    #- name: Fail if it's not a full deploy topology
-    #  fail:
-    #    msg: "Deployment is skipped because is not a full topology."
-    #  when: deploy_1doc or together_root_cluster
-
     - name: Print group assignments for verification
       debug:
         msg: |
-              group_root_full: {{ group_root_full }}
-              group_clusters_full: {{ group_clusters_full }}
-              group_workers_full: {{ group_workers_full }}
+          group_root_full: {{ group_root_full }}
+          group_clusters_full: {{ group_clusters_full }}
+          group_workers_full: {{ group_workers_full }}
 
     - name: Print the parsed topology data
       debug:
         msg: "{{ topology_desc }}"
-    - name: Set topolgy_desc as JSON
+
+    - name: Set topology_desc as JSON
       set_fact:
         topology_desc: "{{ topology_desc | to_json }}"
 
     - name: Set facts for cluster and worker associations
       set_fact:
         clusters: "{{ topology_desc.topology_descriptor.cluster_list }}"
+
     - name: Set cluster IDs
       set_fact:
         cluster_ids: "{{ topology_desc.topology_descriptor.cluster_list | map(attribute='cluster_number') | list }}"
+
     - name: Cast num_clusters to an integer
       set_fact:
         num_clusters_int: "{{ num_clusters | int }}"
+
     - name: Set cluster host ranges
       set_fact:
         cluster_host_ranges: >
@@ -57,24 +56,11 @@
         msg: |
           Cluster Host Map: {{ cluster_host_ranges }}
           Worker Map: {{ worker_map }}
-          
+
     - name: Set environment variables for deployment
       set_fact:
         cluster_host_ranges: "{{ cluster_host_ranges }}"
         worker_map: "{{ worker_map }}"
-
-    - name: Set environment variables for deployment
-      set_stats:
-        data:
-          cluster_host_ranges: "{{ cluster_host_ranges }}"
-          worker_map: "{{ worker_map }}"
-
-
-    - name: Print cluster and worker IPs
-      debug:
-        msg: |
-          Cluster IPs: {{ cluster_host_ranges }}
-          Worker IPs: {{ worker_map }}
 
 ############# Deploy 3-tier components          
 - name: Deploy root component for full topology
@@ -91,16 +77,13 @@
       set_fact:
         cluster_host_ranges: "{{ cluster_host_ranges }}"
         worker_map: "{{ worker_map }}"
+
     - name: Print the cluster and worker IPs at root 
       debug:
         msg: |
           Cluster IPs: "{{ cluster_host_ranges }}"
           Worker IPs: "{{ worker_map }}"
-    - name: Set environment variables for deployment at root
-      set_stats:
-        data:
-          cluster_host_ranges: "{{ cluster_host_ranges }}"
-          worker_map: "{{ worker_map }}"
+
 
 - name: Deploy cluster components for full topology
   hosts: "{{ group_clusters_full }}"
