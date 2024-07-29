@@ -12,7 +12,11 @@ def convert_single_to_double_quotes(json_str):
 
 def compute_worker_cluster_association(data):
     """Compute the association between workers and clusters."""
-    clusters = data.get("topology_descriptor", {}).get("cluster_list", [])
+    clusters = (
+        data.get("topology_descriptor", {})
+        .get("topology_descriptor", {})
+        .get("cluster_list", [])
+    )
     workers = data.get("group_workers_full", [])
 
     cluster_worker_map = {}
@@ -51,8 +55,8 @@ def process_json_string(json_str):
 
 
 def main():
-    # Read input JSON from stdin
-    input_data_str = sys.stdin.read()
+    # Read the entire JSON string from stdin
+    input_data_str = sys.stdin.read().strip()
 
     # Process the JSON string
     result = process_json_string(input_data_str)
