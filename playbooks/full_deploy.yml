@@ -13,6 +13,44 @@
               group_root_full: {{ group_root_full }}
               group_clusters_full: {{ group_clusters_full }}
               group_workers_full: {{ group_workers_full }}
+    - name: Execute ls command
+      ansible.builtin.shell: "ls -la"
+    
+    - name: Set facts for cluster and worker associations
+      set_fact:
+        # Extract clusters information
+        clusters: "{{ topology_descriptor.topology_descriptor.cluster_list }}"
+        # Number of clusters
+        num_clusters: "{{ clusters | length }}"
+        # Create a list of cluster IDs
+        cluster_ids: "{{ clusters | map(attribute='cluster_number') | list }}"
+        
+        # Calculate the ranges of cluster and worker hosts
+        cluster_host_ranges: "{{ cluster_ids | zip(reserved_hosts[1:(1 + (num_clusters | int))]) | items2dict }}"
+        worker_ranges: "{{ reserved_hosts[(1 + (num_clusters | int)):(1 + (num_clusters | int) + (num_nodes | int))] }}"
+
+    - name: Create mappings for clusters and workers
+      set_fact:
+        # Map clusters to hosts
+        cluster_host_map: "{{ cluster_host_ranges | dict2items | map('combine', {'value': {'cluster': item.value, 'hosts': []}}) | items2dict }}"
+        
+        # Map workers to clusters
+        worker_map: {}
+        
+    - name: Associate workers with clusters
+      set_fact:
+        # Associate each worker to the appropriate cluster based on the cluster's node count
+        worker_map: "{{ worker_map | combine({(item.cluster_number): item.workers}) }}"
+      loop: "{{ clusters }}"
+      vars:
+        workers: "{{ reserved_hosts[(start_index):(start_index + item.number_of_nodes)] }}"
+        start_index: "{{ (1 + (num_clusters | int)) + (num_nodes | int) }}"
+    
+    - name: Print the cluster and worker associations
+      debug:
+        msg: |
+          Cluster Host Map: {{ cluster_host_map }}
+          Worker Map: {{ worker_map }}
 
 - name: Deploy root component for full topology
   hosts: "{{ group_root_full }}"
