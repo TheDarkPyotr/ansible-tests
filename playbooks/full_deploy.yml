@@ -60,20 +60,20 @@
           
     - name: Set environment variables for deployment
       set_fact:
-        cluster_ips: "{{ cluster_host_ranges }}"
-        worker_ips: "{{ worker_map }}"
+        cluster_host_ranges: "{{ cluster_host_ranges }}"
+        worker_map: "{{ worker_map }}"
 
     - name: Set environment variables for deployment
       set_stats:
         data:
-          cluster_ips: "{{ cluster_host_ranges }}"
+          cluster_host_ranges: "{{ cluster_host_ranges }}"
           worker_ips: "{{ worker_map }}"
 
 
     - name: Print cluster and worker IPs
       debug:
         msg: |
-          Cluster IPs: {{ cluster_ips }}
+          Cluster IPs: {{ cluster_host_ranges }}
           Worker IPs: {{ worker_ips }}
 
 ############# Deploy 3-tier components          
@@ -87,10 +87,14 @@
 #    - ensure-oakestra-repo-is-cloned
 #    - run-root
   tasks:
+    - name: Set environment variables for deployment
+      set_fact:
+        cluster_host_ranges: "{{ cluster_host_ranges }}"
+        worker_map: "{{ worker_map }}"
     - name: Print the cluster and worker IPs at root 
       debug:
         msg: |
-          Cluster IPs: "{{ cluster_ips }}"
+          Cluster IPs: "{{ cluster_host_ranges }}"
           Worker IPs: "{{ worker_ips }}"
     - name: Set environment variables for deployment at root
       set_stats:
