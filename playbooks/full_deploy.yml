@@ -27,36 +27,14 @@
     - name: Cast num_clusters to an integer
       set_fact:
         num_clusters_int: "{{ num_clusters | int }}"
-    - name: Set facts for cluster and worker associations
+    - name: Set cluster host ranges 
       set_fact:
-        clusters: "{{ topology_desc.topology_descriptor.cluster_list }}"
-        num_clusters: "{{ clusters | length }}"
-        num_clusters_int: "{{ num_clusters | int }}"  # Ensure num_clusters is an integer
-        cluster_ids: "{{ clusters | map(attribute='cluster_number') | list }}"
-        
-        # Ensure all indices are integers
-        start_index: "{{ 1 | int }}"
-        end_index: "{{ (start_index + num_clusters_int) | int }}"
-        
-        # Calculate the ranges of cluster and worker hosts
         cluster_host_ranges: >
           {{
             dict(
-              cluster_ids | zip(reserved_hosts[start_index:end_index]) | list
+              cluster_ids | zip(reserved_hosts[1:(1 + num_clusters_int)]) | list
             )
           }}
-        worker_start_index: "{{ end_index | int }}"
-        worker_end_index: "{{ (worker_start_index + num_nodes | int) | int }}"
-        worker_ranges: "{{ reserved_hosts[worker_start_index:worker_end_index] }}"
-
-    - name: Debug facts
-      debug:
-        msg: |
-          Clusters: {{ clusters }}
-          Number of Clusters: {{ num_clusters }}
-          Cluster IDs: {{ cluster_ids }}
-          Cluster Host Ranges: {{ cluster_host_ranges }}
-          Worker Ranges: {{ worker_ranges }}
 
     - name: Set worker ranges
       set_fact:
