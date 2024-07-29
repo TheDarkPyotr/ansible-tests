@@ -15,7 +15,7 @@
               group_workers_full: {{ group_workers_full }}
     - name: Parse JSON topology data
       set_fact:
-        topology: "{{ topology_desc | from_json }}"
+        topology: "{{ topology_desc }}"
 
     - name: Print the parsed topology data
       debug:
