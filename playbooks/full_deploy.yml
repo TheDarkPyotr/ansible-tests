@@ -117,7 +117,7 @@
     - name: Set environment variables for deployment node
       set_fact:
         #cluster_host_ranges: "{{ hostvars['localhost'].cluster_host_ranges }}"
-         cluster_host_ranges: "{{ hostvars['localhost'].cluster_host_ranges.ansible_facts.cluster_host_ranges }}"
+        cluster_host_ranges: "{{ hostvars['localhost'].cluster_host_ranges.ansible_facts.cluster_host_ranges }}"
         #worker_map: "{{ hostvars['localhost'].worker_map }}"
         worker_map: "{{ hostvars['localhost'].worker_map.results[0].ansible_facts.worker_map }}"
         node_ip: "{{ inventory_hostname }}"
