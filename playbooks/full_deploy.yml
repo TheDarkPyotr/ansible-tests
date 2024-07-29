@@ -90,8 +90,8 @@
     - name: Set environment variables for deployment
       set_stats:
         data:
-          cluster_ips: "{{ cluster_host_ranges }}"
-          worker_ips: "{{ worker_map }}"
+          cluster_ips: "{{ cluster_ips }}"
+          worker_ips: "{{ worker_ips }}"
 
 - name: Deploy cluster components for full topology
   hosts: "{{ group_clusters_full }}"
@@ -106,9 +106,8 @@
     - name: Set environment variables for deployment
       set_stats:
         data:
-          cluster_ips: "{{ cluster_host_ranges }}"
-          worker_ips: "{{ worker_map }}"
-
+          cluster_ips: "{{ cluster_ips }}"
+          worker_ips: "{{ worker_ips }}"
     
 - name: Deploy worker components for full topology
   hosts: "{{ group_workers_full }}"
