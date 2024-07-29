@@ -1,20 +1,21 @@
 {
-    "topology_descriptor": {
-    "one_doc_enabled": false, 
+  "topology_descriptor": {
+    "one_doc_enabled": false,
     "together_root_cluster": false,
-    "cluster_list": [{
-      "cluster_number": 1,
-      "number_of_nodes": 2,
-      "sla_descriptor": {
-          "sla_version" : "v2.0",
-          "customerID" : "Admin",
-          "applications" : [
+    "cluster_list": [
+      {
+        "cluster_number": 1,
+        "number_of_nodes": 2,
+        "sla_descriptor": {
+          "sla_version": "v2.0",
+          "customerID": "Admin",
+          "applications": [
             {
-              "applicationID" : "",
-              "application_name" : "clientsrvr",
-              "application_namespace" : "test",
-              "application_desc" : "Simple demo with curl client and Nginx server",
-              "microservices" : [
+              "applicationID": "",
+              "application_name": "clientsrvr",
+              "application_namespace": "test",
+              "application_desc": "Simple demo with curl client and Nginx server",
+              "microservices": [
                 {
                   "microserviceID": "",
                   "microservice_name": "curl",
@@ -32,7 +33,7 @@
                   "state": "",
                   "port": "",
                   "added_files": [],
-                  "constraints":[]
+                  "constraints": []
                 },
                 {
                   "microserviceID": "",
@@ -59,6 +60,63 @@
             }
           ]
         }
-      }]
+      },
+      {
+        "cluster_number": 2,
+        "number_of_nodes": 2,
+        "sla_descriptor": {
+          "sla_version": "v2.0",
+          "customerID": "Admin",
+          "applications": [
+            {
+              "applicationID": "",
+              "application_name": "exampleapp",
+              "application_namespace": "test",
+              "application_desc": "Example application with a different setup",
+              "microservices": [
+                {
+                  "microserviceID": "",
+                  "microservice_name": "appserver",
+                  "microservice_namespace": "test",
+                  "virtualization": "container",
+                  "cmd": ["sh", "-c", "echo 'Running app server'"],
+                  "memory": 200,
+                  "vcpus": 2,
+                  "vgpus": 0,
+                  "vtpus": 0,
+                  "bandwidth_in": 10,
+                  "bandwidth_out": 10,
+                  "storage": 10,
+                  "code": "docker.io/example/appserver:latest",
+                  "state": "",
+                  "port": "8080:80/tcp",
+                  "added_files": [],
+                  "constraints": []
+                },
+                {
+                  "microserviceID": "",
+                  "microservice_name": "db",
+                  "microservice_namespace": "test",
+                  "virtualization": "container",
+                  "cmd": ["sh", "-c", "echo 'Running database'"],
+                  "memory": 200,
+                  "vcpus": 2,
+                  "vgpus": 0,
+                  "vtpus": 0,
+                  "bandwidth_in": 5,
+                  "bandwidth_out": 5,
+                  "storage": 20,
+                  "code": "docker.io/example/db:latest",
+                  "state": "",
+                  "port": "5432:5432/tcp",
+                  "added_files": [],
+                  "constraints": []
+                }
+              ]
+            }
+          ]
+        }
+      }
+    ]
   }
 }
