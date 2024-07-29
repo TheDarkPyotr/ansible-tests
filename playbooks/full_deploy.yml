@@ -117,10 +117,10 @@
     - name: Set environment variables for deployment node
       set_fact:
         #cluster_host_ranges: "{{ hostvars['localhost'].cluster_host_ranges }}"
-        cluster_host_ranges: "{{ hostvars['localhost'].cluster_host_ranges.ansible_facts.cluster_host_ranges }}"
+         cluster_host_ranges: "{{ hostvars['localhost'].cluster_host_ranges.ansible_facts.cluster_host_ranges }}"
         #worker_map: "{{ hostvars['localhost'].worker_map }}"
         worker_map: "{{ hostvars['localhost'].worker_map.results[0].ansible_facts.worker_map }}"
-        node_ip: "{{ ansible_host }}"
+        node_ip: "{{ inventory_hostname }}"
     - name: Print node IP
       debug:
         msg: "Node IP: {{ node_ip }}"
@@ -128,30 +128,24 @@
     - name: Set cluster ID
       set_fact:
         cluster_id: >-
-          {%- set worker_map_items = worker_map | dict2items -%}
-          {%- set filtered = worker_map_items | selectattr('value', 'search', node_ip) -%}
-          {%- if filtered | length > 0 -%}
-            {%- set first_match = filtered | map(attribute='key') | first -%}
-            {{ first_match }}
+          {%- set cluster_id = worker_map | dict2items | selectattr('value', 'search', node_ip) | map(attribute='key') | first -%}
+          {%- if cluster_id is not none -%}
+            {{ cluster_id }}
           {%- else -%}
             "undefined"
           {%- endif -%}
-    - name: Set cluster IP
+    - name: Set node hostname
       set_fact:
-        cluster_ip: >-
+        cluster_hostname: >-
           {%- if cluster_id != 'undefined' and cluster_id in cluster_host_ranges -%}
             {{ cluster_host_ranges[cluster_id] }}
           {%- else -%}
             "undefined"
           {%- endif -%}
 
-    - name: Print the cluster and worker IPs at node
+    - name: Print node and parent cluster information
       debug:
-        msg: |
-          Node IP: "{{ node_ip }}"
-          Cluster IP: "{{ cluster_ip }}"
-          Cluster Host Ranges: "{{ cluster_host_ranges }}"
-          Worker Map: "{{ worker_map }}"
+        msg: "Hey, I'm node {{ node_ip }} and my parent is cluster {{ cluster_hostname }}"
 
     - name: Print the cluster and worker IPs at node 
       debug:
