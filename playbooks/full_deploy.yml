@@ -22,8 +22,6 @@
       set_fact:
         # Extract clusters information
         clusters: "{{ topology_desc.topology_descriptor.cluster_list }}"
-        # Number of clusters
-        num_clusters: "{{ clusters | length }}"
         # Create a list of cluster IDs
         cluster_ids: "{{ topology_desc.topology_descriptor.cluster_list | map(attribute='cluster_number') | list }}"
         
