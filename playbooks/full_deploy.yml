@@ -57,6 +57,7 @@
         msg: |
           Cluster Host Map: {{ cluster_host_ranges }}
           Worker Map: {{ worker_map }}
+          
     - name: Set environment variables for deployment
       set_fact:
         cluster_ips: "{{ cluster_host_ranges }}"
