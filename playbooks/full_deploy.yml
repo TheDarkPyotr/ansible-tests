@@ -83,11 +83,16 @@
     repo: "{{ oak_repo_link }}"
     path: "{{ oak_repo_path }}"
     branch: "{{ oak_repo_version }}"
-  roles:
-    - ensure-oakestra-repo-is-cloned
-    - run-root
+#  roles:
+#    - ensure-oakestra-repo-is-cloned
+#    - run-root
   tasks:
-    - name: Set environment variables for deployment
+    - name: Print the cluster and worker IPs at root 
+      debug:
+        msg: |
+          Cluster IPs: {{ cluster_ips }}
+          Worker IPs: {{ worker_ips }}
+    - name: Set environment variables for deployment at root
       set_stats:
         data:
           cluster_ips: "{{ cluster_ips }}"
@@ -95,15 +100,20 @@
 
 - name: Deploy cluster components for full topology
   hosts: "{{ group_clusters_full }}"
-  roles:
-    - role: ensure-oakestra-repo-is-cloned
-      vars:
-        repo: "{{ oak_repo_link }}"
-        path: "{{ oak_repo_path }}"
-        branch: "{{ oak_repo_version }}"
-    - role: run-cluster
+#  roles:
+#    - role: ensure-oakestra-repo-is-cloned
+#      vars:
+#        repo: "{{ oak_repo_link }}"
+#        path: "{{ oak_repo_path }}"
+#        branch: "{{ oak_repo_version }}"
+#    - role: run-cluster
   tasks:
-    - name: Set environment variables for deployment
+    - name: Print the cluster and worker IPs at cluster
+      debug:
+        msg: |
+          Cluster IPs: {{ cluster_ips }}
+          Worker IPs: {{ worker_ips }}
+    - name: Set environment variables for deployment at cluster
       set_stats:
         data:
           cluster_ips: "{{ cluster_ips }}"
@@ -111,11 +121,17 @@
     
 - name: Deploy worker components for full topology
   hosts: "{{ group_workers_full }}"
-  roles:
-    - setup-net-manager
-    - setup-node-engine
+#  roles:
+#    - setup-net-manager
+#    - setup-node-engine
   vars:
     repo: "{{ oak_repo_link }}"
   environment:
     CLUSTER_IP: "{{ cluster_ips[inventory_hostname] }}"
     NODE_IP: "{{ worker_ips[inventory_hostname] }}"
+  tasks:
+    - name: Print the cluster and worker IPs at worker
+      debug:
+        msg: |
+          Cluster IPs: {{ cluster_ips }}
+          Worker IPs: {{ worker_ips }}
