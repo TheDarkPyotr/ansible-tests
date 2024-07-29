@@ -94,7 +94,9 @@
   tasks:
     - name: Set environment variables for deployment cluster
       set_fact:
+        #cluster_host_ranges: "{{ hostvars['localhost'].cluster_host_ranges }}"
         cluster_host_ranges: "{{ hostvars['localhost'].cluster_host_ranges.ansible_facts.cluster_host_ranges }}"
+        #worker_map: "{{ hostvars['localhost'].worker_map }}"
         worker_map: "{{ hostvars['localhost'].worker_map.results[0].ansible_facts.worker_map }}"
 
     - name: Print the cluster and worker IPs at cluster
@@ -114,19 +116,28 @@
   tasks:
     - name: Set environment variables for deployment node
       set_fact:
+        #cluster_host_ranges: "{{ hostvars['localhost'].cluster_host_ranges }}"
         cluster_host_ranges: "{{ hostvars['localhost'].cluster_host_ranges.ansible_facts.cluster_host_ranges }}"
+        #worker_map: "{{ hostvars['localhost'].worker_map }}"
         worker_map: "{{ hostvars['localhost'].worker_map.results[0].ansible_facts.worker_map }}"
         node_ip: "{{ ansible_host }}"
+    - name: Print node IP
+      debug:
+        msg: "Node IP: {{ node_ip }}"
 
-    - name: Set the node IP and cluster IP
+    - name: Set cluster ID
       set_fact:
         cluster_id: >-
-          {%- set found_cluster_id = worker_map | dict2items | selectattr('value', 'search', node_ip) | map(attribute='key') | first -%}
-          {%- if found_cluster_id is not none -%}
-            {{ found_cluster_id }}
+          {%- set worker_map_items = worker_map | dict2items -%}
+          {%- set filtered = worker_map_items | selectattr('value', 'search', node_ip) -%}
+          {%- if filtered | length > 0 -%}
+            {%- set first_match = filtered | map(attribute='key') | first -%}
+            {{ first_match }}
           {%- else -%}
             "undefined"
           {%- endif -%}
+    - name: Set cluster IP
+      set_fact:
         cluster_ip: >-
           {%- if cluster_id != 'undefined' and cluster_id in cluster_host_ranges -%}
             {{ cluster_host_ranges[cluster_id] }}
