@@ -57,6 +57,18 @@
         msg: |
           Cluster Host Map: {{ cluster_host_ranges }}
           Worker Map: {{ worker_map }}
+    - name: Set environment variables for deployment
+      set_fact:
+        cluster_ips: "{{ cluster_host_ranges }}"
+        worker_ips: "{{ worker_map }}"
+
+    - name: Print cluster and worker IPs
+      debug:
+        msg: |
+          Cluster IPs: {{ cluster_ips }}
+          Worker IPs: {{ worker_ips }}
+
+############# Deploy 3-tier components          
 - name: Deploy root component for full topology
   hosts: "{{ group_root_full }}"
   vars:
@@ -76,6 +88,8 @@
         path: "{{ oak_repo_path }}"
         branch: "{{ oak_repo_version }}"
     - role: run-cluster
+
+    
 - name: Deploy worker components for full topology
   hosts: "{{ group_workers_full }}"
   roles:
@@ -83,3 +97,6 @@
     - setup-node-engine
   vars:
     repo: "{{ oak_repo_link }}"
+  environment:
+    CLUSTER_IP: "{{ cluster_ips[inventory_hostname] }}"
+    NODE_IP: "{{ worker_ips[inventory_hostname] }}"
