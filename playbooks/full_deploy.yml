@@ -23,7 +23,7 @@
         # Number of clusters
         num_clusters: "{{ clusters | length }}"
         # Create a list of cluster IDs
-        cluster_ids: "{{ clusters | map(attribute='cluster_number') | list }}"
+        cluster_ids: "{{ topology_desc.topology_descriptor.cluster_list | map(attribute='cluster_number') | list }}"
         
         # Calculate the ranges of cluster and worker hosts
         cluster_host_ranges: "{{ cluster_ids | zip(reserved_hosts[1:(1 + (num_clusters | int))]) | items2dict }}"
