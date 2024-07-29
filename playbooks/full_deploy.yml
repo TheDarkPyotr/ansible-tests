@@ -13,22 +13,19 @@
               group_root_full: {{ group_root_full }}
               group_clusters_full: {{ group_clusters_full }}
               group_workers_full: {{ group_workers_full }}
-    - name: Parse JSON topology data
-      set_fact:
-        topology: "{{ topology_desc }}"
 
     - name: Print the parsed topology data
       debug:
-        msg: "{{ topology }}"
-    
+        msg: "{{ topology_desc }}"
+
     - name: Set facts for cluster and worker associations
       set_fact:
         # Extract clusters information
-        clusters: "{{ topology.topology_descriptor.cluster_list }}"
+        clusters: "{{ topology_desc.topology_descriptor.cluster_list }}"
         # Number of clusters
         num_clusters: "{{ clusters | length }}"
         # Create a list of cluster IDs
-        cluster_ids: "{{ topology.topology_descriptor.cluster_list | map(attribute='cluster_number') | list }}"
+        cluster_ids: "{{ topology_desc.topology_descriptor.cluster_list | map(attribute='cluster_number') | list }}"
         
         # Calculate the ranges of cluster and worker hosts
         cluster_host_ranges: "{{ cluster_ids | zip(reserved_hosts[1:(1 + (num_clusters | int))]) | items2dict }}"
