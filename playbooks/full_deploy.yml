@@ -24,10 +24,11 @@
     - name: Set cluster IDs
       set_fact:
         cluster_ids: "{{ topology_desc.topology_descriptor.cluster_list | map(attribute='cluster_number') | list }}"
+    - name: Cast num_clusters to an integer
+      set_fact:
+        num_clusters_int: "{{ num_clusters | int }}"
     - name: Set cluster host ranges 
       set_fact:
-        # Convert num_clusters to integer explicitly
-        num_clusters_int: "{{ num_clusters | int }}"
         # Create the cluster host ranges dictionary
         cluster_host_ranges: >
           {{
