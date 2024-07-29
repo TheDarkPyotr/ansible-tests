@@ -94,8 +94,9 @@
   tasks:
     - name: Set environment variables for deployment cluster
       set_fact:
-        cluster_host_ranges: "{{ hostvars['localhost'].cluster_host_ranges}}"
-        worker_map: "{{ hostvars['localhost'].worker_map }}"
+        cluster_host_ranges: "{{ hostvars['localhost'].cluster_host_ranges.ansible_facts.cluster_host_ranges }}"
+        worker_map: "{{ hostvars['localhost'].worker_map.results[0].ansible_facts.worker_map }}"
+
 
     - name: Print the cluster and worker IPs at cluster
       debug:
@@ -114,8 +115,9 @@
   tasks:
     - name: Set environment variables for deployment node
       set_fact:
-        cluster_host_ranges: "{{ hostvars['localhost'].cluster_host_ranges}}"
-        worker_map: "{{ hostvars['localhost'].worker_map }}"
+        cluster_host_ranges: "{{ hostvars['localhost'].cluster_host_ranges.ansible_facts.cluster_host_ranges }}"
+        worker_map: "{{ hostvars['localhost'].worker_map.results[0].ansible_facts.worker_map }}"
+
 
     - name: Print the cluster and worker IPs at node 
       debug:
