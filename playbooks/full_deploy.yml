@@ -114,7 +114,7 @@
       set_fact:
         cluster_host_ranges: "{{ hostvars['localhost'].cluster_host_ranges.ansible_facts.cluster_host_ranges }}"
         worker_map: "{{ hostvars['localhost'].worker_map.results[0].ansible_facts.worker_map }}"
-        node_ip: "{{ ansible_host }}"  # Use ansible_host to get the IP of the current node
+        node_ip: "{{ ansible_host }}"
         cluster_ip: >-
           {%- set cluster_id = worker_map | selectattr('0', 'search', node_ip) | map('first') | first -%}
           {%- if cluster_id is defined -%}
@@ -129,19 +129,5 @@
           Node IP: "{{ node_ip }}"
           Cluster IP: "{{ cluster_ip }}"
           Cluster Host Ranges: "{{ cluster_host_ranges }}"
-          Worker Map: "{{ worker_map }}"
-
-    - name: Deploy worker components with roles
-      include_role:
-        name: setup-net-manager
-      vars:
-        nodeIP: "{{ node_ip }}"
-        clusterIP: "{{ cluster_ip }}"
-
-    - name: Deploy node engine with roles
-      include_role:
-        name: setup-node-engine
-      vars:
-        nodeIP: "{{ node_ip }}"
-        clusterIP: "{{ cluster_ip }}"
-
+          Worker Map: "{{ worker_map }}"}}"
+          Worker IPs: "{{ worker_map }}"
