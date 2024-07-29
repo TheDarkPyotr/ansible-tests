@@ -90,8 +90,8 @@
     - name: Print the cluster and worker IPs at root 
       debug:
         msg: |
-          Cluster IPs: {{ cluster_ips }}
-          Worker IPs: {{ worker_ips }}
+          Cluster IPs: "{{ cluster_ips }}"
+          Worker IPs: "{{ worker_ips }}"
     - name: Set environment variables for deployment at root
       set_stats:
         data:
