@@ -85,6 +85,12 @@
   roles:
     - ensure-oakestra-repo-is-cloned
     - run-root
+  tasks:
+    - name: Set environment variables for deployment
+      set_stats:
+        data:
+          cluster_ips: "{{ cluster_host_ranges }}"
+          worker_ips: "{{ worker_map }}"
 
 - name: Deploy cluster components for full topology
   hosts: "{{ group_clusters_full }}"
@@ -95,6 +101,12 @@
         path: "{{ oak_repo_path }}"
         branch: "{{ oak_repo_version }}"
     - role: run-cluster
+  tasks:
+    - name: Set environment variables for deployment
+      set_stats:
+        data:
+          cluster_ips: "{{ cluster_host_ranges }}"
+          worker_ips: "{{ worker_map }}"
 
     
 - name: Deploy worker components for full topology
