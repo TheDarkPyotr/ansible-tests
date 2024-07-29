@@ -20,13 +20,15 @@
 
     - name: Set facts for cluster and worker associations
       set_fact:
-        # Extract clusters information
         clusters: "{{ topology_desc.topology_descriptor.cluster_list }}"
-        # Create a list of cluster IDs
+    - name: Set cluster IDs
+      set_fact:
         cluster_ids: "{{ topology_desc.topology_descriptor.cluster_list | map(attribute='cluster_number') | list }}"
-        
-        # Calculate the ranges of cluster and worker hosts
+    - name: Set cluster host ranges 
+      set_fact:
         cluster_host_ranges: "{{ cluster_ids | zip(reserved_hosts[1:(1 + (num_clusters | int))]) | items2dict }}"
+    - name: Set worker ranges
+      set_fact:
         worker_ranges: "{{ reserved_hosts[(1 + (num_clusters | int)):(1 + (num_clusters | int) + (num_nodes | int))] }}"
 
     - name: Create mappings for clusters and workers
