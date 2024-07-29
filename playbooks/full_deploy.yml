@@ -116,10 +116,10 @@
       set_fact:
         cluster_host_ranges: "{{ hostvars['localhost'].cluster_host_ranges.ansible_facts.cluster_host_ranges }}"
         worker_map: "{{ hostvars['localhost'].worker_map.results[0].ansible_facts.worker_map }}"
-    
+        node_ip: "{{ ansible_host }}"
+
     - name: Set the node IP and cluster IP
       set_fact:
-        node_ip: "{{ ansible_host }}"  # Use ansible_host to get the IP of the current node
         cluster_id: >-
           {%- set found_cluster_id = worker_map | dict2items | selectattr('value', 'search', node_ip) | map(attribute='key') | first -%}
           {%- if found_cluster_id is not none -%}
