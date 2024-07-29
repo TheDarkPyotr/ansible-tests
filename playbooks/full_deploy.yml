@@ -1,6 +1,9 @@
 - name: Execute Full Deploy template
   hosts: localhost
   gather_facts: false
+  vars:
+    repo: "https://github.com/TheDarkPyotr/ansible-tests"
+    branch: "main"  
   tasks:
     - name: Print group assignments for verification
       debug:
@@ -56,8 +59,33 @@
     - name: Print the cluster and worker associations
       debug:
         msg: |
-          Cluster Host Map: {{ cluster_host_ranges }}
-          Worker Map: {{ worker_map }}
+          Cluster Host Map: {{ cluster_host_ranges.ansible_facts.cluster_host_ranges }}
+          Worker Map: {{ worker_map.results[0].ansible_facts.worker_map }}
+
+    - name: Create JSON file with cluster_host_ranges and worker_map
+      copy:
+        content: |
+          {
+            "cluster_host_ranges": {{ cluster_host_ranges.ansible_facts.cluster_host_ranges  }},
+            "worker_map": {{ worker_map.results[0].ansible_facts.worker_map  }}
+          }
+        dest: /tmp/input_data.json
+
+    - name: Prepare JSON string for the Python script
+      set_fact:
+        json_input: "{{ {'cluster_host_ranges': cluster_host_ranges.ansible_facts.cluster_host_ranges, 'worker_map': worker_map.results[0].ansible_facts.worker_map} | to_json }}"
+
+    - include_tasks: support_execution.yml
+      vars:
+        script_name: "match_clusters_nodes.py"
+        script_args: "{{ json_input }}"
+
+    - name: Retrieve and display the script result
+      debug:
+        msg: "The script result from support script playbook is {{ hostvars['localhost'].script_result }}"
+
+
+
 
 ############# Deploy 3-tier components          
 - name: Deploy root component for full topology
@@ -116,36 +144,15 @@
   tasks:
     - name: Set environment variables for deployment node
       set_fact:
-        #cluster_host_ranges: "{{ hostvars['localhost'].cluster_host_ranges }}"
-        cluster_host_ranges: "{{ hostvars['localhost'].cluster_host_ranges.ansible_facts.cluster_host_ranges }}"
-        #worker_map: "{{ hostvars['localhost'].worker_map }}"
-        worker_map: "{{ hostvars['localhost'].worker_map.results[0].ansible_facts.worker_map }}"
-        node_ip: "{{ inventory_hostname }}"
-    - name: Print node IP
-      debug:
-        msg: "Node IP: {{ node_ip }}"
+        cluster_node_map: "{{ hostvars['localhost'].script_result }}"
 
-    - name: Set cluster ID
-      set_fact:
-        cluster_id: >-
-          {%- set cluster_id = worker_map | dict2items | selectattr('value', 'search', node_ip) | map(attribute='key') | first -%}
-          {%- if cluster_id is not none -%}
-            {{ cluster_id }}
-          {%- else -%}
-            "undefined"
-          {%- endif -%}
-    - name: Set node hostname
-      set_fact:
-        cluster_hostname: >-
-          {%- if cluster_id != 'undefined' and cluster_id in cluster_host_ranges -%}
-            {{ cluster_host_ranges[cluster_id] }}
-          {%- else -%}
-            "undefined"
-          {%- endif -%}
+    - name: Print cluster_node_map
+      debug:
+        msg: "{{ cluster_node_map }}"
 
     - name: Print node and parent cluster information
       debug:
-        msg: "Hey, I'm node {{ node_ip }} and my parent is cluster {{ cluster_hostname }}"
+        msg: "Hey, I'm node {{ inventory_hostname }} and my parent is node {{ cluster_node_map[inventory_hostname] }}"
 
     - name: Print the cluster and worker IPs at node 
       debug:

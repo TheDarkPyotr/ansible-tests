@@ -4,9 +4,11 @@ import sys
 
 
 def main():
-    input_data = json.load(sys.stdin)
-    cluster_host_ranges = input_data["cluster_host_ranges"]
-    worker_map = input_data["worker_map"]
+    # Read the JSON string from stdin
+    input_data = json.loads(sys.stdin.read())
+
+    cluster_host_ranges = input_data.get("cluster_host_ranges", {})
+    worker_map = input_data.get("worker_map", {})
 
     node_to_cluster = {}
     for cluster_id, nodes in worker_map.items():
