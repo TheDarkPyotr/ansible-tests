@@ -33,6 +33,7 @@
       set_fact:
         cluster_host_ranges: >
           {{ dict(cluster_ids | zip(reserved_hosts[1:(1 | int + (num_clusters_int | int))]) | list) }}
+      register: cluster_host_ranges
 
     - name: Set worker ranges
       set_fact:
@@ -50,18 +51,13 @@
         start_index: "{{ (1 | int + num_clusters_int | int) + ((item.cluster_number | int - 1 | int) * item.number_of_nodes | int) }}"
         end_index: "{{ (start_index | int) + (item.number_of_nodes | int) }}"
         workers: "{{ reserved_hosts[(start_index | int ):(end_index | int)] }}"
+      register: worker_map
 
     - name: Print the cluster and worker associations
       debug:
         msg: |
           Cluster Host Map: {{ cluster_host_ranges }}
           Worker Map: {{ worker_map }}
-
-    - name: Set environment variables for deployment
-      set_stats:
-        data:
-          cluster_host_ranges: "{{ cluster_host_ranges }}"
-          worker_map: "{{ worker_map }}"
 
 ############# Deploy 3-tier components          
 - name: Deploy root component for full topology
@@ -76,8 +72,8 @@
   tasks:
     - name: Set environment variables for deployment root
       set_fact:
-        cluster_host_ranges: "{{ cluster_host_ranges }}"
-        worker_map: "{{ worker_map }}"
+        cluster_host_ranges: "{{ hostvars['localhost'].cluster_host_ranges.ansible_facts.cluster_host_ranges }}"
+        worker_map: "{{ hostvars['localhost'].worker_map.results[0].ansible_facts.worker_map }}"
 
     - name: Print the cluster and worker IPs at root 
       debug:
@@ -96,16 +92,16 @@
 #        branch: "{{ oak_repo_version }}"
 #    - role: run-cluster
   tasks:
+    - name: Set environment variables for deployment cluster
+      set_fact:
+        cluster_host_ranges: "{{ hostvars['localhost'].cluster_host_ranges}}"
+        worker_map: "{{ hostvars['localhost'].worker_map }}"
+
     - name: Print the cluster and worker IPs at cluster
       debug:
         msg: |
-          Cluster IPs: {{ cluster_host_ranges }}
-          Worker IPs: {{ worker_map }}
-    - name: Set environment variables for deployment at cluster
-      set_stats:
-        data:
-          cluster_host_ranges: "{{ cluster_host_ranges }}"
-          worker_map: "{{ worker_map }}"
+          Cluster IPs: "{{ cluster_host_ranges }}"
+          Worker IPs: "{{ worker_map }}"
     
 - name: Deploy worker components for full topology
   hosts: "{{ group_workers_full }}"
@@ -114,12 +110,15 @@
 #    - setup-node-engine
   vars:
     repo: "{{ oak_repo_link }}"
-  environment:
-    CLUSTER_IP: "{{ cluster_host_ranges[inventory_hostname] }}"
-    NODE_IP: "{{ worker_map[inventory_hostname] }}"
+
   tasks:
-    - name: Print the cluster and worker IPs at worker
+    - name: Set environment variables for deployment node
+      set_fact:
+        cluster_host_ranges: "{{ hostvars['localhost'].cluster_host_ranges}}"
+        worker_map: "{{ hostvars['localhost'].worker_map }}"
+
+    - name: Print the cluster and worker IPs at node 
       debug:
         msg: |
-          Cluster IPs: {{ cluster_host_ranges }}
-          Worker IPs: {{ worker_map }}
+          Cluster IPs: "{{ cluster_host_ranges }}"
+          Worker IPs: "{{ worker_map }}"
