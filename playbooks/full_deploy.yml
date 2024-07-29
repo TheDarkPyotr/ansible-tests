@@ -26,7 +26,15 @@
         cluster_ids: "{{ topology_desc.topology_descriptor.cluster_list | map(attribute='cluster_number') | list }}"
     - name: Set cluster host ranges 
       set_fact:
-        cluster_host_ranges: "{{ cluster_ids | zip(reserved_hosts[1:(1 + num_clusters)]) | list | items2dict }}"
+        # Convert num_clusters to integer explicitly
+        num_clusters_int: "{{ num_clusters | int }}"
+        # Create the cluster host ranges dictionary
+        cluster_host_ranges: >
+          {{
+            dict(
+              cluster_ids | zip(reserved_hosts[1:(1 + num_clusters_int)]) | list
+            )
+          }}
 
     - name: Set worker ranges
       set_fact:
