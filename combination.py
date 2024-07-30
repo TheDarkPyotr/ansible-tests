@@ -21,7 +21,7 @@ def remove_sla_descriptor_subfields(json_str):
 def preprocess_json_string(json_str):
     """Preprocess JSON string to be parsed safely."""
     # Convert single quotes to double quotes
-    # json_str = convert_single_to_double_quotes(json_str)
+    json_str = convert_single_to_double_quotes(json_str)
 
     # Remove all subfields of 'sla_descriptor'
     # json_str = remove_sla_descriptor_subfields(json_str)
