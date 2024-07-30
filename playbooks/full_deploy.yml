@@ -123,8 +123,8 @@
   tasks:
     - name: Set environment variables for deployment node
       set_fact:
-        cluster_map: "{{ hostvars['localhost'].cluster_map}}"
-        worker_map: "{{ hostvars['localhost'].worker_map }}"
+        cluster_map: "{{ hostvars['localhost'].cluster_map.ansible_facts.cluster_map}}"
+        worker_map: "{{ hostvars['localhost'].worker_map.ansible_facts.worker_map }}"
 
     - name: Print the cluster and worker IPs at node
       debug:
