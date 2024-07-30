@@ -69,7 +69,7 @@ def main():
     # result = process_json_string(input_data_str)
 
     # Print the result
-    print(result)
+    print(input_data_str)
 
 
 if __name__ == "__main__":
