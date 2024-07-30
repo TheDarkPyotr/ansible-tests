@@ -175,16 +175,11 @@
       vars:
         nodeIP: "{{ cluster_node_ip }}"
         clusterIP: "{{ cluster_node_ip }}"
-        oak_net_repo_link: "{{ oak_net_repo_link }}"
-        oak_net_repo_path: "{{ oak_net_repo_path }}"
-        oak_net_repo_version: "{{ oak_net_repo_version }}"
+
 
     - name: Include role to setup node engine
       include_role:
         name: setup-node-engine
       vars:
-        oak_repo_link: "{{ oak_repo_link }}"
-        oak_repo_path: "{{ oak_repo_path }}"
-        oak_repo_version: "{{ oak_repo_version }}"
         nodeIP: "{{ cluster_node_ip }}"
         clusterIP: "{{ cluster_node_ip }}"
