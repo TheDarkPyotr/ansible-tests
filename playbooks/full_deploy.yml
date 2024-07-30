@@ -175,6 +175,9 @@
       vars:
         nodeIP: "{{ cluster_node_ip }}"
         clusterIP: "{{ cluster_node_ip }}"
+        path: "{{ oak_repo_path }}"
+        repo: "{{ oak_repo_link }}"
+        branch: "{{ oak_repo_version }}"
 
 
     - name: Include role to setup node engine
@@ -183,3 +186,6 @@
       vars:
         nodeIP: "{{ cluster_node_ip }}"
         clusterIP: "{{ cluster_node_ip }}"
+        path: "{{ oak_repo_path }}"
+        repo: "{{ oak_repo_link }}"
+        branch: "{{ oak_repo_version }}"
