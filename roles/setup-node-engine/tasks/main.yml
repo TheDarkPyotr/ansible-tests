@@ -14,9 +14,9 @@
   debug:
     msg: "clusterIP: {{ clusterIP }}"
 
-- name: Print workerIP
+- name: Print nodeIP
   debug:
-    msg: "workerIP: {{ workerIP }}"
+    msg: "workerIP: {{ nodeIP }}"
 
 
 - import_tasks: compile-node-engine.yml
