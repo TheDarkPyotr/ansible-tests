@@ -5,14 +5,8 @@
     state: directory
 
 - name: Fetch all tags from remote
-  block:
-    - ansible.builtin.command:
-        cmd: git fetch --tags --force
-        chdir: "{{ path }}"
-  ansible.builtin.command:
-    cmd: git fetch --tags
-    chdir: "{{ path }}"
-  ignore_errors: yes  
+  cmd: git fetch --tags --force #"{{ repo }}"
+  path: "{{ path }}"
 
 
 - name: Ensure {{ repo }} Repo is cloned
