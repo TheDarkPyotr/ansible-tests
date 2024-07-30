@@ -177,7 +177,7 @@
         clusterIP: "{{ cluster_node_ip }}"
         oak_net_repo_link: "{{ oak_net_repo_link }}"
         oak_net_repo_path: "{{ oak_net_repo_path }}"
-        oak_net_repo_version: "{{ oak_net_repo_version}}"
+        oak_net_repo_version: "{{ oak_net_repo_version }}"
 
     - name: Include role to setup node engine
       include_role:
