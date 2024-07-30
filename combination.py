@@ -77,6 +77,7 @@ def main():
     # Read the entire JSON string from stdin
     input_data_str = sys.stdin.read().strip()
 
+    input_data_str = json.dumps(input_data_str, indent=2)
     # Process the JSON string
     result = process_json_string(input_data_str)
 
