@@ -117,8 +117,8 @@
 #  roles:
 #    - setup-net-manager
 #    - setup-node-engine
-  vars:
-    repo: "{{ oak_repo_link }}"
+#  vars:
+#    repo: "{{ oak_repo_link }}"
 
   tasks:
     - name: Set environment variables for deployment node
@@ -136,9 +136,7 @@
     - name: Print cluster_node_map
       debug:
         msg: "{{ cluster_map }}"
-        
-
-
+      
     - name: Determine cluster for current worker and print message
       debug:
         msg: >
@@ -161,10 +159,19 @@
       set_fact:
         cluster_node_ip: "{{ hostvars[cluster_node_name].ansible_host | default(hostvars[cluster_node_name].ansible_ssh_host, 'IP address not found') }}"
 
+    - name: Fail if cluster_node_ip is not found
+      fail:
+        msg: "IP address not found for cluster node {{ cluster_node_name }}"
+      when: cluster_node_ip == "IP address not found"
+
+    
     - name: Print cluster node IP for worker
       debug:
         msg: "Cluster node IP for worker {{ inventory_hostname }} is {{ cluster_node_ip }}"
 
-    - name: Print cluster node name for worker
-      debug:
-        msg: "Cluster node name for worker {{ inventory_hostname }} is {{ cluster_node_name }}"
+  roles:
+    - setup-net-manager
+    - setup-node-engine
+  vars:
+    clusterIP: "{{ cluster_node_ip }}"
+    nodeIP: "{{ ansible_host }}"
