@@ -28,7 +28,7 @@
 
       - name: Display script_args
         debug:
-          msg: "script_args is {{ script_args | from_json}}"
+          msg: "script_args is {{ script_args }}"
 
 
       - name: Run the Python script to validate JSON in the cloned repository
