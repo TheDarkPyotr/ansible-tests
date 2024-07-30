@@ -5,24 +5,26 @@ import re
 
 def convert_single_to_double_quotes(json_str):
     """Convert single quotes to double quotes in a JSON string."""
+    # Replace single quotes with double quotes except when they are escaped
     json_str = re.sub(r"(?<!\\)'", '"', json_str)
     return json_str
 
 
-def sanitize_microservices(json_str):
-    """Remove or sanitize the 'cmd' field in 'microservices'."""
-    # Regular expression to find and remove the 'cmd' field from 'microservices'
-    sanitized_str = re.sub(r'("cmd"\s*:\s*\[[^\]]*\])', '"cmd": []', json_str)
-    return sanitized_str
+def remove_sla_descriptor_subfields(json_str):
+    """Remove all subfields of 'sla_descriptor'."""
+    # Regular expression to find and replace the entire 'sla_descriptor' object with '{}'
+    pattern = r'("sla_descriptor"\s*:\s*\{[^}]*\})'
+    # Replace with a minimal 'sla_descriptor' object
+    return re.sub(pattern, '"sla_descriptor": {}', json_str)
 
 
 def preprocess_json_string(json_str):
     """Preprocess JSON string to be parsed safely."""
     # Convert single quotes to double quotes
-    json_str = convert_single_to_double_quotes(json_str)
+    # json_str = convert_single_to_double_quotes(json_str)
 
-    # Sanitize the 'microservices' field
-    json_str = sanitize_microservices(json_str)
+    # Remove all subfields of 'sla_descriptor'
+    # json_str = remove_sla_descriptor_subfields(json_str)
 
     return json_str
 
@@ -53,6 +55,10 @@ def process_json_string(json_str):
     """Process JSON string to compute worker-cluster association."""
     # Preprocess the JSON string
     json_str = preprocess_json_string(json_str)
+
+    # Debug: Print the preprocessed JSON string
+    print("Preprocessed JSON string:")
+    print(json_str)
 
     # Load JSON data
     try:
