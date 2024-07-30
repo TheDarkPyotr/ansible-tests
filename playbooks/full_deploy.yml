@@ -87,7 +87,7 @@
       debug:
         msg: |
           Cluster IPs: "{{ cluster_map }}"
-          Worker IPs: "{{ worker_map }}"
+          Worker IPs: "{{ worker_map }}"    
 
 
 - name: Deploy cluster components for full topology
@@ -110,6 +110,35 @@
         msg: |
           Cluster IPs: "{{ cluster_map }}"
           Worker IPs: "{{ worker_map }}"
+
+    - name: Retrieve root hostname from group_root_full
+      set_fact:
+        root_name: "{{ group_root_full[0] }}"
+
+    - name: Retrieve root IP address
+      set_fact:
+        root_ip: "{{ hostvars[root_name].ansible_host | default(hostvars[root_name].ansible_ssh_host, 'IP address not found') }}"
+
+    - name: Print root IP address for cluster
+      debug:
+        msg: "Root IP address for {{ inventory_hostname }} is {{ root_ip }}"
+
+    - name: Include role to ensure cloned repo
+      include_role:
+        name: ensure-oakestra-repo-is-cloned
+      vars:
+        path: "{{ oak_repo_path }}"
+        repo: "{{ oak_repo_link }}"
+        branch: "{{ oak_repo_version }}"
+
+    - name: Include role to run cluster component
+      include_role:
+        name: run-cluster
+      vars:
+        rootIP: "{{ root_ip }}"
+        clusterName: "{{ inventory_hostname }}"
+        clusterLocation: ""
+
 
     
 - name: Deploy worker components for full topology
