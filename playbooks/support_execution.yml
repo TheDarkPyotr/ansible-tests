@@ -22,15 +22,20 @@
           recurse: yes
         register: files
 
+      - name: Set scrpt_args to json
+        set_fact:
+          script_args: "{{ script_args | to_json }}"
+
       - name: Display script_args
         debug:
-          msg: "script_args is {{ script_args }}"
+          msg: "script_args is {{ script_args | from_json}}"
+
 
       - name: Run the Python script to validate JSON in the cloned repository
         ansible.builtin.command:  
           cmd: >
             python3 "{{ temp_repo_dir.path }}/{{ script_name }}"
-          stdin: "{{ script_args }}"
+          stdin: "{{ script_args | from_json }}"
         register: result_output
 
       - name: Set environment variable with validation result

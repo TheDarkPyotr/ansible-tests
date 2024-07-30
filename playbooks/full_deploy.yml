@@ -16,6 +16,16 @@
       debug:
         msg: "{{ topology_desc }}"
 
+    - name: Prepare JSON string for the Python script
+      set_fact:
+        json_input: "{{ {'topology_descriptor': topology_desc, 'group_clusters_full': group_clusters_full, 'group_workers_full': group_workers_full } | to_json }}"
+
+    - include_tasks: support_execution.yml
+      vars:
+        script_name: "combination.py"
+        script_args: "{{ json_input }}"
+
+
     - name: Set topology_desc as JSON
       set_fact:
         topology_desc: "{{ topology_desc | to_json }}"
@@ -38,51 +48,21 @@
           {{ dict(cluster_ids | zip(reserved_hosts[1:(1 | int + (num_clusters_int | int))]) | list) }}
       register: cluster_host_ranges
 
-    - name: Set worker ranges
+    - name: Set worker map
       set_fact:
-        worker_ranges: "{{ reserved_hosts[(1 + (num_clusters | int)):(1 + (num_clusters | int) + (num_nodes | int))] }}"
-
-    - name: Create an empty worker map
-      set_fact:
-        worker_map: {}
-
-    - name: Associate workers with clusters
-      set_fact:
-        worker_map: "{{ worker_map | combine({ (item.cluster_number): workers }) }}"
-      loop: "{{ clusters }}"
-      vars:
-        start_index: "{{ (1 | int + num_clusters_int | int) + ((item.cluster_number | int - 1 | int) * item.number_of_nodes | int) }}"
-        end_index: "{{ (start_index | int) + (item.number_of_nodes | int) }}"
-        workers: "{{ reserved_hosts[(start_index | int ):(end_index | int)] }}"
+        worker_map: "{{ hostvars['localhost'].script_result }}"
       register: worker_map
+
+    - name: Set cluster map
+      set_fact:
+        cluster_map: "{{ cluster_host_ranges.ansible_facts.cluster_host_ranges }}"
+      register: cluster_map
 
     - name: Print the cluster and worker associations
       debug:
         msg: |
           Cluster Host Map: {{ cluster_host_ranges.ansible_facts.cluster_host_ranges }}
-          Worker Map: {{ worker_map.results[0].ansible_facts.worker_map }}
-
-    - name: Create JSON file with cluster_host_ranges and worker_map
-      copy:
-        content: |
-          {
-            "cluster_host_ranges": {{ cluster_host_ranges.ansible_facts.cluster_host_ranges  }},
-            "worker_map": {{ worker_map.results[0].ansible_facts.worker_map  }}
-          }
-        dest: /tmp/input_data.json
-
-    - name: Prepare JSON string for the Python script
-      set_fact:
-        json_input: "{{ {'cluster_host_ranges': cluster_host_ranges.ansible_facts.cluster_host_ranges, 'worker_map': worker_map.results[0].ansible_facts.worker_map} | to_json }}"
-
-    - include_tasks: support_execution.yml
-      vars:
-        script_name: "match_clusters_nodes.py"
-        script_args: "{{ json_input }}"
-
-    - name: Retrieve and display the script result
-      debug:
-        msg: "The script result from support script playbook is {{ hostvars['localhost'].script_result }}"
+          Worker Map: {{ worker_map }}
 
 
 
@@ -100,13 +80,13 @@
   tasks:
     - name: Set environment variables for deployment root
       set_fact:
-        cluster_host_ranges: "{{ hostvars['localhost'].cluster_host_ranges.ansible_facts.cluster_host_ranges }}"
-        worker_map: "{{ hostvars['localhost'].worker_map.results[0].ansible_facts.worker_map }}"
+        cluster_map: "{{ hostvars['localhost'].cluster_map.ansible_facts.cluster_map }}"
+        worker_map: "{{ hostvars['localhost'].worker_map.ansible_facts.worker_map }}"
 
     - name: Print the cluster and worker IPs at root 
       debug:
         msg: |
-          Cluster IPs: "{{ cluster_host_ranges }}"
+          Cluster IPs: "{{ cluster_map }}"
           Worker IPs: "{{ worker_map }}"
 
 
@@ -122,16 +102,15 @@
   tasks:
     - name: Set environment variables for deployment cluster
       set_fact:
-        #cluster_host_ranges: "{{ hostvars['localhost'].cluster_host_ranges }}"
-        cluster_host_ranges: "{{ hostvars['localhost'].cluster_host_ranges.ansible_facts.cluster_host_ranges }}"
-        #worker_map: "{{ hostvars['localhost'].worker_map }}"
-        worker_map: "{{ hostvars['localhost'].worker_map.results[0].ansible_facts.worker_map }}"
+        cluster_map: "{{ hostvars['localhost'].cluster_map.ansible_facts.cluster_map }}"
+        worker_map: "{{ hostvars['localhost'].worker_map.ansible_facts.worker_map }}"
 
     - name: Print the cluster and worker IPs at cluster
       debug:
         msg: |
-          Cluster IPs: "{{ cluster_host_ranges }}"
+          Cluster IPs: "{{ cluster_map }}"
           Worker IPs: "{{ worker_map }}"
+
     
 - name: Deploy worker components for full topology
   hosts: "{{ group_workers_full }}"
@@ -144,18 +123,28 @@
   tasks:
     - name: Set environment variables for deployment node
       set_fact:
-        cluster_node_map: "{{ hostvars['localhost'].script_result }}"
+        cluster_map: "{{ hostvars['localhost'].cluster_map}}"
+        worker_map: "{{ hostvars['localhost'].worker_map }}"
+
+    - name: Print the cluster and worker IPs at node
+      debug:
+        msg: |
+          Cluster IPs: "{{ cluster_map }}"
+          Worker IPs: "{{ worker_map }}"
+
 
     - name: Print cluster_node_map
       debug:
-        msg: "{{ cluster_node_map }}"
+        msg: "{{ cluster_map }}"
 
-    - name: Print node and parent cluster information
-      debug:
-        msg: "Hey, I'm node {{ inventory_hostname }} and my parent is node {{ cluster_node_map[inventory_hostname] }}"
 
-    - name: Print the cluster and worker IPs at node 
+    - name: Determine cluster for current worker and print message
       debug:
-        msg: |
-          Cluster IPs: "{{ cluster_host_ranges }}"
-          Worker IPs: "{{ worker_map }}"
+        msg: >
+          {% set cluster_id = worker_map | dict2items | selectattr('value', 'contains', inventory_hostname) | map(attribute='key') | first %}
+          {% if cluster_id is defined %}
+            {% set cluster_node_name = cluster_map[(cluster_id | int )] %}
+            Hey, I'm host {{ inventory_hostname }} and I'm inside cluster of node {{ cluster_node_name }}
+          {% else %}
+            Cluster information not found for host {{ inventory_hostname }}
+          {% endif %}
