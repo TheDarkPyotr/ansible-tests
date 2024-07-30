@@ -138,13 +138,17 @@
         msg: "{{ cluster_map }}"
 
 
-    - name: Determine cluster for current worker and print message
-      debug:
-        msg: >
-          {% set cluster_id = worker_map | dict2items | selectattr('value', 'contains', inventory_hostname) | map(attribute='key') | first %}
+    - name: Set cluster node name based on current worker
+      set_fact:
+        cluster_id: >
+          {{ worker_map | dict2items | selectattr('value', 'contains', inventory_hostname) | map(attribute='key') | first }}
+        cluster_node_name: >
           {% if cluster_id is defined %}
-            {% set cluster_node_name = cluster_map[(cluster_id | int )] %}
-            Hey, I'm host {{ inventory_hostname }} and I'm inside cluster of node {{ cluster_node_name }}
+            {{ cluster_map[cluster_id | int] }}
           {% else %}
-            Cluster information not found for host {{ inventory_hostname }}
+            'Cluster information not found'
           {% endif %}
+
+    - name: Print node and parent cluster information
+      debug:
+        msg: "Hey, I'm node {{ inventory_hostname }} and I'm inside cluster of node {{ cluster_node_name }}"
