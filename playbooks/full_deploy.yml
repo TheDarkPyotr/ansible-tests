@@ -157,6 +157,14 @@
       set_fact:
         cluster_node_name: "{{ cluster_map[(cluster_id | int)] }}"
 
+    - name: Retrieve IP address of cluster node
+      set_fact:
+        cluster_node_ip: "{{ hostvars[cluster_node_name].ansible_host | default(hostvars[cluster_node_name].ansible_ssh_host, 'IP address not found') }}"
+
+    - name: Print cluster node IP for worker
+      debug:
+        msg: "Cluster node IP for worker {{ inventory_hostname }} is {{ cluster_node_ip }}"
+
     - name: Print cluster node name for worker
       debug:
         msg: "Cluster node name for worker {{ inventory_hostname }} is {{ cluster_node_name }}"
