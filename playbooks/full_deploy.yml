@@ -136,19 +136,27 @@
     - name: Print cluster_node_map
       debug:
         msg: "{{ cluster_map }}"
+        
 
 
-    - name: Set cluster node name based on current worker
-      set_fact:
-        cluster_id: >
-          {{ worker_map | dict2items | selectattr('value', 'contains', inventory_hostname) | map(attribute='key') | first }}
-        cluster_node_name: >
-          {% if cluster_id is defined %}
-            {{ cluster_map[cluster_id | int] }}
-          {% else %}
-            'Cluster information not found'
-          {% endif %}
-
-    - name: Print node and parent cluster information
+    - name: Determine cluster for current worker and print message
       debug:
-        msg: "Hey, I'm node {{ inventory_hostname }} and I'm inside cluster of node {{ cluster_node_name }}"
+        msg: >
+          {% set cluster_id = worker_map | dict2items | selectattr('value', 'contains', inventory_hostname) | map(attribute='key') | first %}
+          {% if cluster_id is defined %}
+            {% set cluster_node_name = cluster_map[(cluster_id | int )] %}
+            Hey, I'm host {{ inventory_hostname }} and I'm inside cluster of node {{ cluster_node_name }}
+          {% else %}
+            Cluster information not found for host {{ inventory_hostname }}
+          {% endif %}
+    - name: Set cluster id for worker
+      set_fact:
+        cluster_id: "{{ worker_map | dict2items | selectattr('value', 'contains', inventory_hostname) | map(attribute='key') | first }}"
+
+    - name: Set cluster node name for worker
+      set_fact:
+        cluster_node_name: "{{ cluster_map[(cluster_id | int)] }}"
+
+    - name: Print cluster node name for worker
+      debug:
+        msg: "Cluster node name for worker {{ inventory_hostname }} is {{ cluster_node_name }}"
