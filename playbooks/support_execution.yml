@@ -35,7 +35,7 @@
         ansible.builtin.command:  
           cmd: >
             python3 "{{ temp_repo_dir.path }}/{{ script_name }}"
-          stdin: "{{ script_args | from_json }}"
+          stdin: "{{ script_args }}"
         register: result_output
 
       - name: Set environment variable with validation result
