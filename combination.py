@@ -1,25 +1,20 @@
 import sys
+import ast
 import json
-import re
 
 
-def convert_single_to_double_quotes(json_str):
-    """Convert single quotes to double quotes in a JSON string."""
-    # Replace single quotes with double quotes except when they are escaped
-    json_str = re.sub(r"(?<!\\)'", '"', json_str)
-    return json_str
-
-
-def preprocess_json_string(json_str):
-    """Preprocess JSON string to be parsed safely."""
-    # Convert single quotes to double quotes
-    json_str = convert_single_to_double_quotes(json_str)
-    return json_str
+def convert_python_literal_to_json(data):
+    """Convert Python literal dictionary to JSON string."""
+    return json.dumps(data, indent=4)
 
 
 def compute_worker_cluster_association(data):
     """Compute the association between workers and clusters."""
-    clusters = data.get("topology_descriptor", {}).get("cluster_list", [])
+    clusters = (
+        data.get("topology_descriptor", {})
+        .get("topology_descriptor", {})
+        .get("cluster_list", [])
+    )
     workers = data.get("group_workers_full", [])
 
     cluster_worker_map = {}
@@ -41,35 +36,28 @@ def compute_worker_cluster_association(data):
 
 def process_json_string(json_str):
     """Process JSON string to compute worker-cluster association."""
-    # Preprocess the JSON string
-    json_str = preprocess_json_string(json_str)
-
-    # Debug: Print the preprocessed JSON string
-    print("Preprocessed JSON string:")
-    print(json_str)
-
-    # Load JSON data
     try:
-        input_data = json.loads(json_str)
-    except json.JSONDecodeError as e:
-        return f"JSON decode error: {e}"
+        # Convert JSON-like string with single quotes to a Python dictionary
+        data = ast.literal_eval(json_str)
+    except (SyntaxError, ValueError) as e:
+        return f"Error parsing input: {e}"
 
     # Compute the association between workers and clusters
-    association = compute_worker_cluster_association(input_data)
+    association = compute_worker_cluster_association(data)
 
-    # Return the result as a JSON string
-    return json.dumps(association, indent=4)
+    # Convert the result to a JSON string and return it
+    return convert_python_literal_to_json(association)
 
 
 def main():
-    # Read the entire JSON string from stdin
+    # Read the entire JSON-like string from stdin
     input_data_str = sys.stdin.read().strip()
 
-    # Process the JSON string
-    # result = process_json_string(input_data_str)
+    # Process the JSON-like string
+    result = process_json_string(input_data_str)
 
     # Print the result
-    print(input_data_str)
+    print(result)
 
 
 if __name__ == "__main__":
