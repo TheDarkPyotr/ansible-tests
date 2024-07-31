@@ -4,13 +4,20 @@
     - kill-all-workers
 
 - hosts: "{{ group_clusters_full }}"
-  roles:
-    - kill-root-cluster
-    - cleanup-root-cluster
-  vars:
-    components_path: "/cluster_orchestrator/docker-compose.yml"
-    oak_repo_path: "{{ oak_repo_path }}"
-    oak_net_repo_path: "{{ oak_net_repo_path }}"
+  tasks:
+    - name: Set components_path
+      set_fact:
+        components_path: "/cluster_orchestrator/docker-compose.yml"
+    - name: Show oak_repo_path and components_path
+      debug:
+        msg: "oak_repo_path: {{ oak_repo_path }}, components_path: {{ components_path }}" 
+  #roles:
+  #  - kill-root-cluster
+  #  - cleanup-root-cluster
+  #vars:
+  #  components_path: "/cluster_orchestrator/docker-compose.yml"
+  #  oak_repo_path: "{{ oak_repo_path }}"
+  #  oak_net_repo_path: "{{ oak_net_repo_path }}"
   #tasks:
   #  - name: Kill Cluster components
   #    command: "docker compose -f {{ oak_repo_path }}/cluster_orchestrator/docker-compose.yml  kill"
@@ -18,13 +25,20 @@
   #    when: "{{ group_clusters_full | length > 0 }}"
 
 - hosts: "{{ group_root_full }}"
-  roles:
-    - kill-root-cluster
-    - cleanup-root-cluster
-  vars:
-    components_path: "root_orchestrator/docker-compose.yml"
-    oak_repo_path: "{{ oak_repo_path }}"
-    oak_net_repo_path: "{{ oak_net_repo_path }}"
+  tasks:
+    - name: Set components_path
+      set_fact:
+        components_path: "/root_orchestrator/docker-compose.yml"
+    - name: Show oak_repo_path and components_path
+      debug:
+        msg: "oak_repo_path: {{ oak_repo_path }}, components_path: {{ components_path }}" 
+  #roles:
+  #  - kill-root-cluster
+  #  - cleanup-root-cluster
+  #vars:
+  #  components_path: "root_orchestrator/docker-compose.yml"
+  #  oak_repo_path: "{{ oak_repo_path }}"
+  #  oak_net_repo_path: "{{ oak_net_repo_path }}"
   #tasks:
   #  - name: Kill Root components
   #    command: "docker compose -f {{ oak_repo_path }}/root_orchestrator/docker-compose.yml kill"
