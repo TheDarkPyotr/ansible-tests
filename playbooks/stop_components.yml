@@ -4,13 +4,29 @@
     - kill-all-workers
 
 - hosts: "{{ group_clusters_full }}"
-  tasks:
-    - name: Kill Cluster components
-      command: "docker compose -f {{ oak_repo_path }}/cluster_orchestrator/docker-compose.yml  kill"
-      become: True
+  roles:
+    - kill-root-cluster
+    - cleanup-root-cluster
+  vars:
+    components_path: "{{ oak_repo_path }}/cluster_orchestrator/docker-compose.yml"
+    oak_repo_path: "{{ oak_repo_path }}"
+    oak_net_repo_path: "{{ oak_net_repo_path }}"
+  #tasks:
+  #  - name: Kill Cluster components
+  #    command: "docker compose -f {{ oak_repo_path }}/cluster_orchestrator/docker-compose.yml  kill"
+  #    become: True
+  #    when: "{{ group_clusters_full | length > 0 }}"
 
 - hosts: "{{ group_root_full }}"
-  tasks:
-    - name: Kill Root components
-      command: "docker compose -f {{ oak_repo_path }}/root_orchestrator/docker-compose.yml kill"
-      become: True
+  roles:
+    - kill-root-cluster
+    - cleanup-root-cluster
+  vars:
+    components_path: "{{ oak_repo_path }}/root_orchestrator/docker-compose.yml"
+    oak_repo_path: "{{ oak_repo_path }}"
+    oak_net_repo_path: "{{ oak_net_repo_path }}"
+  #tasks:
+  #  - name: Kill Root components
+  #    command: "docker compose -f {{ oak_repo_path }}/root_orchestrator/docker-compose.yml kill"
+  #    become: True
+  #    when: "{{ group_root_full | length > 0 }}"
