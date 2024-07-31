@@ -8,7 +8,7 @@
     - kill-root-cluster
     - cleanup-root-cluster
   vars:
-    components_path: "{{ oak_repo_path }}/cluster_orchestrator/docker-compose.yml"
+    components_path: "/cluster_orchestrator/docker-compose.yml"
     oak_repo_path: "{{ oak_repo_path }}"
     oak_net_repo_path: "{{ oak_net_repo_path }}"
   #tasks:
@@ -22,7 +22,7 @@
     - kill-root-cluster
     - cleanup-root-cluster
   vars:
-    components_path: "{{ oak_repo_path }}/root_orchestrator/docker-compose.yml"
+    components_path: "root_orchestrator/docker-compose.yml"
     oak_repo_path: "{{ oak_repo_path }}"
     oak_net_repo_path: "{{ oak_net_repo_path }}"
   #tasks:
