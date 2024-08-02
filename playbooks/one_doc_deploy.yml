@@ -38,7 +38,7 @@
         rootIP: "{{ current_ip }}"
         clusterName: "{{ inventory_hostname }}"
         clusterLocation: ""
-        additionalComposeOverrides: "-f run-a-cluster/override-alpha-versions.yaml"
+        additionalComposeOverrides: "-f override-alpha-versions.yaml"
 
  # roles:
  #   - ensure-oakestra-repo-is-cloned
