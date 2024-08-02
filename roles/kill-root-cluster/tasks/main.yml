@@ -1,3 +1,11 @@
+- name: Set components_path
+  set_fact:
+    components_path: "{{ components_path }}"
+
+- name: Set oak_repo_path
+  set_fact:
+    oak_repo_path: "{{ oak_repo_path }}"
+
 - name: Print oak_repo_path and components_path
   debug:
     msg: "oak_repo_path: {{ oak_repo_path }}, components_path: {{ components_path }}"
