@@ -12,12 +12,12 @@
       debug:
         msg: "oak_repo_path: {{ oak_repo_path }}, components_path: {{ components_path }}" 
 
-    - name: Kill Cluster components
+    - name: Kill cluster processes
       command: "docker compose -f {{ oak_repo_path }}{{ components_path }}  kill"
       become: True
       ignore_errors: true
 
-    - name: Include cleanup-root-cluster
+    - name: Clean cluster node
       ansible.builtin.include_role:
         name: cleanup-root-cluster
       vars:
@@ -41,26 +41,25 @@
   tasks:
     - name: Set components_path
       set_fact:
-        components_path: "/root_orchestrator/docker-compose.yml"  
+        components_path: "/root_orchestrator/docker-compose.yml"
 
     - name: Show oak_repo_path and components_path
       debug:
         msg: "oak_repo_path: {{ oak_repo_path }}, components_path: {{ components_path }}"
 
-    - name: Include kill-root-cluster
+    - name: Kill root processes
       include_role:
         name: kill-root-cluster
       vars:
         components_path: "root_orchestrator/docker-compose.yml"
-        oak_repo_path: "{{ oak_repo_path }}"
 
-    - name: Include cleanup-root-cluster
+    - name: Clean cluster node
       include_role:
         name: cleanup-root-cluster
       vars:
         components_path: "root_orchestrator/docker-compose.yml"
-        oak_repo_path: "{{ oak_repo_path }}"
-        oak_net_repo_path: "{{ oak_net_repo_path }}"
+        repo_path: "{{ oak_repo_path }}"
+        net_repo_path: "{{ oak_net_repo_path }}"
  # roles:
  #   - kill-root-cluster
  #   - cleanup-root-cluster
