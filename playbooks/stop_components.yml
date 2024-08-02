@@ -17,13 +17,13 @@
       become: True
       ignore_errors: true
 
-    - name: Include cleanup-root-cluster  
-      include_role:
+    - name: Include cleanup-root-cluster
+      ansible.builtin.include_role:
         name: cleanup-root-cluster
       vars:
         components_path: "cluster_orchestrator/docker-compose.yml"
-        oak_repo_path: "{{ oak_repo_path }}"
-        oak_net_repo_path: "{{ oak_net_repo_path }}"
+        repo_path: "{{ oak_repo_path }}"
+        net_repo_path: "{{ oak_net_repo_path }}"
  # roles:
  #   - kill-root-cluster
 #   - cleanup-root-cluster
