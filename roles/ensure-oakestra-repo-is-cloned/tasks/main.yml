@@ -4,15 +4,15 @@
     path: "{{ path }}"
     state: directory
 
-- name: Fetch all tags from remote
-  ansible.builtin.command: git fetch --tags --force
-  become: yes
-  args:
-    chdir: "{{ path }}"
-
 - name: Ensure {{ repo }} Repo is cloned
   ansible.builtin.git:
     repo: "{{ repo }}"
     dest: "{{ path }}"
     version: "{{ branch }}"
     force: true
+
+- name: Fetch all tags from remote
+  ansible.builtin.command: git fetch --tags --force
+  become: yes
+  args:
+    chdir: "{{ path }}"
