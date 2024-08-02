@@ -11,5 +11,5 @@
   become: True
 
 - name: Show nohup.out
-  shell: "cat {{ oak_repo_path }}/nohup.out"
+  shell: "cat /home/pinlu/nohup.out"
   become: True
