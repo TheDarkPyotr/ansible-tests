@@ -9,3 +9,7 @@
     SYSTEM_MANAGER_URL: '{{ rootIP }}'  
   shell: "cd {{ oak_repo_path }}/run-a-cluster && nohup docker compose -f 1-DOC.yaml {{ additionalComposeOverrides }} up --detach"
   become: True
+
+- name: Show nohup.out
+  shell: "cat {{ oak_repo_path }}/nohup.out"
+  become: True
