@@ -1,3 +1,7 @@
+- name: Show clusterName, clusterLocation, and rootIP
+  debug:
+    msg: "clusterName: {{ clusterName }}, clusterLocation: {{ clusterLocation }}, rootIP: {{ rootIP }}"
+
 - name: Run Root and Cluster Components in 1-DOC mode 
   environment:
     CLUSTER_NAME: '{{ clusterName }}'
