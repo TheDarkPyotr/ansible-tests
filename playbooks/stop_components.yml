@@ -12,12 +12,11 @@
       debug:
         msg: "oak_repo_path: {{ oak_repo_path }}, components_path: {{ components_path }}" 
 
-    - name: Include kill-root-cluster
-      include_role:
-        name: kill-root-cluster
-      vars:
-        components_path: "cluster_orchestrator/docker-compose.yml"
-        oak_repo_path: "{{ oak_repo_path }}"
+    - name: Kill Cluster components
+      command: "docker compose -f {{ oak_repo_path }}{{ components_path }}  kill"
+      become: True
+      ignore_errors: true
+
     - name: Include cleanup-root-cluster  
       include_role:
         name: cleanup-root-cluster
