@@ -52,6 +52,8 @@
         name: kill-root-cluster
       vars:
         components_path: "root_orchestrator/docker-compose.yml"
+        repo_path: "{{ oak_repo_path }}"
+        
 
     - name: Clean cluster node
       include_role:
