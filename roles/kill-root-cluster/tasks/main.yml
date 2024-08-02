@@ -11,7 +11,7 @@
     msg: "repo_path: {{ repo_path }}, components_path: {{ components_path }}"
 
 - name: Kill Cluster components
-  command: "docker compose -f {{ repo_path }}{{ components_path }}  kill"
+  command: "docker compose -f {{ repo_path }}/{{ components_path }}  kill"
   become: True
   ignore_errors: true
   when: "{{ group_clusters_full | length > 0 }}"
