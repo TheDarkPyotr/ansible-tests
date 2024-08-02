@@ -98,6 +98,7 @@
       lineinfile:
         path: /etc/environment
         create: yes
+        regexp: '^OAK_STATUS='
         line: 'OAK_STATUS=busy'
       with_items: "{{ hosts_to_tag_busy }}"
 

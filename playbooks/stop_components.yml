@@ -1,6 +1,7 @@
 ---
 - hosts: "{{ group_workers_full }}"
   roles:
+    - unset
     - kill-all-workers
 
 - hosts: "{{ group_clusters_full }}"
