@@ -36,7 +36,7 @@
         name: start-1-doc
       vars:
         rootIP: "{{ current_ip }}"
-        clusterName: "{{ hostname }}"
+        clusterName: "{{ inventory_hostname }}"
         clusterLocation: ""
         additionalComposeOverrides: "-f run-a-cluster/override-alpha-versions.yaml"
 
