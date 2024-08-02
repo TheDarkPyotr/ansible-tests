@@ -1,4 +1,21 @@
 ---
+- hosts: "{{ group_1doc }}"
+  roles:
+    - unset
+    - kill-all-workers
+  tasks:
+    - name: Kill 1DOC processes on node {{ inventory_hostname }}
+      command: "docker compose -f {{ oak_repo_path }}/run-a-cluster/1-DOC.yaml down"
+      become: True
+      ignore_errors: true
+
+    - name: Clean 1DOC files node on node {{ inventory_hostname }}
+      ansible.builtin.include_role:
+        name: cleanup-root-cluster
+      vars:
+        repo_path: "{{ oak_repo_path }}"
+        net_repo_path: "{{ oak_net_repo_path }}"
+
 - hosts: "{{ group_workers_full }}"
   roles:
     - unset
@@ -23,7 +40,6 @@
       ansible.builtin.include_role:
         name: cleanup-root-cluster
       vars:
-        components_path: "cluster_orchestrator/docker-compose.yml"
         repo_path: "{{ oak_repo_path }}"
         net_repo_path: "{{ oak_net_repo_path }}"
  # roles:
