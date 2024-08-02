@@ -42,6 +42,10 @@
       vars:
         repo_path: "{{ oak_repo_path }}"
         net_repo_path: "{{ oak_net_repo_path }}"
+
+    - name: Change status of cluster node {{ inventory_hostname }} to free
+      ansible.builtin.include_role:
+        name: unset
  # roles:
  #   - kill-root-cluster
 #   - cleanup-root-cluster
@@ -80,6 +84,10 @@
         components_path: "root_orchestrator/docker-compose.yml"
         repo_path: "{{ oak_repo_path }}"
         net_repo_path: "{{ oak_net_repo_path }}"
+
+    - name: Change status of cluster node {{ inventory_hostname }} to free
+      ansible.builtin.include_role:
+        name: unset
  # roles:
  #   - kill-root-cluster
  #   - cleanup-root-cluster
