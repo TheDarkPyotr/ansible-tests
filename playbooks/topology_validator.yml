@@ -20,7 +20,7 @@
       ansible.builtin.git:
         repo: "{{ repo }}"
         dest: "{{ temp_repo_dir.path }}"
-        version: "develop" # Branch of testbed repository
+        version: "main" # Branch of testbed repository
         force: yes
 
     - name: Checkout the specific commit
