@@ -3,7 +3,6 @@
   hosts: localhost
   vars:
     repo: "https://github.com/TheDarkPyotr/ansible-tests"
-    branch: "main"
 
   gather_facts: no
 
@@ -21,12 +20,12 @@
       ansible.builtin.git:
         repo: "{{ repo }}"
         dest: "{{ temp_repo_dir.path }}"
-        version: "{{ branch }}"
+        version: "develop" # Branch of testbed repository
         force: yes
 
     - name: Checkout the specific commit
       ansible.builtin.command:
-        cmd: git checkout "{{ commit }}"
+        cmd: git checkout HEAD"
         chdir: "{{ temp_repo_dir.path }}"
       register: git_checkout
 
