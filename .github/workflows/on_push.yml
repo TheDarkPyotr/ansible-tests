@@ -56,7 +56,7 @@ jobs:
           extra_vars_data=$(echo "{\"topology_descriptor\": \"$FILENAME\", \"branch\": \"$BRANCH\", \"commit\": \"$COMMIT\"}")
           echo "$extra_vars_data"
         
-          response=$(curl -s -X POST "http://$TOWER_HOST/api/v2/job_templates/$TEMPLATE_ID/launch/" \
+          response=$(curl -s -X POST "http://$TOWER_HOST/api/v2/workflow_job_templates/$TEMPLATE_ID/launch/" \
             -H "Authorization: Bearer $TOWER_API_TOKEN" \
             -H "Content-Type: application/json" \
             -d "{ \"extra_vars\": $extra_vars_data }" \
