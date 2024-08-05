@@ -22,6 +22,10 @@
         msg: "IP address not found for current node {{ inventory_hostname }}"
       when: current_ip == "IP address not found"
 
+    - name: Print repository commit
+      debug:
+        msg: "Repository commit: {{ commit }}"
+        
     - name: Entrypoint to ensure cloned repo (node {{ inventory_hostname }})
       include_role:
         name: ensure-oakestra-repo-is-cloned
@@ -29,8 +33,8 @@
         path: "{{ oak_repo_path }}"
         repo: "{{ oak_repo_link }}"
         branch: "{{ oak_repo_version }}"
+        
       
-
     - name: Entrypoint to start 1DOC (node {{ inventory_hostname }})
       include_role:
         name: start-1-doc
