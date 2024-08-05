@@ -8,6 +8,9 @@
   gather_facts: no
 
   tasks:
+    - name: Received parameters
+      debug:
+        msg: "Received parameters: {{ branch }}, {{ commit }}"
     - name: Create a temporary directory
       ansible.builtin.tempfile:
         state: directory
@@ -75,7 +78,6 @@
       ansible.builtin.debug:
         msg: "TOPOLOGY_VALIDITY is {{ TOPOLOGY_VALIDITY }}"
 
-    # Print topology descriptor content as JSON
     - name: Print topology descriptor content as JSON
       ansible.builtin.debug:
         var: topology_descriptor_content
@@ -85,3 +87,4 @@
         data:
           topology_desc: "{{ topology_descriptor_content | to_json}}"
           topology_validity: "{{ TOPOLOGY_VALIDITY | bool}}"
+          oak_repo_commit: "{{ commit }}"
