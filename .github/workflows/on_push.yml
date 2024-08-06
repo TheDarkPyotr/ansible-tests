@@ -4,15 +4,15 @@ on:
   workflow_dispatch:
     inputs:
       topology:
-        description: 'Path to the topology file'
+        description: 'Testbed repository - topology descriptor'
         required: true
         default: 'topology.json'
       branch:
-        description: 'Branch name'
+        description: 'Oakestra repo branch'
         required: true
         default: 'main'
       commit:
-          description: 'Short commit'
+          description: 'Oakestra repo commit'
           required: true
           type: string
           default: 'HEAD'
