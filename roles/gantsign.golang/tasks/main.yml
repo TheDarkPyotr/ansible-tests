@@ -19,6 +19,15 @@
     that:
       - "golang_redis_sha256sum not in (None, '')"
 
+- name: Set download directory default
+  set_fact:
+    golang_download_dir: "{{ x_ansible_download_dir | default((ansible_facts.env.HOME | default('/home/default')) + '/.ansible/tmp/downloads') }}"
+
+
+- name: Print download directory
+  debug:
+    var: golang_download_dir  
+
 - name: Create download directory
   ansible.builtin.file:
     state: directory
