@@ -54,6 +54,10 @@
     mode: 'u=rwx,go=rx'
     dest: '{{ golang_install_dir }}'
 
+- name: Print ansible_facts
+  debug:
+    var: ansible_facts
+
 - name: Install unarchive dependencies (zypper)
   become: true
   ansible.builtin.package:
