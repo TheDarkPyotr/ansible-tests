@@ -11,7 +11,7 @@
 
 - name: Deploy components for 1DOC topology
   hosts: "{{ group_1doc }}"
-  gather_facts: false
+  gather_facts: true
   tasks:
     - name: Retrieve current hostname IP address
       set_fact:
