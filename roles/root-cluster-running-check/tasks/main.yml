@@ -33,7 +33,7 @@
 
 - name: Check and fail if any container is not running
   vars:
-    container_statuses: "{{ container_status.results | map(attribute='stdout') | map('split', ': ') }}"
+    container_statuses: "{{ container_status.results | map(attribute='stdout') | map('split', ': ') | list }}"
   block:
     - name: Fail if any container is not running
       ansible.builtin.fail:
