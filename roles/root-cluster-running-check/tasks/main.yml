@@ -1,12 +1,10 @@
-- name: Retrieve Docker Compose file
-  ansible.builtin.fetch:
-    src: "{{ docker_compose_file }}"
-    dest: "/tmp/docker-compose.yml"
-    flat: yes
+- name: Print docker_compose_file
+  ansible.builtin.debug:
+    msg: "{{ docker_compose_file }}"
 
 - name: Read Docker Compose file
   ansible.builtin.slurp:
-    src: "/tmp/docker-compose.yml"
+    src: "{{ docker_compose_file }}"
   register: compose_file
 
 - name: Parse container names from Docker Compose file
