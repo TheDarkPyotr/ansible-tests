@@ -27,7 +27,7 @@ jobs:
       - name: Read topology file ${{ github.event.inputs.topology }}
         id: read_topology
         run: |
-          cat ${{ github.event.inputs.topology }} 
+          cat ./topologies/${{ github.event.inputs.topology }} 
       - name: Get the token
         id: get_token
         env:
