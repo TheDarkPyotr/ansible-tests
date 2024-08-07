@@ -14,12 +14,6 @@
   set_fact:
     daemon_json: "{{ daemon_json_content.content | b64decode | from_json }}"
 
-- name: Check if iptables is set to true in /etc/docker/daemon.json
-  fail:
-    msg: "The 'iptables' field in /etc/docker/daemon.json is not set to true."
-  when: >
-    not daemon_json_stat.stat.exists or not daemon_json.get('iptables') or daemon_json['iptables'] != true #   when: daemon_json_stat.stat.exists
-
 - name: Append iptables true to /etc/docker/daemon.json if not present
   when: daemon_json_stat.stat.exists and not daemon_json.get('iptables') or daemon_json['iptables'] != true
   block:
@@ -39,8 +33,9 @@
     dest: /etc/docker/daemon.json
     mode: '0644'
 
-- name: Restart Docker service
-  systemd:
+- name: Restart Docker
+  service:
     name: docker
     state: restarted
-  become: yes
+  become: true
+  when: not daemon_json_stat.stat.exists and not daemon_json.get('iptables') or daemon_json['iptables'] != true

@@ -6,7 +6,7 @@
   tasks:
     - name: Kill 1DOC processes on node {{ inventory_hostname }}
       command: "docker compose -f {{ oak_repo_path }}/run-a-cluster/1-DOC.yaml down"
-      become: True
+      become: true
       ignore_errors: true
 
     - name: Clean 1DOC files node on node {{ inventory_hostname }}
