@@ -7,7 +7,6 @@
         msg: "Deployment is skipped because deploy_1doc is false."
       when: not deploy_1doc
 
-  
 
 - name: Deploy components for 1DOC topology
   hosts: "{{ group_1doc }}"
@@ -21,6 +20,7 @@
       fail:
         msg: "IP address not found for current node {{ inventory_hostname }}"
       when: current_ip == "IP address not found"
+
 
     - name: Entrypoint to ensure cloned repo (node {{ inventory_hostname }})
       include_role:
@@ -60,7 +60,7 @@
     - name: Run net-manager on node {{ inventory_hostname }}
       shell: 'nohup /bin/NetManager -p 6000 </dev/null >/tmp/netmanager.log 2>&1 &'
       become: true
-      ignore_errors: true
+      ignore_errors: false
 
     - name: Setup node engine entrypoint for node {{ inventory_hostname }}
       include_role:
@@ -75,6 +75,7 @@
     - name: Run node-engine on node {{ inventory_hostname }}
       environment:
         CLUSTER_IP: '{{ current_ip }}'
-      shell: 'nohup /bin/NodeEngine -n 6000 -a $CLUSTER_IP -p 10100 </dev/null >/tmp/nodeengine.log 2>&1 &'
+      shell: 'nohup /bin/NodeEngine -n 6000 -p 10100 </dev/null >/tmp/nodeengine.log 2>&1 &'
       become: true
       ignore_errors: true
+      when: not ( proxy | default(false) )
