@@ -33,12 +33,15 @@
 
 - name: Check and fail if any container is not running
   vars:
-    container_statuses: "{{ container_status.results | map(attribute='stdout') | map('split', ': ') | list }}"
+    container_statuses: >-
+      {{
+        container_status.results | map(attribute='stdout') | map('regex_findall', '(.*): (.*)') | map('first') | list
+      }}
   block:
     - name: Fail if any container is not running
       ansible.builtin.fail:
-        msg: "Container {{ item.0 }} is not running. Current status: {{ item.1 }}"
+        msg: "Container {{ item[0] }} is not running. Current status: {{ item[1] }}"
       when: item[1] != "running"
       loop: "{{ container_statuses }}"
       loop_control:
-        label: "{{ item.0 }}"
+        label: "{{ item[0] }}"
