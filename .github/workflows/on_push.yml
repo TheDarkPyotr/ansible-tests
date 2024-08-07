@@ -6,7 +6,7 @@ on:
       topology:
         description: 'Testbed repository - topology descriptor'
         required: true
-        default: 'topology.json'
+        default: '1doc.json'
       branch:
         description: 'Oakestra repo branch'
         required: true
