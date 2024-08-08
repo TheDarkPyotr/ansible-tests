@@ -69,10 +69,17 @@
       ansible.builtin.set_fact:
         TOPOLOGY_VALIDITY: "{{ validation_result.stdout }}"
 
+    - include_tasks: github_results.yml
+      vars:
+        result: "Topology description {{ topology_descriptor }} vadalition returned {{ TOPOLOGY_VALIDITY | bool}}"
+        parameters: "{{ topology_descriptor_content | to_json}}"
+      when: ( reserved_hosts | length) > 0
+
     - name: Fail if topology_validity is false
       fail:
         msg: "Topology descriptor {{ topology_descriptor }} is not valid"
       when: not TOPOLOGY_VALIDITY
+
       
     - name: "Set facts for provisioning workflow"
       set_stats:

@@ -98,6 +98,11 @@
       set_fact:
         reserved_hosts: "{{ available_hosts[:requested_vms | int] | list }}"
 
+    - include_tasks: github_results.yml
+      vars:
+        result: "Provision ended successfully, reserved hosts: {{ reserved_hosts }}"
+      when: ( reserved_hosts | length) > 0
+
     - name: Matching deploy strategy with reserved hosts
       set_stats:
         data:

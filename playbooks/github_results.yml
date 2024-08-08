@@ -17,7 +17,7 @@
         body:
           event_type: "api_call"
           client_payload:
-            output: "AWX Testbed Output"
+            output: "AWX Testbed Output for run ID"
             integration: true
             result: "{{ result }}"
         body_format: json
