@@ -4,7 +4,7 @@
     "together_root_cluster": true,
     "cluster_list": [{
       "cluster_number": 1,
-      "number_of_nodes": 2,
+      "number_of_nodes": 1,
       "sla_descriptor": {
           "sla_version" : "v2.0",
           "customerID" : "Admin",
