@@ -1,6 +1,7 @@
 ---
 - name: Trigger GitHub Event via API
   hosts: localhost
+  gather_facts: no
   tasks:
     - name: Trigger GitHub Event via API
       vars:
