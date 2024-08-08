@@ -1,4 +1,7 @@
 ---
+- name: Trigger GitHub Event via API
+  hosts: localhost
+  tasks:
     - name: Trigger GitHub Event via API
       vars:
         GITHUB_USERNAME: "TheDarkPyotr"
@@ -18,4 +21,3 @@
             result: "{{ result }}"
         body_format: json
         status_code: [204]
-      delegate_to: localhost
