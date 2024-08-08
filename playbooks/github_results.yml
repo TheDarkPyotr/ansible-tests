@@ -1,7 +1,6 @@
 ---
 - name: GitHub Callback
   hosts: localhost
-  gather_facts: false
   tasks:
     - name: Trigger GitHub Event via API
       vars:
