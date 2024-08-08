@@ -73,7 +73,6 @@
       vars:
         result: "Topology description {{ topology_descriptor }} vadalition returned {{ TOPOLOGY_VALIDITY | bool}}"
         parameters: "{{ topology_descriptor_content | to_json}}"
-      when: ( reserved_hosts | length) > 0
 
     - name: Fail if topology_validity is false
       fail:
