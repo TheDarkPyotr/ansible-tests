@@ -1,7 +1,4 @@
 ---
-- name: GitHub Callback
-  hosts: localhost
-  tasks:
     - name: Trigger GitHub Event via API
       vars:
         GITHUB_USERNAME: "TheDarkPyotr"
