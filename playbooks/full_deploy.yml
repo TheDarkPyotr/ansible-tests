@@ -14,7 +14,7 @@
 
     - name: Check execution scenario
       fail:
-        msg: "Deployment is skipped because deploy_1doc is false."
+        msg: "Deployment is skipped because deploy_1doc is true."
       when: deploy_1doc or together_root_cluster
 
     - name: Print the parsed topology data
@@ -68,8 +68,6 @@
         msg: |
           Cluster Host Map: {{ cluster_host_ranges.ansible_facts.cluster_host_ranges }}
           Worker Map: {{ worker_map }}
-
-
 
 
 ################################################## DEPLOY: ROOT ##################################################

@@ -6,11 +6,6 @@
   vars:
     docker_compose_file: "{{ oak_repo_path }}/run-a-cluster/1-DOC.yaml"
 
-#- hosts: "{{ group_workers_full }}"
-#  roles:
-#    - unset
-#    - kill-all-workers
-
 - hosts: "{{ group_clusters_full }}"
   roles:
     - root-cluster-running-check

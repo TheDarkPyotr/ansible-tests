@@ -32,7 +32,11 @@
                   "state": "",
                   "port": "",
                   "added_files": [],
-                  "constraints":[]
+                  "constraints":[ {
+                    "type":"direct",
+                    "node":"node1",
+                    "cluster":"gpu"
+                  }]
                 },
                 {
                   "microserviceID": "",
@@ -53,7 +57,12 @@
                   "addresses": {
                     "rr_ip": "10.30.55.55"
                   },
-                  "added_files": []
+                  "added_files": [],
+                  "constraints":[ {
+                    "type":"direct",
+                    "node":"node2",
+                    "cluster":"gpu"
+                  }]
                 }
               ]
             }
