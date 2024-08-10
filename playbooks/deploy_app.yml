@@ -1,0 +1,25 @@
+---
+
+- name: SLA Descriptor application deployment on 1DOC root
+  hosts: localhost
+  tasks:
+    - name: Add constraints to SLA descriptor for worker assignation
+      include_role:
+        name: add-constraints
+      vars:
+        group_root_full: "{{ group_root_full }}"
+        group_workers_full: "{{ group_workers_full }}"
+        topology_desc: "{{ topology_desc }}"
+      when: deploy_1doc
+
+- name: SLA Descriptor application deployment on root node - full deployment
+  hosts: localhost
+  tasks:
+    - name: Add constraints to SLA descriptor for worker assignation
+      include_role:
+        name: add-constraints
+      vars:
+        group_root_full: "{{ group_root_full }}"
+        group_workers_full: "{{ group_workers_full }}"
+        topology_desc: "{{ topology_desc }}"
+      when: not deploy_1doc and not together_root_cluster
