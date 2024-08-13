@@ -2,6 +2,7 @@ import sys
 import json
 import ast
 from icmplib import ping
+import requests
 
 
 def validate_topology(data):
@@ -9,8 +10,49 @@ def validate_topology(data):
     # todo: extend validation based on /topologies/ schema
 
 
+def authenticate(
+    hostname: str,
+    username: str = "Admin",
+    password: str = "Admin",
+    organization: str = "",
+):
+
+    # Define the login endpoint URL
+    login_url = f"http://{hostname}:10000/api/auth/login"
+
+    # Create the payload with the required credentials
+    payload = {"username": username, "password": password, "organization": organization}
+
+    try:
+        # Send a POST request to the login endpoint
+        response = requests.post(login_url, json=payload)
+
+        # Check if the request was successful (HTTP status code 200)
+        if response.status_code == 200:
+            # Parse the JSON response
+            response_data = response.json()
+
+            # Attempt to extract the token
+            token = response_data.get("token") or response_data.get("token")
+
+            if token:
+                return token
+            else:
+                print("Authentication successful, but no token found in the response.")
+                return None
+        else:
+            # Handle unsuccessful authentication
+            print(f"Failed to authenticate: {response.status_code} - {response.text}")
+            return None
+
+    except requests.RequestException as e:
+        # Handle connection errors or other exceptions
+        print(f"An error occurred: {e}")
+        return None
+
+
 def is_reacheable(hostname: str):
-    host = ping(hostname, count=5, interval=0.2)
+    host = ping(hostname, count=1, interval=0.2)
     return host.packets_sent == host.packets_received
 
 
@@ -79,12 +121,12 @@ def check_correspondece(json_data, workers):
         # print("Insufficient worker nodes.")
         return False
     else:
-        try:
-            update_topology(clusters, workers)
-            return json_data
-        except Exception as e:
-            print(f"Error: {e}")
-            return None
+        # try:
+        update_topology(clusters, workers)
+        return json_data
+        # except Exception as e:
+        print(f"Error updating topology: {e}")
+        return None
 
     # print("Updated topology:")
     # print(json.dumps(topology, indent=4))
@@ -133,12 +175,6 @@ def main():
     except (SyntaxError, ValueError) as e:
         print(f"Error converting string to list: {e}")
 
-    for hostname in root_group:
-        if not is_reacheable(hostname):
-            print(f"Error: Root node {hostname} is not reachable.")
-        else:
-            print(f"Root node {hostname} is reachable.")
-
     # Ping root node
 
     # Validate the JSON data
@@ -150,12 +186,20 @@ def main():
 
     # Output result
     if updated_sla is not None and validate_topology(updated_sla):
-        print(updated_sla)
+        # print(updated_sla)
+
+        for hostname in root_group:
+            if not is_reacheable(hostname):
+                print(f"Error: Root node {hostname} is not reachable.")
+            else:
+                token = authenticate(hostname)
+                print(f"Token: {token}")
+                # requests.get(f"http://{hostname}:10000/api/auth/login")
 
         # Create the updated JSON file
-        updated_file = json_file.replace(".json", "_updated.json")
-        with open(updated_file, "w", encoding="utf-8") as f:
-            json.dump(updated_sla, f, ensure_ascii=False, indent=4)
+        # updated_file = json_file.replace(".json", "_updated.json")
+        # with open(updated_file, "w", encoding="utf-8") as f:
+        # json.dump(updated_sla, f, ensure_ascii=False, indent=4)
 
     else:
         print("false")
