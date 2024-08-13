@@ -36,14 +36,7 @@
                                     "code": "docker.io/curlimages/curl:7.82.0",
                                     "state": "",
                                     "port": "",
-                                    "added_files": [],
-                                    "constraints": [
-                                        {
-                                            "type": "direct",
-                                            "node": "cmvm21",
-                                            "cluster": "gpu22"
-                                        }
-                                    ]
+                                    "added_files": []
                                 },
                                 {
                                     "microserviceID": "",
@@ -64,14 +57,7 @@
                                     "addresses": {
                                         "rr_ip": "10.30.55.55"
                                     },
-                                    "added_files": [],
-                                    "constraints": [
-                                        {
-                                            "type": "direct",
-                                            "node": "cmvm22",
-                                            "cluster": "gpu22"
-                                        }
-                                    ]
+                                    "added_files": []
                                 }
                             ]
                         },
