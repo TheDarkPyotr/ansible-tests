@@ -259,7 +259,7 @@
 
     - name: Run node-engine on node {{ inventory_hostname }}
       environment:
-        CLUSTER_IP: '{{ clusterIP }}'
+        CLUSTER_IP: '{{ cluster_node_ip }}'
       shell: 'nohup /bin/NodeEngine -n 6000 -a $CLUSTER_IP -p 10100 </dev/null >/tmp/nodeengine.log 2>&1 &'
       become: true
       ignore_errors: false
