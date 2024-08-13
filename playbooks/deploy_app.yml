@@ -1,5 +1,93 @@
 ---
+- name: (Full Topology) - Retrieve hostnames of workers
+  hosts: "{{ group_workers_full}}"
+  gather_facts: false
+  tasks:
+    - name: Retrieve hostname for {{ inventory_hostname }}
+      shell: |
+        hostname
+      register: local_hostname
 
+    - name: Add {{ inventory_hostname }} to hostname list
+      set_fact:
+        hostname_list: "{{ local_hostname.stdout }}"
+      delegate_facts: true
+
+- name: Update SLA Descriptor with worker hostnames
+  hosts: localhost
+  gather_facts: false
+  tasks:
+    - name: Retrieve local hostname list
+      set_fact:
+        workers_hostname: >
+          {{ hostvars | dict2items
+          | selectattr('value.local_hostname', 'defined')
+          | map(attribute='value.local_hostname.stdout')
+          | list }}
+
+    - name: Available hostnames display
+      debug:
+        msg: "Available hostnames: {{ workers_hostname }}"
+
+    - name: Print group_clusters_full
+      debug:
+        msg: "group_clusters_full: {{ group_clusters_full }}"
+
+    - name: Set topology_desc JSON string
+      set_fact:
+        topology_desc_json: "{{ topology_desc | to_nice_json }}"
+
+    - name: Set workers list JSON string
+      set_fact:
+        workers_json: "{{ workers_hostname | list }}"
+
+    - name: Save topology_desc to a file
+      ansible.builtin.copy:
+        content: "{{ topology_desc_json }}"
+        dest: "/tmp/topology_desc.json"
+
+    - name: Run the Python script with file and array arguments
+      ansible.builtin.shell: |
+        python3 ../utils/update_sla.py "/tmp/topology_desc.json" "{{ workers_json }}" "{{ group_clusters_full }}" "{{ group_root_full }}"
+      register: result_output
+      become: true
+      become_user: root
+
+    - name: Display execution output
+      ansible.builtin.debug:
+        msg: "{{ result_output.stdout }}"
+
+    - name: Retrieve updated topology
+      ansible.builtin.slurp:
+        src: "/tmp/topology_desc.json"
+      register: new_topology_content
+
+    - name: Decode new topology
+      set_fact:
+        new_topology: "{{ new_topology_content.content | b64decode }}"
+
+    - name: Dump updates
+      ansible.builtin.debug:
+        msg: "{{ new_topology.topology_descriptor.cluster_list[0] }}"
+
+    - name: Execute the Python script
+      command: >
+        python3 ../utils/update_sla.py '{{ topology_desc | to_nice_json }}' '{{ workers_hostname | to_json }}'
+
+      register: validation_result
+
+    - name: Print validation result
+      debug:
+        msg: "{{ validation_result.stdout }}"
+
+    - include_tasks: support_execution.yml
+      vars:
+        script_name: "/utils/update_sla.py"
+        script_args: "{{ topology_desc }} {{ workers_hostname }}"
+
+
+
+###############################################à
 - name: SLA Descriptor application deployment on 1DOC root
   hosts: localhost
   tasks:
@@ -12,14 +100,27 @@
         topology_desc: "{{ topology_desc }}"
       when: deploy_1doc
 
-- name: SLA Descriptor application deployment on root node - full deployment
+- name: Retrieve hostname of group_workers_full
+  hosts: "{{ group_workers_full }}"
+  tasks:
+    - name: Execute hostname command on each host
+      command: hostname
+      register: hostname_result
+
+    - name: Print hostname of each host
+      debug:
+        msg: "Hostname of {{ inventory_hostname }} is {{ hostname_result.stdout }}"
+
+    - name: Store hostname result
+      set_stats:
+        data:
+          hostname_list: "{{ hostname_list | default([]) + [{ 'host': inventory_hostname, 'hostname': hostname_result.stdout }] }}"
+
+- name: Print hostname list
   hosts: localhost
   tasks:
-    - name: Add constraints to SLA descriptor for worker assignation
-      include_role:
-        name: add-constraints
-      vars:
-        group_root_full: "{{ group_root_full }}"
-        group_workers_full: "{{ group_workers_full }}"
-        topology_desc: "{{ topology_desc }}"
-      when: not deploy_1doc and not together_root_cluster
+    - name: Display hostnames
+      debug:
+        msg: "{{ hostname_list }}"
+
+
