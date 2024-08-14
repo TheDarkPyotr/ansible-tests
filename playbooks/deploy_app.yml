@@ -65,7 +65,7 @@
 
     - name: Run the Python script with file and array arguments
       ansible.builtin.shell: |
-        python3 ../utils/update_sla.py "/tmp/topology_desc.json" "{{ workers_json }}" "{{ group_clusters_full }}" "{{ group_root_full }}" > /tmp/deploy_app.log
+        python3 ../utils/update_sla.py "/tmp/topology_desc.json" "{{ workers_json }}" "{{ group_clusters_full }}" "{{ group_root_full }}"
       register: result_output
       become: true
       become_user: root
@@ -76,7 +76,7 @@
 
     - name: Retrieve updated topology
       ansible.builtin.slurp:
-        src: "/tmp/deploy_app.log"
+        src: "/tmp/topology_desc.json"
       register: new_topology_content
 
     - name: Print new topology content
@@ -86,10 +86,6 @@
     - name: Decode new topology
       set_fact:
         new_topology: "{{ new_topology_content.content | b64decode }}"
-
-    - name: Dump updates
-      ansible.builtin.debug:
-        msg: "{{ new_topology.topology_descriptor.cluster_list[0] }}"
 
 
 ###############################################à
