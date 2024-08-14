@@ -184,10 +184,10 @@ def main():
             success, failed = deploy_application(updated_sla)
             if success:
                 print("Successfully deployed applications:")
-                print(json.dumps(success, indent=4))
+                print(success)
             if failed:
                 print("Failed to deploy applications:")
-                print(json.dumps(failed, indent=4))
+                print(failed)
 
         else:
             print("Failed to obtain authentication token.")
