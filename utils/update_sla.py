@@ -113,9 +113,10 @@ def deploy_application(updated_sla: dict):
         if status_code in (200, 201):
             success[cluster["cluster_number"]] = []
             failed[cluster["cluster_number"]] = []
-            # body = json.loads(body)
+            body = json.loads(body)
+            print(body)
             for app in body:
-
+                print(f"App is {app}")
                 microservices = app.get("microservices", [])
                 for microservice_id in microservices:
                     endpoint = f"http://{hostname}:10000/api/service/{microservice_id}/instance"
