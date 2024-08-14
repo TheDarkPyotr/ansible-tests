@@ -6,6 +6,10 @@
       set_fact:
         topology: "{{ topology_desc | from_json }}"
 
+    - name: Print topology
+      debug:
+        var: topology 
+
     - name: Calculate required number of VMs
       set_fact:
         num_clusters: "{{ topology.topology_descriptor.cluster_list | length }}"
