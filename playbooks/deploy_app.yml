@@ -13,6 +13,16 @@
         hostname_list: "{{ local_hostname.stdout }}"
       delegate_facts: true
 
+#- name: Deploying application code
+#  hosts: localhost
+#  roles:
+#    - role: full-topology-deploy
+#      vars:
+#        local_hostname: "{{ local_hostname }}"
+#        group_root_full: "{{ group_root_full}}"
+#        group_clusters_full: "{{ group_clusters_full }}"
+#      when: not deploy_1doc and not together_root_cluster
+
 - name: Update SLA Descriptor with worker hostnames
   hosts: localhost
   gather_facts: false
@@ -55,7 +65,7 @@
 
     - name: Run the Python script with file and array arguments
       ansible.builtin.shell: |
-        python3 ../utils/update_sla.py "/tmp/topology_desc.json" "{{ workers_json }}" "{{ group_clusters_full }}" "{{ group_root_full }} >/tmp/deploy.log 2>&1 &"
+        python3 ../utils/update_sla.py "/tmp/topology_desc.json" "{{ workers_json }}" "{{ group_clusters_full }}" "{{ group_root_full }} > /tmp/deploy.log 2>&1"
       register: result_output
       become: true
       become_user: root
