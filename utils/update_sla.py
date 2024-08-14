@@ -113,7 +113,14 @@ def deploy_application(updated_sla: dict):
         if status_code in (200, 201):
             success[cluster["cluster_number"]] = []
             failed[cluster["cluster_number"]] = []
-            body = json.loads(body)
+            if (
+                isinstance(body, str)
+                or isinstance(body, bytes)
+                or isinstance(body, bytearray)
+            ):
+                body = json.loads(body)
+            else:
+                body = body
             print(body)
             for app in body:
                 print(f"App is {app}")
