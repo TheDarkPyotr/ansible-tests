@@ -3,6 +3,8 @@ import json
 import ast
 from icmplib import ping
 import requests
+import aiohttp
+import asyncio
 
 
 def validate_topology(data):
@@ -10,7 +12,7 @@ def validate_topology(data):
     return isinstance(data, dict)
 
 
-def post_request(url, json_body):
+def post_request_sync(url, json_body):
     """Post JSON data to the specified endpoint using the provided token."""
     headers = {
         "Content-Type": "application/json",
@@ -25,6 +27,25 @@ def post_request(url, json_body):
             return response.status_code, response.text
     except requests.exceptions.RequestException as e:
         print(f"An error occurred: {e}")
+
+
+async def post_request(url, json_body):
+    """Asynchronously post JSON data to the specified endpoint using the provided token."""
+    headers = {
+        "Content-Type": "application/json",
+        "Authorization": f"Bearer {authToken}",
+    }
+
+    try:
+        async with aiohttp.ClientSession() as session:
+            async with session.post(url, headers=headers, json=json_body) as response:
+                if response.status in (200, 201):
+                    return response.status, await response.json()
+                else:
+                    return response.status, await response.text()
+    except aiohttp.ClientError as e:
+        print(f"An error occurred: {e}")
+        return None, str(e)
 
 
 def authenticate(hostname, username="Admin", password="Admin", organization=""):
@@ -77,7 +98,6 @@ def update_topology(clusters, workers):
                             service["constraints"].append(
                                 {"type": "direct", "node": assigned_worker}
                             )
-
                     else:
                         service["constraints"] = [
                             {"type": "direct", "node": assigned_worker}
@@ -97,7 +117,7 @@ def check_correspondence(json_data, workers):
     return json_data
 
 
-def deploy_application(updated_sla: dict):
+async def deploy_application(updated_sla: dict):
     endpoint = f"http://{hostname}:10000/api/application/"
     topology = updated_sla.get("topology_descriptor", {})
     clusters = topology.get("cluster_list", [])
@@ -106,40 +126,40 @@ def deploy_application(updated_sla: dict):
 
     for cluster in clusters:
         sla_descriptor = cluster.get("sla_descriptor", {})
-        # print(json.dumps(sla_descriptor, indent=4))
+        status_code, body = await post_request(endpoint, sla_descriptor)
 
-        status_code, body = post_request(endpoint, sla_descriptor)
+        print(
+            "Post request to endpoint {} for cluster {} is {} \n".format(
+                endpoint, cluster["cluster_number"], body
+            )
+        )
 
         if status_code in (200, 201):
             success[cluster["cluster_number"]] = []
             failed[cluster["cluster_number"]] = []
-            if (
-                isinstance(body, str)
-                or isinstance(body, bytes)
-                or isinstance(body, bytearray)
-            ):
+            if isinstance(body, (str, bytes, bytearray)):
                 body = json.loads(body)
-            else:
-                body = body
-            print(body)
             for app in body:
-                print(f"App is {app}")
-                microservices = app.get("microservices", [])
-                for microservice_id in microservices:
-                    endpoint = f"http://{hostname}:10000/api/service/{microservice_id}/instance"
-                    status_code, body = post_request(endpoint, {})
-                    if status_code in (200, 201):
-                        success[cluster["cluster_number"]].append(microservice_id)
-                    else:
-                        failed.append(microservice_id)
-                        failed[cluster["cluster_number"]].append(microservice_id)
+                if isinstance(app, dict):
+                    microservices = app.get("microservices", [])
+                    for microservice_id in microservices:
+                        instance_endpoint = f"http://{hostname}:10000/api/service/{microservice_id}/instance"
+                        status_code, instance_body = await post_request(
+                            instance_endpoint, {}
+                        )
+                        if status_code in (200, 201):
+                            success[cluster["cluster_number"]].append(microservice_id)
+                        else:
+                            failed[cluster["cluster_number"]].append(microservice_id)
+                else:
+                    print(f"App is not a dict: {app}")
         else:
-            failed[cluster["cluster_number"]] = "SLA_POST_FAILED"
+            failed[cluster["cluster_number"]] = f"SLA_POST_FAILED_{status_code}_{body}"
 
     return success, failed
 
 
-def main():
+async def main_async():
     if len(sys.argv) != 5:
         print("Error: Expected exactly four command-line arguments.")
         return
@@ -189,18 +209,21 @@ def main():
             global authToken
             authToken = token
             print(f"Token: {token}")
-            success, failed = deploy_application(updated_sla)
+            success, failed = await deploy_application(updated_sla)
             if success:
                 print("Successfully deployed applications:")
                 print(success)
             if failed:
                 print("Failed to deploy applications:")
                 print(failed)
-
         else:
             print("Failed to obtain authentication token.")
     else:
         print("Updated SLA is invalid or root group is empty.")
+
+
+def main():
+    asyncio.run(main_async())
 
 
 if __name__ == "__main__":
