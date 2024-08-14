@@ -10,7 +10,6 @@
     dest: "{{ path }}"
     version: "{{ branch }}"
     force: true
-    ignore_errors: true
 
 - name: Fetch all tags from remote
   ansible.builtin.command: git fetch --tags --force
