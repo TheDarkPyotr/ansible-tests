@@ -55,14 +55,20 @@
 
     - name: Run the Python script with file and array arguments
       ansible.builtin.shell: |
-        python3 ../utils/update_sla.py "/tmp/topology_desc.json" "{{ workers_json }}" "{{ group_clusters_full }}" "{{ group_root_full }}"
+        python3 ../utils/update_sla.py "/tmp/topology_desc.json" "{{ workers_json }}" "{{ group_clusters_full }}" "{{ group_root_full }} >/tmp/deploy.log 2>&1 &"
       register: result_output
       become: true
       become_user: root
 
-    - name: Display execution output
-      ansible.builtin.debug:
-        msg: "{{ result_output.stdout }}"
+    - name: Show deploy.log content
+      ansible.builtin.shell: cat /tmp/deploy.log
+      register: deploy_log
+      become: true
+      become_user: root 
+
+    - name: Print deploy.log content
+      debug:
+        msg: "{{ deploy_log }}"
 
     - name: Retrieve updated topology
       ansible.builtin.slurp:
@@ -76,22 +82,6 @@
     - name: Dump updates
       ansible.builtin.debug:
         msg: "{{ new_topology.topology_descriptor.cluster_list[0] }}"
-
-    - name: Execute the Python script
-      command: >
-        python3 ../utils/update_sla.py '{{ topology_desc | to_nice_json }}' '{{ workers_hostname | to_json }}'
-
-      register: validation_result
-
-    - name: Print validation result
-      debug:
-        msg: "{{ validation_result.stdout }}"
-
-    - include_tasks: support_execution.yml
-      vars:
-        script_name: "/utils/update_sla.py"
-        script_args: "{{ topology_desc }} {{ workers_hostname }}"
-
 
 
 ###############################################à
