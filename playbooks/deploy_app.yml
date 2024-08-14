@@ -72,56 +72,18 @@
 
     - name: Print the output of the Python script
       debug:
-        msg: "{{ result_output }}"
+        msg: "{{ result_output.stdout }}"
 
     - name: Retrieve updated topology
       ansible.builtin.slurp:
         src: "/tmp/topology_desc.json"
       register: new_topology_content
 
-    - name: Print new topology content
-      debug:
-        msg: "{{ new_topology_content }}"
-
     - name: Decode new topology
       set_fact:
         new_topology: "{{ new_topology_content.content | b64decode }}"
 
-
-###############################################à
-- name: SLA Descriptor application deployment on 1DOC root
-  hosts: localhost
-  tasks:
-    - name: Add constraints to SLA descriptor for worker assignation
-      include_role:
-        name: add-constraints
-      vars:
-        group_root_full: "{{ group_root_full }}"
-        group_workers_full: "{{ group_workers_full }}"
-        topology_desc: "{{ topology_desc }}"
-      when: deploy_1doc
-
-- name: Retrieve hostname of group_workers_full
-  hosts: "{{ group_workers_full }}"
-  tasks:
-    - name: Execute hostname command on each host
-      command: hostname
-      register: hostname_result
-
-    - name: Print hostname of each host
+    - name: Show deployed topoology 
       debug:
-        msg: "Hostname of {{ inventory_hostname }} is {{ hostname_result.stdout }}"
-
-    - name: Store hostname result
-      set_stats:
-        data:
-          hostname_list: "{{ hostname_list | default([]) + [{ 'host': inventory_hostname, 'hostname': hostname_result.stdout }] }}"
-
-- name: Print hostname list
-  hosts: localhost
-  tasks:
-    - name: Display hostnames
-      debug:
-        msg: "{{ hostname_list }}"
-
+        msg: "{{ new_topology_content }}"
 
