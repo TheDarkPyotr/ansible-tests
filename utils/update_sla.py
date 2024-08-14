@@ -80,6 +80,8 @@ def update_topology(clusters, workers):
                     assigned_hostname = cluster_reserved.pop(0)
                     used_workers.append(assigned_hostname)
                 else:
+                    if service_index >= len(used_workers):
+                        service_index = 0
                     assigned_hostname = used_workers[service_index]
                     service_index += 1
 
@@ -209,4 +211,6 @@ if __name__ == "__main__":
     main()
 
 # test purposes
-# python3 ./utils/update_sla.py ./topologies/full.json "[\"cmvm21\", \"cmvm22\", \"cmvm23\", \"cmvm24\"]" "[\"worker1\", \"worker2\", \"worker3\", \"worker4\"]" "[\"131.159.25.107\"]"
+# python3 ./utils/update_sla.py ./topologies/full.json "[\"cmvm21\", \"cmvm22\", \"cmvm23\", \"cmvm24\"]" "[\"worker1\", \"worker2\", \"worker3\"]" "[\"131.159.25.107\"]"
+# python3 exec.py ./ansible-tests/topologies/full.json "[\"cmvm21\"," \"cmvm22\", \"cmvm23\", \"cmvm24\"]" "[\"worker1\", \"worker2\", \"worker3\"]" "[\"131.159.25.107\"]"
+# python3 ./utils/update_sla.py ./topologies/full.json  "[\"xavier1\"]" "[\"131.159.25.108\"]" "[\"131.159.25.107\"]"
