@@ -56,16 +56,15 @@
         content: "{{ topology_desc_json }}"
         dest: "/tmp/topology_desc.json"
 
-    - name: Install icmplib
-      ansible.builtin.pip:
-        name: icmplib
-        executable: pip3
+    - name: Install script dependencies
+      ansible.builtin.shell: |
+        pip3 install -r ../utils/deploy_app/requirements.txt
       become: true
       become_user: root
 
     - name: Run the Python script with file and array arguments
       ansible.builtin.shell: |
-        python3 ../utils/update_sla.py "/tmp/topology_desc.json" "{{ workers_json }}" "{{ group_clusters_full }}" "{{ group_root_full }}"
+        python3 ../utils/deploy_app/update_sla.py "/tmp/topology_desc.json" "{{ workers_json }}" "{{ group_clusters_full }}" "{{ group_root_full }}"
       register: result_output
       become: true
       become_user: root
