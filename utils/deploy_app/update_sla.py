@@ -209,6 +209,8 @@ async def main_async():
             global authToken
             authToken = token
             print(f"Token: {token}")
+            print("Updated SLA:")
+            print(json.dumps(updated_sla, indent=4))
             success, failed = await deploy_application(updated_sla)
             if success:
                 print("Successfully deployed applications:")
@@ -228,3 +230,5 @@ def main():
 
 if __name__ == "__main__":
     main()
+
+#  sudo python3 ./utils/deploy_app/update_sla.py ./topologies/two-clusters.json  "[\"xavier1\", \"xavier2\"]" "[\"131.159.25.108\", \"pi4-base\"]" "[\"localhost\"]"
