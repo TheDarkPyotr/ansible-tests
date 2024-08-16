@@ -78,7 +78,7 @@
                       "microservice_namespace": "test2",
                       "virtualization": "container",
                       "cmd": ["sh", "-c", "while true; do echo 'Service 1 running'; sleep 60; done"],
-                      "memory": 10,
+                      "memory": 1,
                       "vcpus": 0,
                       "vgpus": 0,
                       "vtpus": 0,
