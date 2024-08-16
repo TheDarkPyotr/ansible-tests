@@ -142,8 +142,8 @@ async def deploy_application(updated_sla: dict):
             if isinstance(body, (str, bytes, bytearray)):
                 body = json.loads(body)
             for app in body:
-                if body["applicationID"] not in deployed_apps:
-                    deployed_apps.append(body["applicationID"])
+                if app["applicationID"] not in deployed_apps:
+                    deployed_apps.append(app["applicationID"])
                     if isinstance(app, dict):
                         microservices = app.get("microservices", [])
                         for microservice_id in microservices:
