@@ -123,6 +123,7 @@ async def deploy_application(updated_sla: dict):
     clusters = topology.get("cluster_list", [])
     success = {}
     failed = {}
+    deployed_apps = []
 
     for cluster in clusters:
         sla_descriptor = cluster.get("sla_descriptor", {})
@@ -135,24 +136,31 @@ async def deploy_application(updated_sla: dict):
         )
 
         if status_code in (200, 201):
+
             success[cluster["cluster_number"]] = []
             failed[cluster["cluster_number"]] = []
             if isinstance(body, (str, bytes, bytearray)):
                 body = json.loads(body)
             for app in body:
-                if isinstance(app, dict):
-                    microservices = app.get("microservices", [])
-                    for microservice_id in microservices:
-                        instance_endpoint = f"http://{hostname}:10000/api/service/{microservice_id}/instance"
-                        status_code, instance_body = await post_request(
-                            instance_endpoint, {}
-                        )
-                        if status_code in (200, 201):
-                            success[cluster["cluster_number"]].append(microservice_id)
-                        else:
-                            failed[cluster["cluster_number"]].append(microservice_id)
-                else:
-                    print(f"App is not a dict: {app}")
+                if body["applicationID"] not in deployed_apps:
+                    deployed_apps.append(body["applicationID"])
+                    if isinstance(app, dict):
+                        microservices = app.get("microservices", [])
+                        for microservice_id in microservices:
+                            instance_endpoint = f"http://{hostname}:10000/api/service/{microservice_id}/instance"
+                            status_code, instance_body = await post_request(
+                                instance_endpoint, {}
+                            )
+                            if status_code in (200, 201):
+                                success[cluster["cluster_number"]].append(
+                                    microservice_id
+                                )
+                            else:
+                                failed[cluster["cluster_number"]].append(
+                                    microservice_id
+                                )
+                    else:
+                        print(f"App is not a dict: {app}")
         else:
             failed[cluster["cluster_number"]] = f"SLA_POST_FAILED_{status_code}_{body}"
 
