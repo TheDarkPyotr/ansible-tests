@@ -90,18 +90,13 @@ def update_topology(clusters, workers):
                 else:
                     assigned_worker = used_workers[service_index % len(used_workers)]
                     # If "constraints" already exists, append the new constraint
-                    if "constraints" in service:
-                        if (
-                            "type" not in service["constraints"]
-                            and "node" not in service["constraints"]
-                        ):
-                            service["constraints"].append(
-                                {"type": "direct", "node": assigned_worker}
-                            )
-                    else:
-                        service["constraints"] = [
-                            {"type": "direct", "node": assigned_worker}
-                        ]
+                print(f"Assigning worker {assigned_worker} to service {service["microservice_name"]}")
+
+                if "constraints" in service:
+                    if ("type" not in service["constraints"] and "node" not in service["constraints"]):
+                        service["constraints"].append({"type": "direct", "node": assigned_worker})
+                else:
+                    service["constraints"] = [{"type": "direct", "node": assigned_worker}]
 
 
 def check_correspondence(json_data, workers):
