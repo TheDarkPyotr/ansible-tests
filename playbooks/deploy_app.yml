@@ -58,7 +58,7 @@
 
     - name: Install script dependencies
       ansible.builtin.shell: |
-        pip3 install -r ../utils/deploy_app/requirements.txt
+        pip install -r ../utils/deploy_app/requirements.txt
       become: true
       become_user: root
 
