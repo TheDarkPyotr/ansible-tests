@@ -56,6 +56,12 @@
         content: "{{ topology_desc_json }}"
         dest: "/tmp/topology_desc.json"
 
+    - name: Change directory to deploy_app
+      ansible.builtin.shell: |
+        cd ..
+      become: true
+      become_user: root
+
     - name: Show files of current directory
       ansible.builtin.shell: |
         ls -l
@@ -70,7 +76,7 @@
 
     - name: Install Python packages from requirements.txt
       pip:
-        requirements: ../utils/deploy_app/requirements.txt
+        requirements: ./utils/deploy_app/requirements.txt
         executable: pip3
       become: true
 
