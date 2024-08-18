@@ -59,6 +59,7 @@
     - name: Show files of current directory
       ansible.builtin.shell: |
         ls -l
+      register: ls
       become: true
       become_user: root 
 
