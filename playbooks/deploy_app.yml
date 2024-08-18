@@ -56,6 +56,13 @@
         content: "{{ topology_desc_json }}"
         dest: "/tmp/topology_desc.json"
 
+    - name: Upgrade pip to the latest version
+      pip:
+        name: pip
+        state: latest
+        executable: pip3
+      become: true
+
     - name: Install Python packages from requirements.txt
       pip:
         requirements: ./utils/deploy_app/requirements.txt
