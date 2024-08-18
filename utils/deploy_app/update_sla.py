@@ -173,7 +173,7 @@ async def deploy_application(updated_sla: dict):
     return success, failed
 
 
-async def entrypoint():
+async def main_async():
     if len(sys.argv) != 5:
         print("Error: Expected exactly four command-line arguments.")
         return
@@ -240,12 +240,11 @@ async def entrypoint():
         print(root_group)
 
 
-async def main():
+def main():
     loop = asyncio.get_event_loop()
-    await loop.run_until_complete(entrypoint())
-    loop.stop()  # Stop the event loop when entrypoint finishes
+    loop.run_until_complete(main_async())
     loop.close()
-    sys.exit(0)
+    # asyncio.run(main_async())
 
 
 if __name__ == "__main__":
