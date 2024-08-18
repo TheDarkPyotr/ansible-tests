@@ -56,6 +56,16 @@
         content: "{{ topology_desc_json }}"
         dest: "/tmp/topology_desc.json"
 
+    - name: Show files of current directory
+      ansible.builtin.shell: |
+        ls -l
+      become: true
+      become_user: root 
+
+    - name: print file list
+      debug:
+        msg: "{{ ls.stdout_lines }}"
+
 
     - name: Install Python packages from requirements.txt
       pip:
