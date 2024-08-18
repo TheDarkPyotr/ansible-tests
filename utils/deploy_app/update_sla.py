@@ -6,6 +6,8 @@ import requests
 import aiohttp
 import asyncio
 
+print(asyncio.__file__)
+
 
 def validate_topology(data):
     """Validate the topology data structure."""

@@ -56,30 +56,12 @@
         content: "{{ topology_desc_json }}"
         dest: "/tmp/topology_desc.json"
 
-    - name: Change directory to deploy_app
-      ansible.builtin.shell: |
-        cd ..
-      become: true
-      become_user: root
-
-    - name: Show files of current directory
-      ansible.builtin.shell: |
-        ls -l
-      register: ls
-      become: true
-      become_user: root 
-
-    - name: print file list
-      debug:
-        msg: "{{ ls.stdout_lines }}"
-
-
     - name: Install Python packages from requirements.txt
       pip:
         requirements: ./utils/deploy_app/requirements.txt
         executable: pip3
         chdir: ..
-      #become: true
+      become: true
 
     #- name: Install script dependencies
     #  ansible.builtin.shell: |
@@ -89,7 +71,7 @@
 
 
     - name: Execute the Python script with sudo and parameters
-      command: python3 ../utils/deploy_app/update_sla.py "/tmp/topology_desc.json" "{{ workers_json }}" "{{ group_clusters_full }}" "{{ group_root_full }}"
+      command: /bin/python3 ../utils/deploy_app/update_sla.py "/tmp/topology_desc.json" "{{ workers_json }}" "{{ group_clusters_full }}" "{{ group_root_full }}"
       register: result_output
       become: true
       become_user: root
