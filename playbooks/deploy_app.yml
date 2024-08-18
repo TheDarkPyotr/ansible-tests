@@ -57,12 +57,6 @@
         dest: "/tmp/topology_desc.json"
 
 
-    - name: Ensure pip is installed
-      package:
-        name: python3-pip
-        state: present
-      become: true
-
     - name: Install Python packages from requirements.txt
       pip:
         requirements: ../utils/deploy_app/requirements.txt
