@@ -76,7 +76,7 @@
 
     - name: Install Python packages from requirements.txt
       pip:
-        requirements: ../utils/deploy_app/requirements.txt
+        requirements: ./utils/deploy_app/requirements.txt
         executable: pip3
         chdir: ..
       become: true
