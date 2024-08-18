@@ -76,12 +76,15 @@ def is_reachable(hostname):
     return host.packets_sent == host.packets_received
 
 
-def update_topology(clusters, workers):
+def update_topology(clusters, workers, cluster_names):
     """Update the topology with the available worker nodes."""
     for cluster in clusters:
         number_of_nodes = cluster.get("number_of_nodes", 0)
         assigned_workers = workers[:number_of_nodes]
-        del workers[:number_of_nodes]  # Remove assigned workers from the list
+        del workers[:number_of_nodes]
+
+        if cluster_names:
+            cluster_suffix = cluster_names.pop(0)
 
         used_workers = []
         for app in cluster["sla_descriptor"]["applications"]:
@@ -102,15 +105,23 @@ def update_topology(clusters, workers):
                         and "node" not in service["constraints"]
                     ):
                         service["constraints"].append(
-                            {"type": "direct", "node": assigned_worker}
+                            {
+                                "type": "direct",
+                                "node": assigned_worker,
+                                "cluster": "CL" + cluster_suffix,
+                            }
                         )
                 else:
                     service["constraints"] = [
-                        {"type": "direct", "node": assigned_worker}
+                        {
+                            "type": "direct",
+                            "node": assigned_worker,
+                            "cluster": "CL" + cluster_suffix,
+                        }
                     ]
 
 
-def check_correspondence(json_data, workers):
+def check_correspondence(json_data, workers, cluster_names):
     """Check if the number of workers matches the required nodes and update the topology."""
     clusters = json_data.get("topology_descriptor", {}).get("cluster_list", [])
     total_nodes = sum(cluster.get("number_of_nodes", 0) for cluster in clusters)
@@ -119,7 +130,7 @@ def check_correspondence(json_data, workers):
         print("Insufficient worker nodes.")
         return False
 
-    update_topology(clusters, workers)
+    update_topology(clusters, workers, cluster_names)
     return json_data
 
 
@@ -173,6 +184,20 @@ async def deploy_application(updated_sla: dict):
     return success, failed
 
 
+def check_list(param_str: str):
+    """Check if the string is a valid list."""
+    try:
+        converted_list = ast.literal_eval(param_str)
+        if not isinstance(converted_list, list):
+            print(f"Error: {param_str} parameter is not a list")
+            return
+        else:
+            return converted_list
+    except (SyntaxError, ValueError) as e:
+        print(f"Error converting {param_str} string to list: {e}")
+        return
+
+
 async def main_async():
     if len(sys.argv) != 5:
         print("Error: Expected exactly four command-line arguments.")
@@ -187,26 +212,12 @@ async def main_async():
         print(f"Error reading JSON file: {e}")
         return
 
-    try:
-        worker_list = ast.literal_eval(worker_str)
-        if not isinstance(worker_list, list):
-            print("Error: worker parameter is not a list")
-            return
-    except (SyntaxError, ValueError) as e:
-        print(f"Error converting worker string to list: {e}")
-        return
-
-    try:
-        root_group = ast.literal_eval(root_str)
-        if not isinstance(root_group, list):
-            print("Error: root parameter is not a list")
-            return
-    except (SyntaxError, ValueError) as e:
-        print(f"Error converting root string to list: {e}")
-        return
+    worker_list = check_list(worker_str)
+    root_group = check_list(root_str)
+    cluster_names = check_list(inventory_str)
 
     if validate_topology(json_data):
-        updated_sla = check_correspondence(json_data, worker_list)
+        updated_sla = check_correspondence(json_data, worker_list, cluster_names)
     else:
         print("Invalid topology data.")
         return
@@ -214,6 +225,7 @@ async def main_async():
     if updated_sla and root_group:
         global hostname
         hostname = root_group[0]
+        print(f"Updated SLA is {updated_sla}")
         if not is_reachable(hostname):
             print(f"Error: Root node {hostname} is not reachable.")
             return
@@ -244,7 +256,6 @@ def main():
     loop = asyncio.get_event_loop()
     loop.run_until_complete(main_async())
     loop.close()
-    # asyncio.run(main_async())
 
 
 if __name__ == "__main__":
