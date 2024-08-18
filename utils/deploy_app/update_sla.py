@@ -243,7 +243,9 @@ async def entrypoint():
 async def main():
     loop = asyncio.get_event_loop()
     await loop.run_until_complete(entrypoint())
+    loop.stop()  # Stop the event loop when entrypoint finishes
     loop.close()
+    sys.exit(0)
 
 
 if __name__ == "__main__":
