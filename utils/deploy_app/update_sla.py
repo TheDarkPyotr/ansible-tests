@@ -234,13 +234,18 @@ async def main_async():
             print("Failed to obtain authentication token.")
     else:
         print("Updated SLA is invalid or root group is empty.")
+        print(updated_sla)
+        print(root_group)
 
 
 def main():
-    asyncio.run(main_async())
+    loop = asyncio.get_event_loop()
+    loop.run_until_complete(main_async())
+    # asyncio.run(main_async())
 
 
 if __name__ == "__main__":
     main()
 
 #  sudo python3 ./utils/deploy_app/update_sla.py ./topologies/two-clusters.json  "[\"xavier1\", \"xavier2\"]" "[\"131.159.25.108\", \"pi4-base\"]" "[\"localhost\"]"
+#  sudo /bin/python3 ./utils/deploy_app/update_sla.py ./topologies/two-clusters.json  "[\"xavier2\"]" "[\"pi4-base\"]" "[\"131.159.25.107\"]"
