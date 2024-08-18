@@ -249,9 +249,7 @@ async def main():
 
 
 if __name__ == "__main__":
-    loop = asyncio.get_event_loop()
-    # Schedule main for execution using run_in_executor
-    loop.run_in_executor(None, main)
+    main()
 
 #  sudo python3 ./utils/deploy_app/update_sla.py ./topologies/two-clusters.json  "[\"xavier1\", \"xavier2\"]" "[\"131.159.25.108\", \"pi4-base\"]" "[\"localhost\"]"
 #  sudo /bin/python3 ./utils/deploy_app/update_sla.py ./topologies/two-clusters.json  "[\"xavier2\"]" "[\"pi4-base\"]" "[\"131.159.25.107\"]"
