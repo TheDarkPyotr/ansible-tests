@@ -240,12 +240,16 @@ async def entrypoint():
         print(root_group)
 
 
-def main():
+async def main():
     loop = asyncio.get_event_loop()
-    loop.run_until_complete(entrypoint())
+    await loop.run_until_complete(entrypoint())
+    loop.close()
 
 
 if __name__ == "__main__":
-    asyncio.run(main())
+    asyncio.ensure_future(main())  # Schedule main for execution
+    loop = asyncio.get_event_loop()
+    loop.run_forever()  # Run the event loop
+
 #  sudo python3 ./utils/deploy_app/update_sla.py ./topologies/two-clusters.json  "[\"xavier1\", \"xavier2\"]" "[\"131.159.25.108\", \"pi4-base\"]" "[\"localhost\"]"
 #  sudo /bin/python3 ./utils/deploy_app/update_sla.py ./topologies/two-clusters.json  "[\"xavier2\"]" "[\"pi4-base\"]" "[\"131.159.25.107\"]"
