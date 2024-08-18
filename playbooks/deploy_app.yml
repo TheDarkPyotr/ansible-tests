@@ -56,11 +56,24 @@
         content: "{{ topology_desc_json }}"
         dest: "/tmp/topology_desc.json"
 
-    - name: Install script dependencies
-      ansible.builtin.shell: |
-        pip3 install -r ../utils/deploy_app/requirements.txt
+
+    - name: Ensure pip is installed
+      apt:
+        name: python3-pip
+        state: present
       become: true
-      become_user: root
+
+    - name: Install Python packages from requirements.txt
+      pip:
+        requirements: ../utils/deploy_app/requirements.txt
+        executable: pip3
+      become: true
+
+    #- name: Install script dependencies
+    #  ansible.builtin.shell: |
+    #    pip3 install -r ../utils/deploy_app/requirements.txt
+    #  become: true
+    #  become_user: root
 
     - name: Run the Python script with file and array arguments
       ansible.builtin.shell: |
@@ -85,4 +98,3 @@
     - name: Show deployed topoology 
       debug:
         msg: "{{ new_topology_content }}"
-
