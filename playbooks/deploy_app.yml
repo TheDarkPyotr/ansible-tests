@@ -79,7 +79,7 @@
         requirements: ./utils/deploy_app/requirements.txt
         executable: pip3
         chdir: ..
-      become: true
+      #become: true
 
     #- name: Install script dependencies
     #  ansible.builtin.shell: |
