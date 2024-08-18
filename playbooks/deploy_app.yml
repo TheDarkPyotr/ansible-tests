@@ -66,7 +66,7 @@
     - name: Install Python packages from requirements.txt
       pip:
         requirements: ./utils/deploy_app/requirements.txt
-        executable: pip3
+        executable: /bin/python3 -m pip
         chdir: ..
       become: true
 
@@ -79,7 +79,6 @@
 
     - name: Execute the Python script with sudo and parameters
       command: >
-        /bin/python3 -m pip install -r ../utils/deploy_app/requirements.txt
         /bin/python3 ../utils/deploy_app/update_sla.py "/tmp/topology_desc.json" "{{ workers_json }}" "{{ group_clusters_full }}" "{{ group_root_full }}"
       register: result_output
       become: true
