@@ -87,9 +87,9 @@
     #  become: true
     #  become_user: root
 
-    - name: Run the Python script with file and array arguments
-      ansible.builtin.shell: |
-        sudo python3 ../utils/deploy_app/update_sla.py "/tmp/topology_desc.json" "{{ workers_json }}" "{{ group_clusters_full }}" "{{ group_root_full }}"
+
+    - name: Execute the Python script with sudo and parameters
+      command: python3 ../utils/deploy_app/update_sla.py "/tmp/topology_desc.json" "{{ workers_json }}" "{{ group_clusters_full }}" "{{ group_root_full }}"
       register: result_output
       become: true
       become_user: root
