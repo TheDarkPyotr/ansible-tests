@@ -1,28 +1,28 @@
-- name: Execute 1DOC template if one_doc_enabled is true
+- name: Deploy 1DOC topology
   hosts: localhost
   gather_facts: false
   tasks:
-    - name: Fail if deploy_1doc is false
+    - name: Skip deployment if deploy_1doc is false
       fail:
         msg: "Deployment is skipped because deploy_1doc is false."
       when: not deploy_1doc
 
 
-- name: Deploy components for 1DOC topology
+- name: Deploy components for 1DOC topology host ({{ group_1doc }})
   hosts: "{{ group_1doc }}"
   gather_facts: true
   tasks:
-    - name: Retrieve current hostname IP address
+    - name: Retrieve {{ inventory_hostname }} hostname IP address
       set_fact:
         current_ip: "{{ hostvars[inventory_hostname].ansible_host | default(hostvars[inventory_hostname].ansible_ssh_host, 'IP address not found') }}"  
 
-    - name: Check current ip validity
+    - name: Check {{ inventory_hostname }} IP validity
       fail:
         msg: "IP address not found for current node {{ inventory_hostname }}"
       when: current_ip == "IP address not found"
 
 
-    - name: Entrypoint to ensure cloned repo (node {{ inventory_hostname }})
+    - name: Verify Oakestra repo is cloned (node {{ inventory_hostname }})
       include_role:
         name: ensure-oakestra-repo-is-cloned
       vars:
@@ -31,7 +31,7 @@
         branch: "{{ oak_repo_version }}"
         commit: "{{ commit }}"
       
-    - name: Entrypoint to start 1DOC (node {{ inventory_hostname }})
+    - name: Start 1DOC components (node {{ inventory_hostname }})
       include_role:
         name: start-1-doc
       vars:
@@ -40,7 +40,7 @@
         clusterLocation: ""
         additionalComposeOverrides: "-f override-alpha-versions.yaml"
 
-    - name: Set OAK_ROLE environment variables on worker node {{ inventory_hostname }}
+    - name: Set OAK_ROLE environment variables on worker node
       ansible.builtin.lineinfile:
         path: /etc/environment
         regexp: '^OAK_ROLE='

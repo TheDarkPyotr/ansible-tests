@@ -3,33 +3,38 @@
   gather_facts: false
   vars:
     repo: "https://github.com/TheDarkPyotr/ansible-tests"
-    branch: "main"  
+    branch: "main"
   tasks:
-    - name: Print group assignments for verification
+    - name: Show groups division
       debug:
         msg: |
           group_root_full: {{ group_root_full }}
           group_clusters_full: {{ group_clusters_full }}
           group_workers_full: {{ group_workers_full }}
 
-    - name: Check execution scenario
+    - name: Check flag for full deployment
       fail:
         msg: "Deployment is skipped because deploy_1doc is true."
       when: deploy_1doc or together_root_cluster
 
-    - name: Print the parsed topology data
+    - name: Parsed topology descriptor
       debug:
         msg: "{{ topology_desc }}"
 
-    - name: Prepare JSON string for the Python script
+    - name: Set JSON string for combination script
       set_fact:
         json_input: "{{ {'topology_descriptor': topology_desc, 'group_clusters_full': group_clusters_full, 'group_workers_full': group_workers_full } | to_json }}"
 
-    - include_tasks: support_execution.yml
+    - include_role:
+        name: support-execution
       vars:
         script_name: "/utils/full_deploy/combination.py"
         script_args: "{{ json_input }}"
 
+    #- include_tasks: support_execution.yml
+    #  vars:
+    #    script_name: "/utils/full_deploy/combination.py"
+    #    script_args: "{{ json_input }}"
 
     - name: Set topology_desc as JSON
       set_fact:
