@@ -19,8 +19,8 @@
     - role: topology-app-deploy
       vars:
         local_hostname: "{{ local_hostname }}"
-        group_root_full: "{{ group_1doc }}"
-        group_clusters_full: "{{ group_1doc }}"
+        group_root: "{{ group_1doc }}"
+        group_clusters: "{{ group_1doc }}"
         topology_desc: "{{ topology_desc }}"
       when: deploy_1doc and not together_root_cluster
 
@@ -44,7 +44,7 @@
     - role: topology-app-deploy
       vars:
         local_hostname: "{{ local_hostname }}"
-        group_root_full: "{{ group_root_full}}"
-        group_clusters_full: "{{ group_clusters_full }}"
+        group_root: "{{ group_root_full}}"
+        group_clusters: "{{ group_clusters_full }}"
         topology_desc: "{{ topology_desc }}"
       when: not deploy_1doc and not together_root_cluster
