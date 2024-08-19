@@ -9,6 +9,7 @@ import asyncio
 
 def validate_topology(data):
     """Validate the topology data structure."""
+    # TODO: Add more validation checks
     return isinstance(data, dict)
 
 
@@ -92,11 +93,11 @@ def update_topology(clusters, workers, cluster_names):
                     used_workers.append(assigned_worker)
                 else:
                     assigned_worker = used_workers[service_index % len(used_workers)]
-                    # If "constraints" already exists, append the new constraint
                 print(
                     f"Assigning worker {assigned_worker} to service {service['microservice_name']}"
                 )
 
+            if deploy_mode == "rc" or deploy_mode == "full":
                 if "constraints" in service:
                     if (
                         "type" not in service["constraints"]
@@ -201,8 +202,10 @@ async def main_async():
         print("Error: Expected exactly four command-line arguments.")
         return
 
+    # Parse command-line arguments
     json_file, worker_str, inventory_str, root_str = sys.argv[1:5]
 
+    # Read the topology descriptor temp JSON file
     try:
         with open(json_file, "r") as f:
             json_data = json.load(f)
@@ -210,12 +213,27 @@ async def main_async():
         print(f"Error reading JSON file: {e}")
         return
 
+    # Convert the string parameters to lists
     worker_list = check_list(worker_str)
     root_group = check_list(root_str)
     cluster_names = check_list(inventory_str)
 
     if validate_topology(json_data):
+        global deploy_mode
+        onedoc_enabled = json_data.get("topology_descriptor", {}).get(
+            "one_doc_enabled", "false"
+        )
+        rc_enabled = json_data.get("topology_descriptor", {}).get(
+            "together_root_cluster", "false"
+        )
+        deploy_mode = (
+            "one-doc"
+            if onedoc_enabled == "true"
+            else "rc" if rc_enabled == "true" else "full"
+        )
+
         updated_sla = check_correspondence(json_data, worker_list, cluster_names)
+
     else:
         print("Invalid topology data.")
         return
