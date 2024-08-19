@@ -234,6 +234,8 @@ async def main_async():
             else "rc" if rc_enabled == "true" else "full"
         )
 
+        print(f"Deploy is setted to: {deploy_mode}")
+
         updated_sla = check_correspondence(
             json_data, worker_list, cluster_names, deploy_mode
         )
