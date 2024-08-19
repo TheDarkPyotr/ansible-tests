@@ -233,40 +233,38 @@ async def main_async():
         )
 
         updated_sla = check_correspondence(json_data, worker_list, cluster_names)
+        if updated_sla and root_group:
+            global hostname
+            hostname = root_group[0]
+
+            if not is_reachable(hostname):
+                print(f"Error: Root node {hostname} is not reachable.")
+                return
+
+            token = authenticate(hostname)
+            if token:
+                global authToken
+                authToken = token
+                print(f"Token: {token}")
+                print("Updated SLA is:")
+                print(json.dump(updated_sla))
+                success, failed = await deploy_application(updated_sla)
+                if success:
+                    print("Successfully deployed applications:")
+                    print(success)
+                if failed:
+                    print("Failed to deploy applications:")
+                    print(failed)
+            else:
+                print("Failed to obtain authentication token.")
+        else:
+            print("Updated SLA is invalid or root group is empty.")
+            print(updated_sla)
+            print(root_group)
 
     else:
         print("Invalid topology data.")
-        return
-
-    if updated_sla and root_group:
-        global hostname
-        hostname = root_group[0]
-        print("Updated SLA is:")
-        print(json.dumps(updated_sla, indent=4))
-        if not is_reachable(hostname):
-            print(f"Error: Root node {hostname} is not reachable.")
-            return
-
-        token = authenticate(hostname)
-        if token:
-            global authToken
-            authToken = token
-            print(f"Token: {token}")
-            print("Updated SLA:")
-            print(json.dumps(updated_sla, indent=4))
-            success, failed = await deploy_application(updated_sla)
-            if success:
-                print("Successfully deployed applications:")
-                print(success)
-            if failed:
-                print("Failed to deploy applications:")
-                print(failed)
-        else:
-            print("Failed to obtain authentication token.")
-    else:
-        print("Updated SLA is invalid or root group is empty.")
-        print(updated_sla)
-        print(root_group)
+        return None
 
 
 def main():
