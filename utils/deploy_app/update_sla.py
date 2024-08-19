@@ -247,7 +247,7 @@ async def main_async():
                 authToken = token
                 print(f"Token: {token}")
                 print("Updated SLA is:")
-                print(json.dump(updated_sla))
+                print(json.dumps(updated_sla))
                 success, failed = await deploy_application(updated_sla)
                 if success:
                     print("Successfully deployed applications:")
