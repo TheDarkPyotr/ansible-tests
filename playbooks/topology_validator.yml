@@ -11,15 +11,15 @@
     - name: Create a temporary directory for testbed files
       ansible.builtin.tempfile:
         state: directory
-        suffix: testbed_repo
+        suffix: _testbed_repo
       register: temp_repo_dir
 
     - name: Clone the testbed repository
       ansible.builtin.git:
-        testbed_repo: "{{ testbed_repo }}"
+        repo: "{{ testbed_repo }}"
         dest: "{{ temp_repo_dir.path }}"
         version: "{{ testbed_repo_branch }}" # Branch of testbed repository
-        force: yes
+        force: true
 
     - name: Checkout the specific commit
       ansible.builtin.command:
