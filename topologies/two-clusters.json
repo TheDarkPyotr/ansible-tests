@@ -32,8 +32,7 @@
                       "code": "docker.io/library/alpine:latest",
                       "state": "",
                       "port": "",
-                      "added_files": [],
-                      "constraints":[{"type":"direct","node":"xavier2"}]
+                      "added_files": []
                     },
                     {
                       "microserviceID": "",
@@ -51,8 +50,7 @@
                       "code": "docker.io/library/alpine:latest",
                       "state": "",
                       "port": "",
-                      "added_files": [],
-                    "constraints":[{"type":"direct","node":"xavier2"}]
+                      "added_files": []
                     }
                   ]
                 }
@@ -88,8 +86,7 @@
                     "code": "docker.io/curlimages/curl:7.82.0",
                     "state": "",
                     "port": "",
-                    "added_files": [],
-                    "constraints":[{"type":"direct","node":"xavier1"}]
+                    "added_files": []
                   },
                   {
                     "microserviceID": "",
@@ -110,8 +107,7 @@
                     "addresses": {
                       "rr_ip": "10.30.55.55"
                     },
-                    "added_files": [],
-                    "constraints":[{"type":"direct","node":"xavier1"}]
+                    "added_files": []
                   }
                 ]
               }
