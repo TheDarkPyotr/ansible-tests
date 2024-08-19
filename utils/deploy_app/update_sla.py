@@ -233,11 +233,7 @@ async def main_async():
         print(f"Flag one_doc_enabled is setted to: {onedoc_enabled}")
         print(f"Flag together_root_cluster is setted to: {rc_enabled}")
 
-        deploy_mode = (
-            "one-doc"
-            if onedoc_enabled == "true"
-            else "rc" if rc_enabled == "true" else "full"
-        )
+        deploy_mode = "one-doc" if onedoc_enabled else "rc" if rc_enabled else "full"
 
         print(f"Deploy is setted to: {deploy_mode}")
 
