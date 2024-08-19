@@ -1,0 +1,73 @@
+- name: Retrieve local hostname list
+  set_fact:
+    workers_hostname: >
+      {{ hostvars | dict2items
+      | selectattr('value.local_hostname', 'defined')
+      | map(attribute='value.local_hostname.stdout')
+      | list }}
+
+- name: Available hostnames display
+  debug:
+    msg: "Available hostnames: {{ workers_hostname }}"
+
+- name: Print group_clusters_full
+  debug:
+    msg: "group_clusters_full: {{ group_clusters_full }}"
+
+- name: Set topology_desc JSON string
+  set_fact:
+    topology_desc_json: "{{ topology_desc | to_nice_json }}"
+
+- name: Set workers list JSON string
+  set_fact:
+    workers_json: "{{ workers_hostname | list }}"
+
+- name: Save topology_desc to a file
+  ansible.builtin.copy:
+    content: "{{ topology_desc_json }}"
+    dest: "/tmp/topology_desc.json"
+
+- name: Upgrade pip to the latest version
+  pip:
+    name: pip
+    state: latest
+    executable: pip3
+  become: true
+
+- name: Install Python packages from requirements.txt
+  pip:
+    requirements: ./utils/deploy_app/requirements.txt
+    executable: /usr/local/bin/pip3
+    chdir: ..
+  become: true
+  become_user: root
+
+- name: Install script dependencies
+  ansible.builtin.shell: |
+    pip3 install -r ../utils/deploy_app/requirements.txt
+  become: true
+  become_user: root
+
+- name: Execute the Python script with sudo and parameters
+  command: >
+    sudo /usr/bin/python3 ../utils/deploy_app/update_sla.py "/tmp/topology_desc.json" "{{ workers_json }}" "{{ group_clusters_full }}" "{{ group_root_full }}"
+  register: result_output
+  become: true
+  become_user: root
+
+- name: Print the output of the Python script
+  debug:
+    msg: "{{ result_output.stdout }}"
+
+- name: Retrieve updated topology
+  ansible.builtin.slurp:
+    src: "/tmp/topology_desc.json"
+  register: new_topology_content
+
+- name: Decode new topology
+  set_fact:
+    new_topology: "{{ new_topology_content.content | b64decode }}"
+
+- name: Show deployed topology
+  debug:
+    msg: "{{ new_topology_content }}"
