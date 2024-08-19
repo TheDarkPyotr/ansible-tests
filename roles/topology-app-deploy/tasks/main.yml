@@ -14,6 +14,10 @@
   debug:
     msg: "group_clusters_full: {{ group_clusters_full }}"
 
+- name: Print group_root_full
+  debug:
+    msg: "group_root_full: {{ group_root_full }}"
+
 - name: Set topology_desc JSON string
   set_fact:
     topology_desc_json: "{{ topology_desc | to_nice_json }}"
