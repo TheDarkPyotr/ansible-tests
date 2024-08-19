@@ -98,6 +98,9 @@ def update_topology(clusters, workers, cluster_names):
                 )
 
             if deploy_mode == "rc" or deploy_mode == "full":
+                print(
+                    f"Deploy mode: {deploy_mode} for service {service['microservice_name']}"
+                )
                 if "constraints" in service:
                     if (
                         "type" not in service["constraints"]
