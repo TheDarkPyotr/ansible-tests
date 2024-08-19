@@ -97,10 +97,11 @@ def update_topology(clusters, workers, cluster_names, deploy_mode):
                     f"Assigning worker {assigned_worker} to service {service['microservice_name']}"
                 )
 
+            print(
+                f"Deploy mode: {deploy_mode} for service {service['microservice_name']}"
+            )
             if deploy_mode == "rc" or deploy_mode == "full":
-                print(
-                    f"Deploy mode: {deploy_mode} for service {service['microservice_name']}"
-                )
+
                 if "constraints" in service:
                     if (
                         "type" not in service["constraints"]
@@ -223,11 +224,15 @@ async def main_async():
 
     if validate_topology(json_data):
         onedoc_enabled = json_data.get("topology_descriptor", {}).get(
-            "one_doc_enabled", "false"
+            "one_doc_enabled", False
         )
         rc_enabled = json_data.get("topology_descriptor", {}).get(
-            "together_root_cluster", "false"
+            "together_root_cluster", False
         )
+
+        print(f"Flag one_doc_enabled is setted to: {onedoc_enabled}")
+        print(f"Flag together_root_cluster is setted to: {rc_enabled}")
+
         deploy_mode = (
             "one-doc"
             if onedoc_enabled == "true"
