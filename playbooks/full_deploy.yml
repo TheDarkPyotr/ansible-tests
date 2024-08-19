@@ -27,7 +27,7 @@
 
     - include_tasks: support_execution.yml
       vars:
-        script_name: "/utils/combination.py"
+        script_name: "/utils/full_deploy/combination.py"
         script_args: "{{ json_input }}"
 
 
