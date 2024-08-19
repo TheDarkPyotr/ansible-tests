@@ -223,7 +223,8 @@ async def main_async():
     if updated_sla and root_group:
         global hostname
         hostname = root_group[0]
-        print(f"Updated SLA is {updated_sla}")
+        print("Updated SLA is:")
+        print(json.dumps(updated_sla, indent=4))
         if not is_reachable(hostname):
             print(f"Error: Root node {hostname} is not reachable.")
             return
