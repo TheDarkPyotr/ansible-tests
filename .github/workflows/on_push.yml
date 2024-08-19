@@ -43,7 +43,7 @@ jobs:
           token=$(echo "$response" | jq -r '.token')
           echo "TOWER_API_TOKEN=$token" >> $GITHUB_ENV
 
-      - name: Use the token
+      - name: POST request to AWX Testbed API Endpoint
         env:
           TOWER_HOST: ${{ secrets.TOWER_HOST }}
           TEMPLATE_ID: ${{ secrets.TEMPLATE_ID }}
@@ -61,4 +61,7 @@ jobs:
             -H "Content-Type: application/json" \
             -d "{ \"extra_vars\": $extra_vars_data }" \
             --insecure)  # --insecure is equivalent to validate_certs: false in Ansible
-          echo "$response" | jq .
+          
+          workflow_job_id=$(echo "$response" | jq -r ".id")
+
+          echo "Oakestra Testbed triggered. Visit  /jobs/workflow/$workflow_job_id/output for detailed execution logs."
