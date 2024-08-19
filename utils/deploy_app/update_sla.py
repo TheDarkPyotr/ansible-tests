@@ -75,7 +75,7 @@ def is_reachable(hostname):
     return host.packets_sent == host.packets_received
 
 
-def update_topology(clusters, workers, cluster_names):
+def update_topology(clusters, workers, cluster_names, deploy_mode):
     """Update the topology with the available worker nodes."""
     for cluster in clusters:
         number_of_nodes = cluster.get("number_of_nodes", 0)
@@ -123,7 +123,7 @@ def update_topology(clusters, workers, cluster_names):
                     ]
 
 
-def check_correspondence(json_data, workers, cluster_names):
+def check_correspondence(json_data, workers, cluster_names, deploy_mode):
     """Check if the number of workers matches the required nodes and update the topology."""
     clusters = json_data.get("topology_descriptor", {}).get("cluster_list", [])
     total_nodes = sum(cluster.get("number_of_nodes", 0) for cluster in clusters)
@@ -132,7 +132,7 @@ def check_correspondence(json_data, workers, cluster_names):
         print("Insufficient worker nodes.")
         return False
 
-    update_topology(clusters, workers, cluster_names)
+    update_topology(clusters, workers, cluster_names, deploy_mode)
     return json_data
 
 
@@ -222,7 +222,6 @@ async def main_async():
     cluster_names = check_list(inventory_str)
 
     if validate_topology(json_data):
-        global deploy_mode
         onedoc_enabled = json_data.get("topology_descriptor", {}).get(
             "one_doc_enabled", "false"
         )
@@ -235,7 +234,9 @@ async def main_async():
             else "rc" if rc_enabled == "true" else "full"
         )
 
-        updated_sla = check_correspondence(json_data, worker_list, cluster_names)
+        updated_sla = check_correspondence(
+            json_data, worker_list, cluster_names, deploy_mode
+        )
         if updated_sla and root_group:
             global hostname
             hostname = root_group[0]
