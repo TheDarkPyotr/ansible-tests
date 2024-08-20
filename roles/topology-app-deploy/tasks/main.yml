@@ -68,10 +68,6 @@
   ansible.builtin.set_fact:
     worker_process_dict: "{{ slurped_file['content'] | b64decode | from_json }}"
 
-- name: Print the worker_process_dict
-  debug:
-    msg: "{{ worker_process_dict }}"
-
 - name: Retrieve machine inventory hostnames from IPs
   ansible.builtin.set_fact:
     ip_to_hostname: >-
@@ -102,16 +98,10 @@
   register: process_check_results  # Register the output of the task
   ignore_errors: false
 
-- name: Debug output
-  debug:
-    msg: "{{ process_check_results }}"
-  when: process_check_results is defined
-
 - name: Print the output of the process check task
   debug:
     msg: |
-      Stdout: {{ item.stdout }}
-      Stderr: {{ item.stderr }}
+      Stdout: {{ item.stdout_lines[2] }}
   loop: "{{ process_check_results.results }}"
 
 - name: Print the output of the Python script
