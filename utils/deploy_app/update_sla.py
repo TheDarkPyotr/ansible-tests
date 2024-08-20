@@ -273,6 +273,7 @@ async def application_healthcheck(deployed_apps, worker_list, SYSTEM_MANAGER_URL
             print(f"Request body is a list of {len(request_body)} elements.")
             for service in request_body:
                 print(f"Service: {service}")
+                print(f"List of services: {services}")
                 if service and service["microserviceID"] in services:
                     instance_list = service.get("instance_list", [])
                     if instance_list:
