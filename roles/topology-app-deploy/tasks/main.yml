@@ -79,7 +79,7 @@
   args:
     warn: false
   delegate_to: "{{ item.key }}"
-  with_dict: "{{ worker_process_dict }}"
+  with_dict: "{{ worker_process_dict | from_json }}"
   ignore_errors: false  # Set to true if you want to continue even if a process is not running
 
 - name: Print the output of the Python script
