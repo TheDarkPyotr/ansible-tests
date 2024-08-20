@@ -262,7 +262,8 @@ async def application_healthcheck(deployed_apps, worker_list, SYSTEM_MANAGER_URL
 
                             service_statuses[id] = instance.get("status")
 
-                        print(f"Healthcheck for {id} returned {instance}")
+                        # print(f"Healthcheck for {id} returned {instance}")
+    return service_statuses
 
 
 async def main_async():
@@ -319,9 +320,12 @@ async def main_async():
                     print("Successfully deployed applications:")
                     print(success)
 
-                    await application_healthcheck(
+                    statuses = await application_healthcheck(
                         success, worker_list, SYSTEM_MANAGER_URL
                     )
+
+                    print("Service statuses:")
+                    print(statuses)
 
                 if failed:
                     print("Failed to deploy applications:")
