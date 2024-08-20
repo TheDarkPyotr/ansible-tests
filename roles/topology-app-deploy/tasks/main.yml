@@ -62,7 +62,7 @@
 - name: Read JSON file
   ansible.builtin.slurp:
     src: /tmp/process_dictionary.json
-    register: slurped_file
+  register: slurped_file
 
 - name: Decode JSON file content
   ansible.builtin.set_fact:
