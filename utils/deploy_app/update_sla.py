@@ -347,8 +347,8 @@ async def main_async():
                     print(statuses)
 
                 if failed:
-                    print("Failed to deploy applications:")
-                    print(failed)
+                    #print("Failed to deploy applications:")
+                    #print(failed)
             else:
                 print(
                     f"Failed to obtain authentication token from {SYSTEM_MANAGER_URL}."
