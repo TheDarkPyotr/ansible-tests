@@ -43,6 +43,8 @@
     - name: Include role to run root component for node {{ inventory_hostname }}
       include_role:
         name: run-root
+      vars:
+        rootIP: "{{ root_cluster_ip }}"
 
     - name: Run cluster entrypoint for node {{ inventory_hostname }}
       include_role:
