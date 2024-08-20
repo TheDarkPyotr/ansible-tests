@@ -68,6 +68,21 @@
   debug:
     msg: "{{ worker_process_dict }}"
 
+- name: Retrieve machine inventory hostnames from IPs
+  ansible.builtin.set_fact:
+    ip_to_hostname: >-
+      {{
+        ip_to_hostname | default({})
+        | combine({item.key: hostvars | dict2items | selectattr('value.ansible_host', 'equalto', item.key) | map(attribute='key') | first})
+      }}
+    loop: "{{ worker_process_dict | dict2items }}"
+    vars:
+      ip_to_hostname: {}
+
+- name: Debug IP hostname mapping
+  debug:
+    msg: "{{ ip_to_hostname }}"
+
 - name: Check if process is running on the remote host
   ansible.builtin.shell: |
     if pgrep -f "{{ item.value }}"; then
@@ -78,8 +93,8 @@
     fi
   args:
     warn: false
-  delegate_to: "{{ item.key }}"
-  with_dict: "{{ worker_process_dict | from_json }}"
+  delegate_to: "{{ ip_to_hostname[item.key] }}"
+  loop: "{{ worker_process_dict | dict2items }}"
   ignore_errors: false  # Set to true if you want to continue even if a process is not running
 
 - name: Print the output of the Python script
