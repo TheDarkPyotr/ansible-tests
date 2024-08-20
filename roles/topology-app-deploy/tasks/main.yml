@@ -75,9 +75,9 @@
         ip_to_hostname | default({})
         | combine({item.key: hostvars | dict2items | selectattr('value.ansible_host', 'equalto', item.key) | map(attribute='key') | first})
       }}
-    loop: "{{ worker_process_dict | dict2items }}"
-    vars:
-      ip_to_hostname: {}
+  loop: "{{ worker_process_dict | dict2items }}"
+  vars:
+    ip_to_hostname: {}
 
 - name: Debug IP hostname mapping
   debug:
