@@ -276,6 +276,7 @@ async def application_healthcheck(deployed_apps, worker_list, SYSTEM_MANAGER_URL
                             + "_instance_"
                             + instance["instance_number"]
                         )
+                        service_statuses[id] = instance
                         if instance.get("status") != "RUNNING":
 
                             service_statuses[id] = instance.get("status")
