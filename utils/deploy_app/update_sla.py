@@ -30,6 +30,24 @@ def post_request_sync(url, json_body):
         print(f"An error occurred: {e}")
 
 
+def get_request_sync(url):
+    """Get JSON data from the specified endpoint using the provided token."""
+    headers = {
+        "Content-Type": "application/json",
+        "Authorization": f"Bearer {authToken}",
+    }
+
+    try:
+        response = requests.get(url, headers=headers)
+        if response.status_code in (200, 201):
+            return response.status_code, response.json()
+        else:
+            return response.status_code, response.text
+    except requests.exceptions.RequestException as e:
+        print(f"An error occurred: {e}")
+        return None, str(e)
+
+
 async def post_request(url, json_body):
     """Asynchronously post JSON data to the specified endpoint using the provided token."""
     headers = {
@@ -237,13 +255,13 @@ def check_list(param_str: str):
         return
 
 
-async def application_healthcheck(deployed_apps, worker_list, SYSTEM_MANAGER_URL):
+def application_healthcheck(deployed_apps, worker_list, SYSTEM_MANAGER_URL):
 
     service_statuses = {}
 
     services = deployed_apps.values()
 
-    request_status, request_body = await get_request(
+    request_status, request_body = get_request_sync(
         url=f"http://{SYSTEM_MANAGER_URL}:10000/api/services/"
     )
 
@@ -320,7 +338,7 @@ async def main_async():
                     print("Successfully deployed applications:")
                     print(success)
 
-                    statuses = await application_healthcheck(
+                    statuses = application_healthcheck(
                         success, worker_list, SYSTEM_MANAGER_URL
                     )
 
