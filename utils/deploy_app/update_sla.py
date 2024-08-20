@@ -268,8 +268,8 @@ async def application_healthcheck(deployed_apps, worker_list, SYSTEM_MANAGER_URL
     if request_status in (200, 201):
         print(f"Request status: {request_status}")
         print(f"Request body: {request_body}")
-        if isinstance(request_body, []):
-            print(f"Request body is a list")
+        if request_body:
+            print(f"Request body is a list of {len(request_body)} elements.")
             for service in request_body:
                 print(f"Service: {service}")
                 if isinstance(service, dict) and service["$oid"] in services:
