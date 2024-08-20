@@ -273,18 +273,21 @@ async def application_healthcheck(deployed_apps, worker_list, SYSTEM_MANAGER_URL
             print(f"Request body is a list of {len(request_body)} elements.")
             for service in request_body:
                 print(f"Service: {service}")
-                if isinstance(service, dict) and service["microserviceID"] in services:
+                if service and service["microserviceID"] in services:
                     instance_list = service.get("instance_list", [])
-                    for instance in instance_list:
-                        id = (
-                            service["job_name"]
-                            + "_instance_"
-                            + instance["instance_number"]
-                        )
-                        service_statuses[id] = instance
-                        if instance.get("status") != "RUNNING":
+                    if instance_list:
+                        for instance in instance_list:
+                            id = (
+                                service["job_name"]
+                                + "_instance_"
+                                + instance["instance_number"]
+                            )
+                            service_statuses[id] = instance
+                            if instance.get("status") != "RUNNING":
 
-                            service_statuses[id] = instance.get("status")
+                                service_statuses[id] = instance.get("status")
+                    else:
+                        service_statuses[service["job_name"]] = service.get("status")
 
                         # print(f"Healthcheck for {id} returned {instance}")
     return service_statuses
