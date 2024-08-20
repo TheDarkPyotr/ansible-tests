@@ -244,21 +244,25 @@ def application_healthcheck(deployed_apps, worker_list, SYSTEM_MANAGER_URL):
     services = deployed_apps.values()
 
     request_status, request_body = get_request(
-            url=f"http://{SYSTEM_MANAGER_URL}:10000/api/services/"
-        )
+        url=f"http://{SYSTEM_MANAGER_URL}:10000/api/services/"
+    )
 
     if request_status in (200, 201):
         if isinstance(request_body, (list, bytearray)):
             for service in request_body:
-                if (isinstance(service, dict) and service["$oid"] in services):
+                if isinstance(service, dict) and service["$oid"] in services:
                     instance_list = service.get("instance_list", [])
                     for instance in instance_list:
-                        id = (service["job_name"] + "_instance_" + instance["instance_number"])
+                        id = (
+                            service["job_name"]
+                            + "_instance_"
+                            + instance["instance_number"]
+                        )
                         if instance.get("status") != "RUNNING":
-                                
+
                             service_statuses[id] = instance.get("status")
 
-                        print(f"Healthcheck for {id} returned {instance.get("status")}")
+                        print(f"Healthcheck for {id} returned {instance}")
 
 
 async def main_async():
