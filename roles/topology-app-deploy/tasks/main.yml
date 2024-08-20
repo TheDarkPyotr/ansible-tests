@@ -100,14 +100,10 @@
 
 - name: Print the output of the process check task
   debug:
-    msg: |
-      Stdout: {{ item.stdout_lines[2] }}
+    msg: "{{ item.stdout_lines[2] }}"
   loop: "{{ process_check_results.results }}"
 
-- name: Print the output of the Python script
-  debug:
-    msg: "{{ result_output.stdout }}"
-
+################ TO BE REMOVED ################
 - name: Retrieve updated topology
   ansible.builtin.slurp:
     src: "/tmp/topology_desc.json"
