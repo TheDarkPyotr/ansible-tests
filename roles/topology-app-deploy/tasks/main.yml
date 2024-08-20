@@ -68,6 +68,20 @@
   debug:
     msg: "{{ worker_process_dict }}"
 
+- name: Check if process is running on the remote host
+  ansible.builtin.shell: |
+    if pgrep -f "{{ item.value }}"; then
+      echo "Process "{{ item.value }}" is running"
+    else
+      echo "Process "{{ item.value }}" not running"
+      exit 1
+    fi
+  args:
+    warn: false
+  delegate_to: "{{ item.key }}"
+  with_dict: "{{ worker_process_dict }}"
+  ignore_errors: false  # Set to true if you want to continue even if a process is not running
+
 - name: Print the output of the Python script
   debug:
     msg: "{{ result_output.stdout }}"
