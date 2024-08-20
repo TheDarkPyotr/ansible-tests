@@ -255,13 +255,13 @@ def check_list(param_str: str):
         return
 
 
-def application_healthcheck(deployed_apps, worker_list, SYSTEM_MANAGER_URL):
+async def application_healthcheck(deployed_apps, worker_list, SYSTEM_MANAGER_URL):
 
     service_statuses = {}
 
     services = deployed_apps.values()
 
-    request_status, request_body = get_request_sync(
+    request_status, request_body = await get_request(
         url=f"http://{SYSTEM_MANAGER_URL}:10000/api/services/"
     )
 
@@ -338,7 +338,7 @@ async def main_async():
                     print("Successfully deployed applications:")
                     print(success)
 
-                    statuses = application_healthcheck(
+                    statuses = await application_healthcheck(
                         success, worker_list, SYSTEM_MANAGER_URL
                     )
 
