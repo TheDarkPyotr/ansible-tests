@@ -54,10 +54,26 @@
         clusterName: "CL{{ inventory_hostname }}"
         clusterLocation: ""
 
+    - name: Set root cluster IP for worker nodes
+      set_fact:
+        root_cluster_ip: "{{ root_cluster_ip }}"
 
 - name: Deploy worker components for full topology
   hosts: "{{ group_rc_workers }}"
   tasks:
+
+    - name: Retrieve root&cluster hostname from group_rc_together
+      set_fact:
+        root_hostname: "{{ group_rc_together[0] }}"
+
+    - name: Retrieve root IP address
+      set_fact:
+        root_cluster_ip: "{{ hostvars[root_hostname].ansible_host | default(hostvars[root_hostname].ansible_ssh_host, 'IP address not found') }}"
+
+    - name: Print root&cluster IP address for worker nodes
+      debug:
+        msg: "Root&Cluster IP address for worker {{ inventory_hostname }} is {{ root_cluster_ip }}"
+
     - name: Set OAK_ROLE environment variables on worker node {{ inventory_hostname }}
       ansible.builtin.lineinfile:
         path: /etc/environment
