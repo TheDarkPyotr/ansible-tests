@@ -277,17 +277,16 @@ async def application_healthcheck(deployed_apps, worker_list, SYSTEM_MANAGER_URL
                         for instance in instance_list:
                             id = (
                                 service["job_name"]
+                                + "_microservice_"
+                                + str(service["microserviceID"])
                                 + "_instance_"
                                 + str(instance["instance_number"])
                             )
                             service_statuses[id] = instance.get("status")
-                            # if instance.get("status") != "RUNNING":
 
-                            #    service_statuses[id] = instance.get("status")
                     else:
                         service_statuses[service["job_name"]] = service.get("status")
 
-                        # print(f"Healthcheck for {id} returned {instance}")
     return service_statuses
 
 
@@ -337,13 +336,13 @@ async def main_async():
             if token:
                 global authToken
                 authToken = token
-                print(f"Token: {token}")
-                print("Updated SLA is:")
-                print(json.dumps(updated_sla))
+                # print(f"Token: {token}")
+                # print("Updated SLA is:")
+                # print(json.dumps(updated_sla))
                 success, failed = await deploy_application(updated_sla)
                 if success:
-                    print("Successfully deployed applications:")
-                    print(success)
+                    # print("Successfully deployed applications:")
+                    # print(success)
 
                     # Wait for the applications to start
                     await asyncio.sleep(30)
@@ -352,7 +351,7 @@ async def main_async():
                         success, worker_list, SYSTEM_MANAGER_URL
                     )
 
-                    print("Service statuses:")
+                    # print("Service statuses:")
                     print(statuses)
 
                 if failed:
