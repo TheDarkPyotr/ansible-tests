@@ -258,8 +258,10 @@ def check_list(param_str: str):
 async def application_healthcheck(deployed_apps, worker_list, SYSTEM_MANAGER_URL):
 
     service_statuses = {}
+    services_unified = []
 
-    services = deployed_apps.values()
+    for ids in deployed_apps.values():
+        services_unified.extend(ids)
 
     request_status, request_body = await get_request(
         url=f"http://{SYSTEM_MANAGER_URL}:10000/api/services/"
@@ -272,9 +274,7 @@ async def application_healthcheck(deployed_apps, worker_list, SYSTEM_MANAGER_URL
         if request_body:
             print(f"Request body is a list of {len(request_body)} elements.")
             for service in request_body:
-                print(f"Service: {service}")
-                print(f"List of services: {services}")
-                if service and service["microserviceID"] in services:
+                if service and service["microserviceID"] in services_unified:
                     instance_list = service.get("instance_list", [])
                     if instance_list:
                         for instance in instance_list:
@@ -288,6 +288,8 @@ async def application_healthcheck(deployed_apps, worker_list, SYSTEM_MANAGER_URL
 
                                 service_statuses[id] = instance.get("status")
                     else:
+                        print(f"Instance list is empty for {service['job_name']}")
+                        print(f"Status: {service.get('status')}")
                         service_statuses[service["job_name"]] = service.get("status")
 
                         # print(f"Healthcheck for {id} returned {instance}")
