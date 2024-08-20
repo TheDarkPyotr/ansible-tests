@@ -89,7 +89,7 @@
         path: /etc/environment
         regexp: '^OAK_ROLE='
         line: 'OAK_ROLE=root'
-        create: yes
+        create: true
 
     - name: Set environment variables for deployment root (node {{ inventory_hostname }})
       set_fact:
@@ -187,7 +187,7 @@
         path: /etc/environment
         regexp: '^OAK_ROLE='
         line: "OAK_ROLE=worker_{{ inventory_hostname }}"
-        create: yes
+        create: true
 
     - name: Set environment variables for deployment node (worker {{ inventory_hostname }})
       set_fact:

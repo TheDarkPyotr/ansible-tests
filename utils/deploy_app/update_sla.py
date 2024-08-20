@@ -75,6 +75,15 @@ def is_reachable(hostname):
     return host.packets_sent == host.packets_received
 
 
+def constrained_already_specified(constraints: list):
+    for constraint in constraints:
+        if constraint.get("type") == "direct" and (
+            "node" in constraint or "cluster" in constraint
+        ):
+            return True
+        return False
+
+
 def update_topology(clusters, workers, cluster_names, deploy_mode):
     """Update the topology with the available worker nodes."""
     for cluster in clusters:
@@ -103,25 +112,27 @@ def update_topology(clusters, workers, cluster_names, deploy_mode):
                 if deploy_mode == "rc" or deploy_mode == "full":
 
                     if "constraints" in service:
-                        if (
-                            "type" not in service["constraints"]
-                            and "node" not in service["constraints"]
-                        ):
-                            service["constraints"].append(
+                        if not constrained_already_specified(service["constraints"]):
+                            service["constraints"] = [
                                 {
                                     "type": "direct",
                                     "node": assigned_worker,
                                     "cluster": "CL" + cluster_suffix,
                                 }
-                            )
-                    else:
-                        service["constraints"] = [
-                            {
-                                "type": "direct",
-                                "node": assigned_worker,
-                                "cluster": "CL" + cluster_suffix,
-                            }
-                        ]
+                            ]
+                        # TODO: `else`` branch can be avoided under assumption that
+                        # during provisioning phase, alongside `filter_root` and `filter_clusters`
+                        # the `constraints` field is also inspected to filter `worker` nodes.
+                        # Open problem at provisioning level remain cluster-node association (n.d.r.)
+                        #
+                        # else:
+                        #    service["constraints"].append(
+                        #        {
+                        #            "type": "direct",
+                        #            "node": assigned_worker,
+                        #            "cluster": "CL" + cluster_suffix,
+                        #        }
+                        #    )
 
 
 def check_correspondence(json_data, workers, cluster_names, deploy_mode):
