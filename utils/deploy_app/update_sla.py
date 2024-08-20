@@ -49,9 +49,30 @@ async def post_request(url, json_body):
         return None, str(e)
 
 
-def authenticate(hostname, username="Admin", password="Admin", organization=""):
+async def get_request(url):
+    """Asynchronously get JSON data from the specified endpoint using the provided token."""
+    headers = {
+        "Content-Type": "application/json",
+        "Authorization": f"Bearer {authToken}",
+    }
+
+    try:
+        async with aiohttp.ClientSession() as session:
+            async with session.get(url, headers=headers) as response:
+                if response.status in (200, 201):
+                    return response.status, await response.json()
+                else:
+                    return response.status, await response.text()
+    except aiohttp.ClientError as e:
+        print(f"An error occurred: {e}")
+        return None, str(e)
+
+
+def authenticate(
+    SYSTEM_MANAGER_URL="localhost", username="Admin", password="Admin", organization=""
+):
     """Authenticate with the server and return a token."""
-    login_url = f"http://{hostname}:10000/api/auth/login"
+    login_url = f"http://{SYSTEM_MANAGER_URL}:10000/api/auth/login"
     payload = {"username": username, "password": password, "organization": organization}
 
     try:
@@ -69,9 +90,9 @@ def authenticate(hostname, username="Admin", password="Admin", organization=""):
     return None
 
 
-def is_reachable(hostname):
+def is_reachable(SYSTEM_MANAGER_URL):
     """Check if a host is reachable by sending a ping request."""
-    host = ping(hostname, count=1, interval=0.2)
+    host = ping(SYSTEM_MANAGER_URL, count=1, interval=0.2)
     return host.packets_sent == host.packets_received
 
 
@@ -151,7 +172,7 @@ def check_correspondence(json_data, workers, cluster_names, deploy_mode):
 
 
 async def deploy_application(updated_sla: dict):
-    endpoint = f"http://{hostname}:10000/api/application/"
+    endpoint = f"http://{SYSTEM_MANAGER_URL}:10000/api/application/"
     topology = updated_sla.get("topology_descriptor", {})
     clusters = topology.get("cluster_list", [])
     success = {}
@@ -180,7 +201,7 @@ async def deploy_application(updated_sla: dict):
                     if isinstance(app, dict):
                         microservices = app.get("microservices", [])
                         for microservice_id in microservices:
-                            instance_endpoint = f"http://{hostname}:10000/api/service/{microservice_id}/instance"
+                            instance_endpoint = f"http://{SYSTEM_MANAGER_URL}:10000/api/service/{microservice_id}/instance"
                             status_code, instance_body = await post_request(
                                 instance_endpoint, {}
                             )
@@ -214,6 +235,30 @@ def check_list(param_str: str):
     except (SyntaxError, ValueError) as e:
         print(f"Error converting {param_str} string to list: {e}")
         return
+
+
+def application_healthcheck(deployed_apps, worker_list, SYSTEM_MANAGER_URL):
+
+    service_statuses = {}
+
+    services = deployed_apps.values()
+
+    request_status, request_body = get_request(
+            url=f"http://{SYSTEM_MANAGER_URL}:10000/api/services/"
+        )
+
+    if request_status in (200, 201):
+        if isinstance(request_body, (list, bytearray)):
+            for service in request_body:
+                if (isinstance(service, dict) and service["$oid"] in services):
+                    instance_list = service.get("instance_list", [])
+                    for instance in instance_list:
+                        id = (service["job_name"] + "_instance_" + instance["instance_number"])
+                        if instance.get("status") != "RUNNING":
+                                
+                            service_statuses[id] = instance.get("status")
+
+                        print(f"Healthcheck for {id} returned {instance.get("status")}")
 
 
 async def main_async():
@@ -251,14 +296,14 @@ async def main_async():
             json_data, worker_list, cluster_names, deploy_mode
         )
         if updated_sla and root_group:
-            global hostname
-            hostname = root_group[0]
+            global SYSTEM_MANAGER_URL
+            SYSTEM_MANAGER_URL = root_group[0]
 
-            if not is_reachable(hostname):
-                print(f"Error: Root node {hostname} is not reachable.")
+            if not is_reachable(SYSTEM_MANAGER_URL):
+                print(f"Error: Root node {SYSTEM_MANAGER_URL} is not reachable.")
                 return
 
-            token = authenticate(hostname)
+            token = authenticate(SYSTEM_MANAGER_URL)
             if token:
                 global authToken
                 authToken = token
@@ -269,11 +314,16 @@ async def main_async():
                 if success:
                     print("Successfully deployed applications:")
                     print(success)
+
+                    application_healthcheck(success, worker_list, SYSTEM_MANAGER_URL)
+
                 if failed:
                     print("Failed to deploy applications:")
                     print(failed)
             else:
-                print(f"Failed to obtain authentication token from {hostname}.")
+                print(
+                    f"Failed to obtain authentication token from {SYSTEM_MANAGER_URL}."
+                )
         else:
             print("Updated SLA is invalid or rootIP is empty.")
             print(updated_sla)
