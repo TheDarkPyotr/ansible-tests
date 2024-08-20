@@ -268,11 +268,8 @@ async def application_healthcheck(deployed_apps, worker_list, SYSTEM_MANAGER_URL
     )
 
     if request_status in (200, 201):
-        print(f"Request status: {request_status}")
-        print(f"Request body: {request_body}")
         request_body = json.loads(request_body)
         if request_body:
-            print(f"Request body is a list of {len(request_body)} elements.")
             for service in request_body:
                 if service and service["microserviceID"] in services_unified:
                     instance_list = service.get("instance_list", [])
@@ -288,8 +285,6 @@ async def application_healthcheck(deployed_apps, worker_list, SYSTEM_MANAGER_URL
 
                                 service_statuses[id] = instance.get("status")
                     else:
-                        print(f"Instance list is empty for {service['job_name']}")
-                        print(f"Status: {service.get('status')}")
                         service_statuses[service["job_name"]] = service.get("status")
 
                         # print(f"Healthcheck for {id} returned {instance}")
@@ -349,6 +344,9 @@ async def main_async():
                 if success:
                     print("Successfully deployed applications:")
                     print(success)
+
+                    # Wait for the applications to start
+                    await asyncio.sleep(30)
 
                     statuses = await application_healthcheck(
                         success, worker_list, SYSTEM_MANAGER_URL
