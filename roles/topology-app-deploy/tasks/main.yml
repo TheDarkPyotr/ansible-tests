@@ -102,14 +102,16 @@
   register: process_check_results  # Register the output of the task
   ignore_errors: false
 
+- name: Debug output
+  debug:
+    msg: "{{ process_check_results }}"
+  when: process_check_results is defined
+
 - name: Print the output of the process check task
   debug:
     msg: |
-      Host: {{ item.invocation.delegate_to }}
-      Command: {{ item.item.value }}
       Stdout: {{ item.stdout }}
       Stderr: {{ item.stderr }}
-      RC: {{ item.rc }}
   loop: "{{ process_check_results.results }}"
 
 - name: Print the output of the Python script
