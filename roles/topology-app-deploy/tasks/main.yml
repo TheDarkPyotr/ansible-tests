@@ -62,7 +62,7 @@
 
 - name: Set result_output as JSON dictionary
   set_fact:
-    worker_process_dict: "{{ result_output.stdout | from_json }}"
+    worker_process_dict: "{{ result_output.stdout | to_json }}"
 
 - name: Print the worker_process_dict
   debug:
