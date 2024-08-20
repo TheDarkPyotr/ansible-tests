@@ -345,6 +345,9 @@ async def main_async():
 
                     # print("Service statuses:")
                     print(statuses)
+                    # Save statuses JSON dict to file
+                    with open("/tmp/process_dictionary.json", "w") as f:
+                        json.dump(statuses, f, indent=4)
 
                 # if failed:
                 # print("Failed to deploy applications:")

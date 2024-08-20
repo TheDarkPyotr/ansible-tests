@@ -59,10 +59,14 @@
   become: true
   become_user: root
 
+- name: Read JSON file
+  ansible.builtin.slurp:
+    src: /tmp/process_dictionary.json
+    register: slurped_file
 
-- name: Set result_output as JSON dictionary
-  set_fact:
-    worker_process_dict: "{{ result_output.stdout | to_json }}"
+- name: Decode JSON file content
+  ansible.builtin.set_fact:
+    worker_process_dict: "{{ slurped_file['content'] | b64decode | from_json }}"
 
 - name: Print the worker_process_dict
   debug:
@@ -75,7 +79,7 @@
         ip_to_hostname | default({})
         | combine({item.key: hostvars | dict2items | selectattr('value.ansible_host', 'equalto', item.key) | map(attribute='key') | first})
       }}
-  loop: "{{ worker_process_dict | from_json | dict2items }}"
+  loop: "{{ worker_process_dict | dict2items }}"
   vars:
     ip_to_hostname: {}
 
