@@ -141,13 +141,7 @@ def update_topology(clusters, workers, cluster_names, deploy_mode):
                     used_workers.append(assigned_worker)
                 else:
                     assigned_worker = used_workers[service_index % len(used_workers)]
-                print(
-                    f"Assigning worker {assigned_worker} to service {service['microservice_name']}"
-                )
 
-                print(
-                    f"Deploy mode: {deploy_mode} for service {service['microservice_name']}"
-                )
                 if deploy_mode == "rc" or deploy_mode == "full":
 
                     if (
@@ -200,12 +194,6 @@ async def deploy_application(updated_sla: dict):
     for cluster in clusters:
         sla_descriptor = cluster.get("sla_descriptor", {})
         status_code, body = await post_request(endpoint, sla_descriptor)
-
-        print(
-            "Post request to endpoint {} for cluster {} is {} \n".format(
-                endpoint, cluster["cluster_number"], body
-            )
-        )
 
         if status_code in (200, 201):
 
@@ -275,17 +263,21 @@ async def application_healthcheck(deployed_apps, worker_list, SYSTEM_MANAGER_URL
                     instance_list = service.get("instance_list", [])
                     if instance_list:
                         for instance in instance_list:
-                            id = (
+                            process = (
                                 service["job_name"]
-                                + "_microservice_"
-                                + str(service["microserviceID"])
-                                + "_instance_"
+                                + ".instance."
                                 + str(instance["instance_number"])
                             )
-                            service_statuses[id] = instance.get("status")
+                            if instance.get("status") == "RUNNING":
 
-                    else:
-                        service_statuses[service["job_name"]] = service.get("status")
+                                host = instance.get("publicip")
+
+                                service_statuses[host] = process
+
+                            else:
+                                service_statuses[service["microserviceID"]] = (
+                                    process + "_" + instance.get("status")
+                                )
 
     return service_statuses
 
