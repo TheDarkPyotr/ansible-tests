@@ -97,31 +97,31 @@ def update_topology(clusters, workers, cluster_names, deploy_mode):
                     f"Assigning worker {assigned_worker} to service {service['microservice_name']}"
                 )
 
-            print(
-                f"Deploy mode: {deploy_mode} for service {service['microservice_name']}"
-            )
-            if deploy_mode == "rc" or deploy_mode == "full":
+                print(
+                    f"Deploy mode: {deploy_mode} for service {service['microservice_name']}"
+                )
+                if deploy_mode == "rc" or deploy_mode == "full":
 
-                if "constraints" in service:
-                    if (
-                        "type" not in service["constraints"]
-                        and "node" not in service["constraints"]
-                    ):
-                        service["constraints"].append(
+                    if "constraints" in service:
+                        if (
+                            "type" not in service["constraints"]
+                            and "node" not in service["constraints"]
+                        ):
+                            service["constraints"].append(
+                                {
+                                    "type": "direct",
+                                    "node": assigned_worker,
+                                    "cluster": "CL" + cluster_suffix,
+                                }
+                            )
+                    else:
+                        service["constraints"] = [
                             {
                                 "type": "direct",
                                 "node": assigned_worker,
                                 "cluster": "CL" + cluster_suffix,
                             }
-                        )
-                else:
-                    service["constraints"] = [
-                        {
-                            "type": "direct",
-                            "node": assigned_worker,
-                            "cluster": "CL" + cluster_suffix,
-                        }
-                    ]
+                        ]
 
 
 def check_correspondence(json_data, workers, cluster_names, deploy_mode):
@@ -180,9 +180,11 @@ async def deploy_application(updated_sla: dict):
                                     microservice_id
                                 )
                     else:
-                        print(f"App is not a dict: {app}")
+                        print(f"Application is not a dict type: {app}")
         else:
-            failed[cluster["cluster_number"]] = f"SLA_POST_FAILED_{status_code}_{body}"
+            failed[cluster["cluster_number"]] = (
+                f"SLA_POST_FAILED_{status_code}_{instance_body}"
+            )
 
     return success, failed
 
@@ -230,12 +232,7 @@ async def main_async():
             "together_root_cluster", False
         )
 
-        print(f"Flag one_doc_enabled is setted to: {onedoc_enabled}")
-        print(f"Flag together_root_cluster is setted to: {rc_enabled}")
-
         deploy_mode = "one-doc" if onedoc_enabled else "rc" if rc_enabled else "full"
-
-        print(f"Deploy is setted to: {deploy_mode}")
 
         updated_sla = check_correspondence(
             json_data, worker_list, cluster_names, deploy_mode
@@ -263,9 +260,9 @@ async def main_async():
                     print("Failed to deploy applications:")
                     print(failed)
             else:
-                print("Failed to obtain authentication token.")
+                print(f"Failed to obtain authentication token from {hostname}.")
         else:
-            print("Updated SLA is invalid or root group is empty.")
+            print("Updated SLA is invalid or rootIP is empty.")
             print(updated_sla)
             print(root_group)
 
