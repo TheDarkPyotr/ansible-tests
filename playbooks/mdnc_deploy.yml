@@ -28,7 +28,7 @@
     - include_role:
         name: support-execution
       vars:
-        script_name: "/utils/full_deploy/combination.py"
+        script_name: "/utils/mdnc_deploy/combination.py"
         script_args: "{{ json_input }}"
 
     - name: Set topology_desc as JSON
