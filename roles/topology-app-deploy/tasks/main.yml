@@ -59,6 +59,19 @@
   become: true
   become_user: root
 
+- name: Read updated SLA JSON file
+  ansible.builtin.slurp:
+    src: /tmp/updated_sla.json
+  register: slurped_file_update_sla
+
+- name: Decode updated SLA JSON content
+  ansible.builtin.set_fact:
+    updated_sla: "{{ slurped_file_update_sla['content'] | b64decode | from_json }}"
+
+- name: Debug updated SLA JSON content
+  debug:
+    msg: "{{ updated_sla }}"
+
 - name: Read dict of successfully executed processes
   ansible.builtin.slurp:
     src: /tmp/run_process_dictionary.json
@@ -119,17 +132,3 @@
   debug:
     msg: "{{ item.stdout_lines[2] }}"
   loop: "{{ process_check_results.results }}"
-
-################ TO BE REMOVED ################
-- name: Retrieve updated topology
-  ansible.builtin.slurp:
-    src: "/tmp/topology_desc.json"
-  register: new_topology_content
-
-- name: Decode new topology
-  set_fact:
-    new_topology: "{{ new_topology_content.content | b64decode }}"
-
-- name: Show deployed topology
-  debug:
-    msg: "{{ new_topology_content }}"
