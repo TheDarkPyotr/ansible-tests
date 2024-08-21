@@ -40,7 +40,7 @@
 
 - name: Install Python packages from requirements.txt
   pip:
-    requirements: ./utils/deploy_app/requirements.txt
+    requirements: ./utils/topology-app-deploy/requirements.txt
     executable: /usr/local/bin/pip3
     chdir: ..
   become: true
@@ -48,13 +48,13 @@
 
 - name: Install script dependencies
   ansible.builtin.shell: |
-    pip3 install -r ../utils/deploy_app/requirements.txt
+    pip3 install -r ../utils/topology-app-deploy/requirements.txt
   become: true
   become_user: root
 
 - name: Execute the Python script with sudo and parameters
   command: >
-    sudo /usr/bin/python3 ../utils/deploy_app/update_sla.py "/tmp/topology_desc.json" "{{ workers_json }}" "{{ group_clusters }}" "{{ group_root }}"
+    sudo /usr/bin/python3 ../utils/topology-app-deploy/update_sla.py "/tmp/topology_desc.json" "{{ workers_json }}" "{{ group_clusters }}" "{{ group_root }}"
   register: result_output
   become: true
   become_user: root
