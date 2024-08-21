@@ -24,7 +24,7 @@
         topology_desc: "{{ topology_desc }}"
       when: deploy_1doc and not together_root_cluster
 
-- name: (Full Topology) - Retrieve hostnames of workers
+- name: (MDNC Topology) - Retrieve hostnames of workers
   hosts: "{{ group_workers_full}}"
   gather_facts: false
   tasks:
@@ -38,7 +38,7 @@
         hostname_list: "{{ local_hostname.stdout }}"
       delegate_facts: true
 
-- name: (Full Topology) - App Deploy
+- name: (MDNC Topology) - App Deploy
   hosts: localhost
   roles:
     - role: topology-app-deploy
@@ -50,7 +50,7 @@
       when: not deploy_1doc and not together_root_cluster
 
 
-- name: (Root&Cluster) - Retrieve hostnames of workers
+- name: (M-DOC) - Retrieve hostnames of workers
   hosts: "{{ group_rc_workers }}"
   gather_facts: true
   tasks:
@@ -64,7 +64,7 @@
         hostname_list: "{{ local_hostname.stdout }}"
       delegate_facts: true
 
-- name: (Root&Cluster) - App Deploy
+- name: (M-DOC) - App Deploy
   hosts: localhost
   roles:
     - role: topology-app-deploy
