@@ -8,18 +8,10 @@
   gather_facts: false
 
   tasks:
-    - name: Get current job ID
+    - name: Metadata print
       set_fact:
-        current_job_id: "{{ ansible_job_id }}"
+        current_job_id: "{{ awx.awx.tower_job }}"
 
-    - name: Query Tower to get the workflow job ID
-      set_fact:
-        workflow_job_id: "{{ lookup('awx.awx.tower_job', current_job_id).related.workflow_job }}"
-
-    - name: Display the Workflow Job Execution ID
-      debug:
-        msg: "The Workflow Job Execution ID is: {{ workflow_job_id }}"
-   
     - name: Create a temporary directory for testbed files
       ansible.builtin.tempfile:
         state: directory
