@@ -321,6 +321,10 @@ async def main_async():
             global SYSTEM_MANAGER_URL
             SYSTEM_MANAGER_URL = root_group[0]
 
+            # Save updated SLA JSON dict to file
+            with open("/tmp/updated_sla.json", "w") as f:
+                json.dump(updated_sla, f, indent=4)
+
             if not is_reachable(SYSTEM_MANAGER_URL):
                 print(f"Error: Root node {SYSTEM_MANAGER_URL} is not reachable.")
                 return
