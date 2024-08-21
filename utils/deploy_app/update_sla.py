@@ -245,7 +245,8 @@ def check_list(param_str: str):
 
 async def application_healthcheck(deployed_apps, worker_list, SYSTEM_MANAGER_URL):
 
-    service_statuses = {}
+    running_statuses = {}
+    failed_statuses = {}
     services_unified = []
 
     for ids in deployed_apps.values():
@@ -272,14 +273,14 @@ async def application_healthcheck(deployed_apps, worker_list, SYSTEM_MANAGER_URL
 
                                 host = instance.get("publicip")
 
-                                service_statuses[host] = process
+                                running_statuses[host] = process
 
                             else:
-                                service_statuses[service["microserviceID"]] = (
+                                failed_statuses[service["microserviceID"]] = (
                                     process + "_" + instance.get("status")
                                 )
 
-    return service_statuses
+    return running_statuses, failed_statuses
 
 
 async def main_async():
@@ -339,15 +340,20 @@ async def main_async():
                     # Wait for the applications to start
                     await asyncio.sleep(30)
 
-                    statuses = await application_healthcheck(
+                    running_processes, failed_processes = await application_healthcheck(
                         success, worker_list, SYSTEM_MANAGER_URL
                     )
 
                     # print("Service statuses:")
-                    print(statuses)
+                    print(running_processes)
                     # Save statuses JSON dict to file
-                    with open("/tmp/process_dictionary.json", "w") as f:
-                        json.dump(statuses, f, indent=4)
+                    # Filter out from statuses keys that are not IP addresses
+
+                    with open("/tmp/run_process_dictionary.json", "w") as f:
+                        json.dump(running_processes, f, indent=4)
+
+                    with open("/tmp/failed_process_dictionary.json", "w") as f:
+                        json.dump(failed_processes, f, indent=4)
 
                 # if failed:
                 # print("Failed to deploy applications:")

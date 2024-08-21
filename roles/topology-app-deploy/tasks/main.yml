@@ -59,18 +59,31 @@
   become: true
   become_user: root
 
-- name: Read JSON file
+- name: Read dict of successfully executed processes
   ansible.builtin.slurp:
-    src: /tmp/process_dictionary.json
-  register: slurped_file
+    src: /tmp/run_process_dictionary.json
+  register: slurped_file_success
 
-- name: Decode JSON file content
+- name: Read dict of failed executed processes
+  ansible.builtin.slurp:
+    src: /tmp/failed_process_dictionary.json
+  register: slurped_file_failed
+
+- name: Decode success process dictionary
   ansible.builtin.set_fact:
-    worker_process_dict: "{{ slurped_file['content'] | b64decode | from_json }}"
+    worker_process_dict: "{{ slurped_file_success['content'] | b64decode | from_json }}"
 
-- name: Debug worker process dictionary
+- name: Decode failed process dictionary
+  ansible.builtin.set_fact:
+    services_fail_process_dict: "{{ slurped_file_failed['content'] | b64decode | from_json }}"
+
+- name: Debug worker successfully executed process dictionary
   debug:
     msg: "{{ worker_process_dict }}"
+
+- name: Debug worker failed executed process dictionary
+  debug:
+    msg: "{{ services_fail_process_dict }}"
 
 - name: Retrieve machine inventory hostnames from IPs
   ansible.builtin.set_fact:
