@@ -31,11 +31,6 @@
         script_name: "/utils/full_deploy/combination.py"
         script_args: "{{ json_input }}"
 
-    #- include_tasks: support_execution.yml
-    #  vars:
-    #    script_name: "/utils/full_deploy/combination.py"
-    #    script_args: "{{ json_input }}"
-
     - name: Set topology_desc as JSON
       set_fact:
         topology_desc: "{{ topology_desc | to_json }}"

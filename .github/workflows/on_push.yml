@@ -38,12 +38,12 @@ jobs:
           response=$(curl -s -X POST "http://$TOWER_HOST/api/v2/users/1/personal_tokens/" \
             -u "$TOWER_USER:$TOWER_PASS" \
             -H "Content-Type: application/json" \
-            --insecure)  # --insecure is equivalent to validate_certs: false in Ansible
+            --insecure) 
           echo "$response" | jq .
           token=$(echo "$response" | jq -r '.token')
           echo "TOWER_API_TOKEN=$token" >> $GITHUB_ENV
 
-      - name: POST request to AWX Testbed API Endpoint
+      - name: Response AWX Testbed API Endpoint
         env:
           TOWER_HOST: ${{ secrets.TOWER_HOST }}
           TEMPLATE_ID: ${{ secrets.TEMPLATE_ID }}
@@ -60,7 +60,7 @@ jobs:
             -H "Authorization: Bearer $TOWER_API_TOKEN" \
             -H "Content-Type: application/json" \
             -d "{ \"extra_vars\": $extra_vars_data }" \
-            --insecure)  # --insecure is equivalent to validate_certs: false in Ansible
+            --insecure)  
           
           workflow_job_id=$(echo "$response" | jq -r ".id")
 
