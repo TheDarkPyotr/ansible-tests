@@ -8,14 +8,6 @@
   gather_facts: false
 
   tasks:
-    - name: Metadata print
-      set_fact:
-        metadata: "{{ awx.awx.tower_job }}"
-
-    - name: Debug metadata
-      debug:
-        msg: "Metadata {{ metadata }}"
-
     - name: Create a temporary directory for testbed files
       ansible.builtin.tempfile:
         state: directory
