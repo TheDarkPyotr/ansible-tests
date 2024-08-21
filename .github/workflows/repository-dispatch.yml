@@ -1,4 +1,4 @@
-name: API Triggered Workflow
+name: Testbed Repository Callback 
 
 on:
   repository_dispatch:

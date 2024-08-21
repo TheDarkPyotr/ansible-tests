@@ -1,4 +1,4 @@
-name: Trigger AWX Job Template
+name: Execute Testbed Workflow Pipeline
 
 on:  
   workflow_dispatch:
@@ -8,11 +8,11 @@ on:
         required: true
         default: '1doc.json'
       branch:
-        description: 'Oakestra repo branch'
+        description: 'Oakestra branch (optional)'
         required: true
         default: 'main'
       commit:
-          description: 'Oakestra repo commit'
+          description: 'Oakestra commit (optional)'
           required: true
           type: string
           default: 'HEAD'
