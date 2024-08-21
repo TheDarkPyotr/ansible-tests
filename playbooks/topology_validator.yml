@@ -10,7 +10,11 @@
   tasks:
     - name: Metadata print
       set_fact:
-        current_job_id: "{{ awx.awx.tower_job }}"
+        metadata: "{{ awx.awx.tower_job }}"
+
+    - name: Debug metadata
+      debug:
+        msg: "Metadata {{ metadata }}"
 
     - name: Create a temporary directory for testbed files
       ansible.builtin.tempfile:
