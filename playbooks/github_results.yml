@@ -1,5 +1,8 @@
 ---
-    - name: Trigger GitHub Event via API
+- name: Trigger GitHub Event via API
+  hosts: localhost
+  tasks:
+    - name: Notify GitHub Action
       uri:
         url: "https://api.github.com/repos/{{ GITHUB_USERNAME }}/{{ GITHUB_REPO }}/dispatches"
         method: POST
@@ -7,9 +10,9 @@
           Accept: "application/vnd.github+json"
           Authorization: "Bearer {{ GITHUB_API_TOKEN }}"
           X-GitHub-Api-Version: "2022-11-28"
-        body: 
+        body:
           event_type: "api_call"
-          client_payload: 
+          client_payload:
             output: "AWX Testbed Output"
             integration: true
             result: "{{ result }}"
