@@ -8,6 +8,10 @@
   gather_facts: false
 
   tasks:
+    - name: Get the Workflow Job Execution ID
+      debug:
+        msg: "The Workflow Job Execution ID is: {{ awx_meta['workflow_job_id'] }}"
+    
     - name: Create a temporary directory for testbed files
       ansible.builtin.tempfile:
         state: directory
