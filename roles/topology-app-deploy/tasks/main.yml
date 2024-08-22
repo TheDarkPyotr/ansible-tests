@@ -41,7 +41,7 @@
 - name: Install Python packages from requirements.txt
   pip:
     requirements: ./utils/topology-app-deploy/requirements.txt
-    executable: /usr/local/bin/pip3
+    executable: pip3
     chdir: ..
   become: true
   become_user: root
