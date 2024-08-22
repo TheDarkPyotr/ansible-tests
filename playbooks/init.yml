@@ -38,7 +38,7 @@
       register: files
 
     - name: Launch execution pipeline
-      workflow_launch:
+      awx.awx.workflow_launch:
         workflow_template: "Oakestra Testbed Execution Pipeline [WIP]"
         extra_vars:
           topology_descriptor: "{{ item.path }}"
