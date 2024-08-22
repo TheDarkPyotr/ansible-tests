@@ -1,2 +1,6 @@
 roles:
   - name: gantsign.golang
+
+collections:
+  - name: awx.awx
+    version: "<=21.9.0"
