@@ -48,7 +48,7 @@
 
 - name: Install script dependencies
   ansible.builtin.shell: |
-    pip3 install -r ../utils/topology-app-deploy/requirements.txt
+    sudo pip3 install -r ../utils/topology-app-deploy/requirements.txt
   become: true
   become_user: root
 
