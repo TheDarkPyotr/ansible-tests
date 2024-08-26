@@ -26,19 +26,6 @@
   set_fact:
     workers_json: "{{ workers_hostname | list }}"
 
-- name: Save topology_desc to a file
-  copy:
-    content: "{{ topology_desc_json }}"
-    dest: "/tmp/topology_desc.json"
-
-- name: Upgrade pip to the latest version
-  pip:
-    name: pip
-    state: latest
-    executable: pip3
-
-- name: Install Python packages from requirements.txt
-  pip:
-    requirements: ./utils/topology-app-deploy/requirements.txt
-    executable: /usr/bin/pip3
-    chdir: ..
+- name: Print tworkers_json
+  debug:
+    msg: "workers_json: {{ workers_json }}"
