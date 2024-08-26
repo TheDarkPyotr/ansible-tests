@@ -27,7 +27,7 @@
     workers_json: "{{ workers_hostname | list }}"
 
 - name: Save topology_desc to a file
-  ansible.builtin.copy:
+  copy:
     content: "{{ topology_desc_json }}"
     dest: "/tmp/topology_desc.json"
 
@@ -44,7 +44,7 @@
     chdir: ..
 
 - name: Install script dependencies
-  ansible.builtin.shell: |
+  shell: |
     pip3 install -r ../utils/topology-app-deploy/requirements.txt
 
 - name: Execute the Python script with sudo and parameters
@@ -53,12 +53,12 @@
   register: result_output
 
 - name: Read updated SLA JSON file
-  ansible.builtin.slurp:
+  slurp:
     src: /tmp/updated_sla.json
   register: slurped_file_update_sla
 
 - name: Decode updated SLA JSON content
-  ansible.builtin.set_fact:
+  set_fact:
     updated_sla: "{{ slurped_file_update_sla['content'] | b64decode | from_json }}"
 
 - name: Debug updated SLA JSON content
@@ -66,21 +66,21 @@
     msg: "{{ updated_sla }}"
 
 - name: Read dict of successfully executed processes
-  ansible.builtin.slurp:
+  slurp:
     src: /tmp/run_process_dictionary.json
   register: slurped_file_success
 
 - name: Read dict of failed executed processes
-  ansible.builtin.slurp:
+  slurp:
     src: /tmp/failed_process_dictionary.json
   register: slurped_file_failed
 
 - name: Decode success process dictionary
-  ansible.builtin.set_fact:
+  set_fact:
     worker_process_dict: "{{ slurped_file_success['content'] | b64decode | from_json }}"
 
 - name: Decode failed process dictionary
-  ansible.builtin.set_fact:
+  set_fact:
     services_fail_process_dict: "{{ slurped_file_failed['content'] | b64decode | from_json }}"
 
 - name: Debug worker successfully executed process dictionary
@@ -92,7 +92,7 @@
     msg: "{{ services_fail_process_dict }}"
 
 - name: Retrieve machine inventory hostnames from IPs
-  ansible.builtin.set_fact:
+  set_fact:
     ip_to_hostname: >-
       {{
         ip_to_hostname | default({})
@@ -107,7 +107,7 @@
     msg: "{{ ip_to_hostname }}"
 
 - name: Check if process is running on the remote host
-  ansible.builtin.shell: |
+  shell: |
     if pgrep -f "{{ item.value }}"; then
       echo "Process "{{ item.value }}" is running"
     else

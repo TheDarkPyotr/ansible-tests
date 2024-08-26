@@ -1,7 +1,7 @@
 ---
 - name: (1DOC Topology) - Retrieve hostnames of workers
   hosts: "{{ group_1doc }}"
-  gather_facts: true
+  gather_facts: false
   tasks:
     - name: Retrieve hostname for {{ inventory_hostname }}
       shell: |
@@ -26,7 +26,7 @@
 
 - name: (MDNC Topology) - Retrieve hostnames of workers
   hosts: "{{ group_workers_full}}"
-  gather_facts: true
+  gather_facts: false
   tasks:
     - name: Retrieve hostname for {{ inventory_hostname }}
       shell: |
@@ -52,7 +52,7 @@
 
 - name: (M-DOC) - Retrieve hostnames of workers
   hosts: "{{ group_rc_workers }}"
-  gather_facts: true
+  gather_facts: false
   tasks:
     - name: Retrieve hostname for {{ inventory_hostname }}
       shell: |
