@@ -36,28 +36,25 @@
     name: pip
     state: latest
     executable: pip3
-  become: true
+  become_user: root
 
 - name: Install Python packages from requirements.txt
   pip:
     requirements: ./utils/topology-app-deploy/requirements.txt
     executable: /usr/bin/pip3
     chdir: ..
-  become: true
   become_user: root
 
 - name: Install script dependencies
   ansible.builtin.shell: |
     pip3 install -r ../utils/topology-app-deploy/requirements.txt
-  become: true
-  become_user: root
+  become_method: sudo
 
 - name: Execute the Python script with sudo and parameters
   command: >
     /usr/bin/python3 ../utils/topology-app-deploy/update_sla.py "/tmp/topology_desc.json" "{{ workers_json }}" "{{ group_clusters }}" "{{ group_root }}"
   register: result_output
-  become: true
-  become_user: root
+  become_method: sudo
 
 - name: Read updated SLA JSON file
   ansible.builtin.slurp:
