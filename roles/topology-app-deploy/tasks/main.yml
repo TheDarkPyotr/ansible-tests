@@ -50,7 +50,7 @@
 
 - name: Install script dependencies
   shell: |
-    pip3 install -r ../utils/topology-app-deploy/requirements.txt
+    pip3 install -r ./utils/topology-app-deploy/requirements.txt
 
 - name: Execute the Python script with sudo and parameters
   command: >
