@@ -11,7 +11,7 @@
     - name: Add {{ inventory_hostname }} to hostname list
       set_fact:
         hostname_list: "{{ local_hostname.stdout }}"
-      delegate_facts: true
+      #delegate_facts: true
 
 - name: (1DOC Topology) - App Deploy
   hosts: localhost
