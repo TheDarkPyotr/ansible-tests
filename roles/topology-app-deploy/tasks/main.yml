@@ -114,16 +114,14 @@
 - name: Check if process is running on the remote host
   shell: |
     if pgrep -f "{{ item.value }}"; then
-      echo "Process "{{ item.value }}" is running"
+      echo "Process {{ item.value }} is running"
     else
-      echo "Process "{{ item.value }}" not running"
+      echo "Process {{ item.value }} not running"
       exit 1
     fi
-  args:
-    warn: false
   delegate_to: "{{ ip_to_hostname[item.key] }}"
   loop: "{{ worker_process_dict | dict2items }}"
-  register: process_check_results  # Register the output of the task
+  register: process_check_results 
   ignore_errors: false
 
 - name: Print the output of the process check task
