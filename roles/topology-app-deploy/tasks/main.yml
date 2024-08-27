@@ -37,6 +37,15 @@
     state: latest
     executable: pip3
 
+- name: Show current files in the directory
+  ansible.builtin.find:
+  paths: "{{ playbook_dir }}"
+  recurse: yes
+
+- name: Print current files in the directory
+  debug:
+    msg: "{{ files.files | map(attribute='path') | list }}"  
+
 
 - name: Install script dependencies
   shell: |
