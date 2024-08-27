@@ -39,8 +39,9 @@
 
 - name: Show current files in the directory
   ansible.builtin.find:
-  paths: "{{ playbook_dir }}"
-  recurse: yes
+    paths: "{{ playbook_dir }}"
+    recurse: yes
+  register: files
 
 - name: Print current files in the directory
   debug:
