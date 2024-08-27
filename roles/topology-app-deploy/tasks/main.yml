@@ -37,11 +37,6 @@
     state: latest
     executable: pip3
 
-- name: Install Python packages from requirements.txt
-  pip:
-    requirements: ./utils/topology-app-deploy/requirements.txt
-    executable: /usr/bin/pip3
-    chdir: ..
 
 - name: Install script dependencies
   shell: |
