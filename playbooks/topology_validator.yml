@@ -11,7 +11,8 @@
     - name: Create a temporary directory for testbed files
       ansible.builtin.tempfile:
         state: directory
-        path: /tmp/testbed_files/
+        suffix: testbed
+        path: /tmp/
       register: temp_repo_dir
 
     - name: Clone the testbed repository
