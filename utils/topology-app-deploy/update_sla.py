@@ -340,6 +340,10 @@ async def main_async():
                 global authToken
                 authToken = token
                 success, failed = await deploy_application(updated_sla)
+
+                print(f"Success deploy {success}\n")
+                print(f"Failed deply {failed}\n")
+
                 if success:
 
                     # Wait for the applications to start
