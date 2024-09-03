@@ -66,6 +66,10 @@
       set_fact:
         available_hosts: "{{ hostvars | dict2items | selectattr('value.host_available', 'defined') | selectattr('value.host_available', 'eq', True) | map(attribute='key') | list }}"
 
+    - name: Remove localhost from available hosts
+      set_fact:
+        available_hosts: "{{ available_hosts | difference(['localhost']) }}"
+
     - name: List available hosts
       debug:
         msg: "Available hosts: {{ available_hosts }}"
@@ -73,7 +77,7 @@
     - name: Requested VMs display
       debug:
         msg: "Total VMs: {{ requested_vms }}"
-   
+
     - name: Set availability flag based on available hosts
       set_fact:
         enough_hosts: "{{ available_hosts | length >= requested_vms | int }}"
