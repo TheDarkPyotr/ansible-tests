@@ -1,7 +1,6 @@
 ---
 - name: 1. Topology Validator Phase
   hosts: localhost
-
   gather_facts: false
 
   tasks:
@@ -21,7 +20,7 @@
 
     - name: Checkout the specific commit
       ansible.builtin.command:
-        cmd: git checkout HEAD
+        cmd: git checkout {{ testbed_repo_branch }}
         chdir: "{{ temp_repo_dir.path }}"
       register: git_checkout
 
@@ -29,7 +28,7 @@
       ansible.builtin.assert:
         that:
           - git_checkout.rc == 0
-        fail_msg: "Failed to checkout commit {{ commit }}"
+        fail_msg: "Failed to checkout commit {{ testbed_repo_branch }}"
 
     - name: Register testbed repository files
       ansible.builtin.find:
@@ -67,7 +66,6 @@
     - name: Store validation result
       ansible.builtin.set_fact:
         TOPOLOGY_VALIDITY: "{{ validation_result.stdout }}"
-
 
     - name: Stop execution if topology descriptor is invalid
       fail:

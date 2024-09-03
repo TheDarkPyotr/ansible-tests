@@ -4,7 +4,14 @@
     path: "{{ path }}"
     state: directory
 
-- name: Check if commit exists in the repo
+- name: Clone repository if not already present
+  ansible.builtin.git:
+    repo: "{{ repo }}"
+    dest: "{{ path }}"
+    version: "{{ branch }}"
+    update: false  # Do not update if it already exists
+
+- name: Check if {{ commit }} exists on branch {{ branch }}
   ansible.builtin.command:
     cmd: git cat-file -t "{{ commit }}"
   args:
@@ -16,7 +23,7 @@
   set_fact:
     git_version: "{{ commit_check.rc == 0 | ternary(commit, branch) }}"
 
-- name: Ensure {{ repo }} Repo is cloned
+- name: Ensure repository is at the correct state (commit or branch)
   ansible.builtin.git:
     repo: "{{ repo }}"
     dest: "{{ path }}"
