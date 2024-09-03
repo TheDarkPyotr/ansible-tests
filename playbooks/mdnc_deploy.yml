@@ -82,7 +82,7 @@
             msg: |
               Cluster Host Map: {{ cluster_host_ranges.ansible_facts.cluster_host_ranges }}
               Worker Map: {{ worker_map }}
-      when: not deploy_1doc and not together_root_cluster
+      when: not onedoc and not mdoc
 
 ################################################## DEPLOY: ROOT ##################################################
 - name: Deploy root component for full topology

@@ -305,12 +305,8 @@ async def main_async():
     cluster_names = check_list(inventory_str)
 
     if validate_topology(json_data):
-        onedoc_enabled = json_data.get("topology_descriptor", {}).get(
-            "one_doc_enabled", False
-        )
-        rc_enabled = json_data.get("topology_descriptor", {}).get(
-            "together_root_cluster", False
-        )
+        onedoc_enabled = json_data.get("topology_descriptor", {}).get("onedoc", False)
+        rc_enabled = json_data.get("topology_descriptor", {}).get("mdoc", False)
 
         deploy_mode = "one-doc" if onedoc_enabled else "rc" if rc_enabled else "full"
 

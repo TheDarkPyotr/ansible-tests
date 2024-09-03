@@ -6,12 +6,12 @@ def validate_topology(json_data):
     try:
         topology_descriptor = json_data["topology_descriptor"]
 
-        # Validate one_doc_enabled
-        if not isinstance(topology_descriptor.get("one_doc_enabled"), bool):
+        # Validate onedoc
+        if not isinstance(topology_descriptor.get("onedoc"), bool):
             return False
 
-        # Validate together_root_cluster
-        if not isinstance(topology_descriptor.get("together_root_cluster"), bool):
+        # Validate mdoc
+        if not isinstance(topology_descriptor.get("mdoc"), bool):
             return False
 
         # Validate cluster_list
