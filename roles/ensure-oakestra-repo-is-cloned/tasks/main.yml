@@ -4,15 +4,28 @@
     path: "{{ path }}"
     state: directory
 
+- name: Check if commit exists in the repo
+  ansible.builtin.command:
+    cmd: git cat-file -t "{{ commit }}"
+  args:
+    chdir: "{{ path }}"
+  register: commit_check
+  ignore_errors: true  # Ignore errors if the commit doesn't exist
+
+- name: Set git_version variable
+  set_fact:
+    git_version: "{{ commit_check.rc == 0 | ternary(commit, branch) }}"
+
 - name: Ensure {{ repo }} Repo is cloned
   ansible.builtin.git:
     repo: "{{ repo }}"
     dest: "{{ path }}"
-    version: "{{ branch }}"
+    version: "{{ git_version }}"
     force: true
 
 - name: Fetch all tags from remote
-  ansible.builtin.command: git fetch --tags --force
+  ansible.builtin.command:
+    cmd: git fetch --tags --force
   become: true
   args:
     chdir: "{{ path }}"
