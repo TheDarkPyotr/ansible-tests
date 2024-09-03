@@ -13,14 +13,14 @@ def compute_worker_cluster_association(json_data, cluster_list=None, workers=Non
 
     clusters = json_data.get("topology_descriptor", {}).get("cluster_list", [])
 
-    # print(f"clusters: {clusters}")
+    # print(f"clusters: {clusters}\n")
 
     cluster_worker_map = {}
     worker_index = 0
 
     for cluster in clusters:
         cluster_number = cluster.get("cluster_number")
-        number_of_nodes = cluster.get("workers_number", 0)
+        number_of_nodes = cluster.get("number_of_nodes", 0)
 
         if number_of_nodes > 0:
             cluster_worker_map[cluster_number] = []
