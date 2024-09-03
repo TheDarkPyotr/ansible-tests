@@ -21,7 +21,7 @@
 
 - name: Set git_version variable
   set_fact:
-    git_version: "{{ commit_check.rc == 0 | ternary(commit, branch) }}"
+    git_version: "{{ commit_check.rc == 0 | bool | ternary(commit, branch) }}"
 
 - name: Ensure repository is at the correct state (commit or branch)
   ansible.builtin.git:
