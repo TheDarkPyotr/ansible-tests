@@ -1,9 +1,6 @@
 ---
 - name: 1. Topology Validator Phase
   hosts: localhost
-  vars:
-    testbed_repo: "https://github.com/TheDarkPyotr/ansible-tests"
-    testbed_repo_branch: "main"
 
   gather_facts: false
 
@@ -71,10 +68,6 @@
       ansible.builtin.set_fact:
         TOPOLOGY_VALIDITY: "{{ validation_result.stdout }}"
 
-    #- include_tasks: github_results.yml
-    #  vars:
-    #    result: "Topology description {{ topology_descriptor }} vadalition returned {{ TOPOLOGY_VALIDITY | bool}}"
-    #    parameters: "{{ topology_descriptor_content | to_json}}"
 
     - name: Stop execution if topology descriptor is invalid
       fail:
