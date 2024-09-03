@@ -134,9 +134,3 @@
       ansible.builtin.include_role:
         name: unset
 ################# MDOC - Stop and Cleanup Components #################
-
-
-    - include_tasks: github_results.yml
-      vars:
-        result: "Provision ended successfully, reserved hosts: {{ reserved_hosts }}"
-      when: ( reserved_hosts | length) > 0

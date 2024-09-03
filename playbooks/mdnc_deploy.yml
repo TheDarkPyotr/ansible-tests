@@ -1,9 +1,6 @@
 - name: Execute Full Deploy template
   hosts: localhost
   gather_facts: false
-  vars:
-    repo: "https://github.com/TheDarkPyotr/ansible-tests"
-    branch: "main"
   tasks:
     - name: Check MNDC Deploy flags
       block:
@@ -18,8 +15,6 @@
           debug:
             msg: "{{ topology_desc }}"
 
-
-        ############################################ Removing support-execution role test
         - name: Execute the support Script
           command: >
             /usr/bin/python3 "{{ testbed_tmp_path }}"/utils/mdnc_deploy/combination.py "{{ testbed_tmp_path }}/topologies/{{ topology_descriptor }}" "{{ group_clusters_full }}" "{{ group_workers_full }}"
@@ -32,18 +27,6 @@
         - name: Debug the script result
           debug:
             msg: "script_result is {{ script_result }}"
-
-#        - name: Set JSON string for combination script
-#          set_fact:
-#            json_input: "{{ {'topology_descriptor': topology_desc, 'group_clusters_full': group_clusters_full, 'group_workers_full': group_workers_full } | to_json }}"
-
-#        - include_role:
-#            name: support-execution
-#          vars:
-#            script_name: "/utils/mdnc_deploy/combination.py"
-#            script_args: "{{ json_input }}"
-######################################################àà
-
 
         - name: Set topology_desc as JSON
           set_fact:

@@ -6,15 +6,15 @@
       | map(attribute='value.local_hostname.stdout')
       | list }}
 
-- name: Available hostnames display
+- name: Debug workers hostname(s)
   debug:
     msg: "Available hostnames: {{ workers_hostname }}"
 
-- name: Print group_clusters
+- name: Debug cluster(s) group
   debug:
     msg: "group_clusters: {{ group_clusters }}"
 
-- name: Print group_root
+- name: Debug root group
   debug:
     msg: "group_root: {{ group_root }}"
 
@@ -37,22 +37,11 @@
     state: latest
     executable: pip3
 
-- name: Show current files in the directory
-  ansible.builtin.find:
-    paths: "{{ playbook_dir }}"
-    recurse: yes
-  register: files
-
-- name: Print current files in the directory
-  debug:
-    msg: "{{ files }}"
-
-
-- name: Install script dependencies
+- name: Install update_sla.py script dependencies
   shell: |
     pip3 install -r "{{ testbed_tmp_path }}"/utils/topology-app-deploy/requirements.txt
 
-- name: Execute the Python script with sudo and parameters
+- name: Execute update_sla.py for app deploy and status retrieval
   command: >
     /usr/bin/python3 "{{ testbed_tmp_path }}"/utils/topology-app-deploy/update_sla.py "/tmp/topology_desc.json" "{{ workers_json }}" "{{ group_clusters }}" "{{ group_root }}"
   register: result_output

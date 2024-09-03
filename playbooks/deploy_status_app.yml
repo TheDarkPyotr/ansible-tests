@@ -28,12 +28,12 @@
   hosts: "{{ group_workers_full}}"
   gather_facts: true
   tasks:
-    - name: Retrieve hostname for {{ inventory_hostname }}
+    - name: (MDNC Topology) Retrieve hostname(s)
       shell: |
         hostname
       register: local_hostname
 
-    - name: Add {{ inventory_hostname }} to hostname list
+    - name: (MDNC Topology) Add gathered hostnames to list
       set_fact:
         hostname_list: "{{ local_hostname.stdout }}"
       delegate_facts: true
