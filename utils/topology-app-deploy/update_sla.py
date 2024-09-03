@@ -126,7 +126,7 @@ def constrained_already_specified(constraints: list):
 def update_topology(clusters, workers, cluster_names, deploy_mode):
     """Update the topology with the available worker nodes."""
     for cluster in clusters:
-        number_of_nodes = cluster.get("number_of_nodes", 0)
+        number_of_nodes = cluster.get("workers_number", 0)
         assigned_workers = workers[:number_of_nodes]
         del workers[:number_of_nodes]
 
@@ -173,7 +173,7 @@ def update_topology(clusters, workers, cluster_names, deploy_mode):
 def check_correspondence(json_data, workers, cluster_names, deploy_mode):
     """Check if the number of workers matches the required nodes and update the topology."""
     clusters = json_data.get("topology_descriptor", {}).get("cluster_list", [])
-    total_nodes = sum(cluster.get("number_of_nodes", 0) for cluster in clusters)
+    total_nodes = sum(cluster.get("workers_number", 0) for cluster in clusters)
 
     if len(workers) < total_nodes:
         print("Insufficient worker nodes.")

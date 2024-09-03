@@ -20,7 +20,7 @@ def compute_worker_cluster_association(json_data, cluster_list=None, workers=Non
 
     for cluster in clusters:
         cluster_number = cluster.get("cluster_number")
-        number_of_nodes = cluster.get("number_of_nodes", 0)
+        number_of_nodes = cluster.get("workers_number", 0)
 
         if number_of_nodes > 0:
             cluster_worker_map[cluster_number] = []

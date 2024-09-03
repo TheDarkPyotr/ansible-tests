@@ -13,7 +13,7 @@
     - name: Compute required number of hosts based on topology
       set_fact:
         num_clusters: "{{ topology.topology_descriptor.cluster_list | length }}"
-        num_nodes: "{{ topology.topology_descriptor.cluster_list | map(attribute='number_of_nodes') | sum }}"
+        num_nodes: "{{ topology.topology_descriptor.cluster_list | map(attribute='workers_number') | sum }}"
         one_doc_enabled: "{{ topology.topology_descriptor.one_doc_enabled | bool }}"
         together_root_cluster: "{{ topology.topology_descriptor.together_root_cluster | bool }}"
 

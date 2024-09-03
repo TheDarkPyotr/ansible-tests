@@ -23,8 +23,8 @@ def validate_topology(json_data):
             # Validate cluster_number
             if not isinstance(cluster.get("cluster_number"), int):
                 return False
-            # Validate number_of_nodes
-            if not isinstance(cluster.get("number_of_nodes"), int):
+            # Validate workers_number
+            if not isinstance(cluster.get("workers_number"), int):
                 return False
 
             # Validate sla_descriptor inside cluster

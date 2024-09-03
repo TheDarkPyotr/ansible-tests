@@ -5,7 +5,7 @@
     "cluster_list": [
       {
         "cluster_number": 2,
-        "number_of_nodes": 1,
+        "workers_number": 1,
         "sla_descriptor": {
             "sla_version" : "v2.0",
             "customerID" : "Admin",
@@ -59,7 +59,7 @@
       },
       {
         "cluster_number": 1,
-        "number_of_nodes": 1,
+        "workers_number": 1,
         "sla_descriptor": {
             "sla_version" : "v2.0",
             "customerID" : "Admin",
