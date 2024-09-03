@@ -71,6 +71,8 @@ def validate_topology(json_data):
                         # Validate cmd
                         if not isinstance(microservice.get("cmd"), list):
                             return False
+                        if not isinstance(microservice.get("expected_output"), str):
+                            return False
                         # Validate memory
                         if not isinstance(microservice.get("memory"), int):
                             return False

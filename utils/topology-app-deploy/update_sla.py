@@ -125,6 +125,9 @@ def constrained_already_specified(constraints: list):
 
 def update_topology(clusters, workers, cluster_names, deploy_mode):
     """Update the topology with the available worker nodes."""
+
+    log_verifier = {}
+
     for cluster in clusters:
         number_of_nodes = cluster.get("workers_number", 0)
         assigned_workers = workers[:number_of_nodes]
@@ -135,12 +138,29 @@ def update_topology(clusters, workers, cluster_names, deploy_mode):
 
         used_workers = []
         for app in cluster["sla_descriptor"]["applications"]:
+
+            application_prefix = (
+                app["application_name"] + "." + app["application_namespace"]
+            )
             for service_index, service in enumerate(app["microservices"]):
                 if assigned_workers:
                     assigned_worker = assigned_workers.pop(0)
                     used_workers.append(assigned_worker)
                 else:
                     assigned_worker = used_workers[service_index % len(used_workers)]
+
+                print(service)
+                if "expected_output" in service:
+                    expected_output = service["expected_output"]
+                    microservice_suffix = (
+                        service["microservice_name"]
+                        + "."
+                        + service["microservice_namespace"]
+                    )
+                    identifier = application_prefix + "." + microservice_suffix
+                    log_verifier[identifier] = expected_output
+                    print(f"Expected output {expected_output} for service {identifier}")
+                    service.pop("expected_output")
 
                 if deploy_mode == "rc" or deploy_mode == "full":
 
@@ -155,19 +175,9 @@ def update_topology(clusters, workers, cluster_names, deploy_mode):
                                 "cluster": "CL" + cluster_suffix,
                             }
                         ]
-                    # TODO: `else`` branch can be avoided under assumption that
-                    # during provisioning phase, alongside `filter_root` and `filter_clusters`
-                    # the `constraints` field is also inspected to filter `worker` nodes.
-                    # Open problem at provisioning level remain cluster-node association (n.d.r.)
-                    #
-                    # else:
-                    #    service["constraints"].append(
-                    #        {
-                    #            "type": "direct",
-                    #            "node": assigned_worker,
-                    #            "cluster": "CL" + cluster_suffix,
-                    #        }
-                    #    )
+
+    with open("/tmp/log_verifier.json", "w") as f:
+        json.dump(log_verifier, f, indent=4)
 
 
 def check_correspondence(json_data, workers, cluster_names, deploy_mode):
@@ -329,13 +339,8 @@ async def main_async():
             if token:
                 global authToken
                 authToken = token
-                # print(f"Token: {token}")
-                # print("Updated SLA is:")
-                # print(json.dumps(updated_sla))
                 success, failed = await deploy_application(updated_sla)
                 if success:
-                    # print("Successfully deployed applications:")
-                    # print(success)
 
                     # Wait for the applications to start
                     await asyncio.sleep(30)
@@ -380,3 +385,5 @@ def main():
 
 if __name__ == "__main__":
     main()
+
+    # python3 update_sla.py "topo.json" "['xavier1', 'xavier2']" "['pi4-base']" "['cmvm22']"
