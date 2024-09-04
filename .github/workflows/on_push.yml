@@ -4,7 +4,7 @@ on:
   workflow_dispatch:
     inputs:
       topology:
-        description: 'Testbed repository - topology descriptor'
+        description: 'Testbed repository - topology descriptor /topologies folder'
         required: true
         default: '1doc.json'
       branch:
@@ -24,11 +24,7 @@ jobs:
     steps:
       - name: Checkout repository
         uses: actions/checkout@v3
-      - name: Read topology file ${{ github.event.inputs.topology }}
-        id: read_topology
-        run: |
-          cat ./topologies/${{ github.event.inputs.topology }} 
-
+ 
       - name: Response AWX Testbed API Endpoint
         env:
           TOWER_HOST: ${{ secrets.TOWER_HOST }}
