@@ -42,6 +42,11 @@
         echo $OAK_STATUS
       register: oak_status
 
+    - name: Debug hosts status
+      debug:
+        msg: "Host {{ inventory_hostname }} status {{ oak_status.stdout }}"
+      when: oak_status.stdout is defined
+
     - name: Set host availability if not busy 
       set_fact:
         host_available: "{{ oak_status.stdout != 'busy' }}"
