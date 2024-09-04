@@ -49,7 +49,7 @@
 
     - name: Set host availability if not busy 
       set_fact:
-        host_available: "{{ oak_status.stdout != 'busy' }}"
+        host_available: "{{ oak_status.stdout == 'free' }}"
       when: oak_status.stdout is defined
 
     - name: Set host availability if OAK_STATUS is not set
