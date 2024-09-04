@@ -8,12 +8,12 @@ on:
         required: true
         default: '1doc.json'
       branch:
-        description: 'Oakestra branch (optional)'
-        required: true
-        default: 'main'
+        description: 'Oakestra branch'
+        required: false
+        default: 'develop'
       commit:
-          description: 'Oakestra commit (optional)'
-          required: true
+          description: 'Oakestra commit'
+          required: false
           type: string
           default: 'HEAD'
 
@@ -21,10 +21,7 @@ jobs:
   trigger-awx-job:
     runs-on: ubuntu-latest
 
-    steps:
-      - name: Checkout repository
-        uses: actions/checkout@v3
- 
+    steps: 
       - name: Response AWX Testbed API Endpoint
         env:
           TOWER_HOST: ${{ secrets.TOWER_HOST }}
