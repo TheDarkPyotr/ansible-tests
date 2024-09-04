@@ -45,4 +45,4 @@ jobs:
             --insecure)  
           workflow_job_id=$(echo "$response" | jq -r ".id")
 
-          echo "Oakestra Testbed triggered. Visit  /jobs/workflow/$workflow_job_id/output for detailed execution logs."
+          echo "Oakestra Testbed triggered. Visit  https://*******/#/jobs/workflow/$workflow_job_id/output for detailed execution logs."
