@@ -7,9 +7,9 @@
         - name: Show groups division
           debug:
             msg: |
-              group_root_full: {{ group_root_full }}
-              group_clusters_full: {{ group_clusters_full }}
-              group_workers_full: {{ group_workers_full }}
+              Root hosts: {{ group_root_full }}
+              Cluster hosts: {{ group_clusters_full }}
+              Workers hosts: {{ group_workers_full }}
 
         - name: Parsed topology descriptor
           debug:
