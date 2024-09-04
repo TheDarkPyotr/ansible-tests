@@ -1,0 +1,125 @@
+{
+    "topology_descriptor": {
+        "cluster_list": [
+            {
+                "cluster_number": 1,
+                "sla_descriptor": {
+                    "applications": [
+                        {
+                            "applicationID": "",
+                            "application_desc": "New application with two long-running services",
+                            "application_name": "firstapp",
+                            "application_namespace": "test1",
+                            "microservices": [
+                                {
+                                    "added_files": [],
+                                    "bandwidth_in": 0,
+                                    "bandwidth_out": 0,
+                                    "cmd": [
+                                        "sh",
+                                        "-c",
+                                        "while true; do echo 'Service 1 running'; sleep 60; done"
+                                    ],
+                                    "code": "docker.io/library/alpine:latest",
+                                    "memory": 1,
+                                    "microserviceID": "",
+                                    "microservice_name": "service1",
+                                    "microservice_namespace": "test2",
+                                    "port": "",
+                                    "state": "",
+                                    "storage": 0,
+                                    "vcpus": 0,
+                                    "vgpus": 0,
+                                    "virtualization": "container",
+                                    "vtpus": 0
+                                },
+                                {
+                                    "added_files": [],
+                                    "bandwidth_in": 0,
+                                    "bandwidth_out": 0,
+                                    "cmd": [
+                                        "sh",
+                                        "-c",
+                                        "while true; do echo 'Service 2 running'; sleep 60; done"
+                                    ],
+                                    "expected_output": "Service 2 running",
+                                    "code": "docker.io/library/alpine:latest",
+                                    "memory": 1,
+                                    "microserviceID": "",
+                                    "microservice_name": "service2",
+                                    "microservice_namespace": "test2",
+                                    "port": "",
+                                    "state": "",
+                                    "storage": 0,
+                                    "vcpus": 0,
+                                    "vgpus": 0,
+                                    "virtualization": "container",
+                                    "vtpus": 0
+                                }
+                            ]
+                        },
+                        {
+                            "applicationID": "",
+                            "application_desc": "New 2nd application with two long-running services",
+                            "application_name": "secondapp",
+                            "application_namespace": "test2",
+                            "microservices": [
+                                {
+                                    "added_files": [],
+                                    "bandwidth_in": 0,
+                                    "bandwidth_out": 0,
+                                    "cmd": [
+                                        "sh",
+                                        "-c",
+                                        "while true; do echo 'Service 1 running'; sleep 60; done"
+                                    ],
+                                    "code": "docker.io/library/alpine:latest",
+                                    "expected_output": "Service 1 running",
+                                    "memory": 1,
+                                    "microserviceID": "",
+                                    "microservice_name": "service1",
+                                    "microservice_namespace": "test2",
+                                    "port": "",
+                                    "state": "",
+                                    "storage": 0,
+                                    "vcpus": 0,
+                                    "vgpus": 0,
+                                    "virtualization": "container",
+                                    "vtpus": 0
+                                },
+                                {
+                                    "added_files": [],
+                                    "bandwidth_in": 0,
+                                    "bandwidth_out": 0,
+                                    "cmd": [
+                                        "sh",
+                                        "-c",
+                                        "while true; do echo 'Service 2 running'; sleep 60; done"
+                                    ],
+                                    "expected_output": "Service 2 running",
+                                    "code": "docker.io/library/alpine:latest",
+                                    "memory": 1,
+                                    "microserviceID": "",
+                                    "microservice_name": "service2",
+                                    "microservice_namespace": "test2",
+                                    "port": "",
+                                    "state": "",
+                                    "storage": 0,
+                                    "vcpus": 0,
+                                    "vgpus": 0,
+                                    "virtualization": "container",
+                                    "vtpus": 0
+                                }
+                            ]
+                        }
+                    ],
+                    "customerID": "Admin",
+                    "sla_version": "v2.0"
+                },
+                "workers_number": 2
+            }
+        ],
+        "mdoc": false,
+        "onedoc": false
+    }
+}
