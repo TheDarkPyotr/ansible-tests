@@ -44,7 +44,7 @@ jobs:
           OAK_NET_COMMIT: ${{ github.event.inputs.net_commit }}
           
         run: |
-          extra_vars_data="{\"topology_descriptor\": \"$FILENAME\", \"branch\": \"$OAK_BRANCH\", \"commit\": \"$OAK_COMMIT\", \"net-branch\": \"$OAK_NET_BRANCH\", \"net-commit\": \"$OAK_NET_COMMIT\"}"
+          extra_vars_data="{\"topology_descriptor\": \"$FILENAME\", \"branch\": \"$OAK_BRANCH\", \"commit\": \"$OAK_COMMIT\", \"net_branch\": \"$OAK_NET_BRANCH\", \"net_commit\": \"$OAK_NET_COMMIT\"}"
           echo "$extra_vars_data"
         
           response=$(curl -s -X POST "https://$TOWER_HOST/api/v2/workflow_job_templates/$TEMPLATE_ID/launch/" \
