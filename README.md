@@ -1,5 +1,12 @@
 # How to automate Oakestra deployment using Ansible Playbooks
 
+
+
+
+
+
+
+
 Table of content:
 - [🪛Prerequisites🪛](#Prerequisites)
 - [🌳Root and Cluster Orchestrators🌳](#Root-and-Cluster-Orchestrators)
